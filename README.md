@@ -1,4 +1,8 @@
-<img width="200" height="200" alt="CAOCAP-logo" src="https://github.com/user-attachments/assets/caf820d9-7a8a-4fdc-82f8-e6d959aad6ed" />
+<div style="display: flex;">
+   <img width="200" alt="Azzam-Alrashed" src="https://github.com/user-attachments/assets/5ebe3f09-2bad-4aa3-9b30-2d88159b242d" />
+   &emsp;&emsp; <!-- Adds a large horizontal gap -->
+   <img width="200" alt="CAOCAP-Ficruty" src="https://github.com/user-attachments/assets/379cf647-5d89-48c5-85c8-5d83e851e298" />
+</div>
 
 # CAOCAP Ficruty - The Future of Programming
 
