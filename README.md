@@ -49,7 +49,7 @@ Ficruty is built in Swift and requires Xcode 15+.
 
 1. **Clone** this repository:
    ```bash
-   git clone https://github.com/CAOCAP/Ficruty.git
+   git clone https://github.com/Azzam-Alrashed/CAOCAP-Ficruty.git
    ```
 2. **Open** the project:
    Open `caocap/caocap.xcodeproj` in Xcode.
