@@ -66,7 +66,7 @@ struct DottedBackground: View {
     let scale: CGFloat
     
     let dotSpacing: CGFloat = 30
-    let dotSize: CGFloat = 1.5
+    let dotSize: CGFloat = 2
     
     var body: some View {
         Canvas { context, size in
