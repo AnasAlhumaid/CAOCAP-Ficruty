@@ -1,3 +1,5 @@
+<img width="200" height="200" alt="CAOCAP-logo" src="https://github.com/user-attachments/assets/caf820d9-7a8a-4fdc-82f8-e6d959aad6ed" />
+
 # CAOCAP Ficruty - The Future of Programming
 
 [The Mission](#the-mission) | [The Philosophy](#the-philosophy) | [The Core Concept](#the-core-concept) | [Tech Stack](#tech-stack) | [Current Status](#current-status) | [Devlog](#devlog) | [Getting Started](#getting-started) | [Contributing](#contributing) | [License](#license)
