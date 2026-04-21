@@ -10,18 +10,27 @@ struct InfiniteCanvasView: View {
     // Scale Limits to prevent crashes and performance issues
     let minScale: CGFloat = 0.5
     let maxScale: CGFloat = 3.0
+    @State private var nodes: [SpatialNode] = [
+        SpatialNode(position: .zero, content: "Hello, world!")
+    ]
     
     var body: some View {
         GeometryReader { geometry in
+            let center = CGPoint(x: geometry.size.width / 2, y: geometry.size.height / 2)
+            
             ZStack {
                 // The Dotted Background (Renders dots relative to global state)
                 DottedBackground(offset: offset, scale: scale)
                 
                 // The Content Layer (Everything here is "pinned" to the canvas)
                 ZStack {
-                    Text("CAOCAP Spatial Workspace")
-                        .font(.system(.caption, design: .monospaced))
-                        .foregroundColor(.secondary.opacity(0.5))
+                    ForEach(nodes) { node in
+                        NodeView(node: node)
+                            .position(
+                                x: center.x + node.position.x,
+                                y: center.y + node.position.y
+                            )
+                    }
                 }
                 .scaleEffect(scale) // 1. Scale the coordinate system
                 .offset(offset)     // 2. Pan the scaled system
