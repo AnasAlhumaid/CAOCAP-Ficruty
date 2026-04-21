@@ -2,8 +2,21 @@ import SwiftUI
 
 struct InfiniteCanvasView: View {
     @Environment(\.colorScheme) var colorScheme
-    @State private var viewport = ViewportState()
-    @State private var nodes: [SpatialNode] = OnboardingProvider.manifestoNodes
+    
+    /// Tracks the current panning and zooming state of the canvas.
+    @State private var viewport: ViewportState
+    
+    /// The central store managing node data and persistence.
+    var store: ProjectStore
+    
+    init(store: ProjectStore) {
+        self.store = store
+        // Initialize viewport from the store's persisted state.
+        self._viewport = State(initialValue: ViewportState(
+            offset: store.viewportOffset,
+            scale: store.viewportScale
+        ))
+    }
     
     // Selection and Dragging State
     @State private var selectedNode: SpatialNode?
@@ -12,15 +25,16 @@ struct InfiniteCanvasView: View {
     
     var body: some View {
         GeometryReader { geometry in
+            // Calculate the screen center to serve as the canvas origin.
             let center = CGPoint(x: geometry.size.width / 2, y: geometry.size.height / 2)
             
             ZStack {
-                // The Dotted Background
+                // Layer 1: The Infinite Dotted Grid
                 DottedBackground(offset: viewport.offset, scale: viewport.scale)
                 
-                // The Content Layer
+                // Layer 2: The Spatial Nodes
                 ZStack {
-                    ForEach(nodes) { node in
+                    ForEach(store.nodes) { node in
                         let currentOffset = nodeDragOffsets[node.id] ?? .zero
                         let isDraggingThisNode = nodeDragOffsets[node.id] != nil
                         
@@ -35,15 +49,17 @@ struct InfiniteCanvasView: View {
                             .highPriorityGesture(
                                 DragGesture(minimumDistance: 5)
                                     .onChanged { value in
+                                        // Block canvas panning while a node is being moved.
                                         isDraggingNode = true
                                         nodeDragOffsets[node.id] = value.translation
                                     }
                                     .onEnded { value in
+                                        // Finalize the node position with a smooth spring animation.
                                         withAnimation(.spring(response: 0.4, dampingFraction: 0.75)) {
-                                            if let index = nodes.firstIndex(where: { $0.id == node.id }) {
-                                                nodes[index].position.x += value.translation.width
-                                                nodes[index].position.y += value.translation.height
-                                            }
+                                            let finalX = node.position.x + value.translation.width
+                                            let finalY = node.position.y + value.translation.height
+                                            store.updateNodePosition(id: node.id, position: CGPoint(x: finalX, y: finalY))
+                                            
                                             nodeDragOffsets[node.id] = nil
                                             isDraggingNode = false
                                         }
@@ -54,10 +70,11 @@ struct InfiniteCanvasView: View {
                 .scaleEffect(viewport.scale)
                 .offset(viewport.offset)
             }
-            .contentShape(Rectangle())
+            .contentShape(Rectangle()) // Ensure the entire area is gesture-sensitive.
             .simultaneousGesture(
                 DragGesture()
                     .onChanged { value in
+                        // Only pan the background if no node is currently being dragged.
                         if !isDraggingNode {
                             viewport.handleDragChanged(value)
                         }
@@ -65,13 +82,21 @@ struct InfiniteCanvasView: View {
                     .onEnded { _ in 
                         if !isDraggingNode {
                             viewport.handleDragEnded()
+                            // Persist the new canvas offset.
+                            store.updateViewport(offset: viewport.offset, scale: viewport.scale)
                         }
                     }
             )
             .simultaneousGesture(
                 MagnificationGesture()
-                    .onChanged { viewport.handleMagnificationChanged($0) }
-                    .onEnded { _ in viewport.handleMagnificationEnded() }
+                    .onChanged { 
+                        viewport.handleMagnificationChanged($0)
+                    }
+                    .onEnded { _ in 
+                        viewport.handleMagnificationEnded()
+                        // Persist the new zoom level.
+                        store.updateViewport(offset: viewport.offset, scale: viewport.scale)
+                    }
             )
         }
         .background(backgroundColor)
@@ -86,6 +111,7 @@ struct InfiniteCanvasView: View {
     }
 }
 
+/// A highly optimized canvas view that renders a procedural dotted grid.
 struct DottedBackground: View {
     @Environment(\.colorScheme) var colorScheme
     let offset: CGSize
@@ -102,6 +128,7 @@ struct DottedBackground: View {
             let centerX = size.width / 2
             let centerY = size.height / 2
             
+            // Calculate the starting position for the dot grid to ensure it loops infinitely.
             let startX = ((offset.width + centerX).truncatingRemainder(dividingBy: scaledSpacing)) - scaledSpacing
             let startY = ((offset.height + centerY).truncatingRemainder(dividingBy: scaledSpacing)) - scaledSpacing
             
@@ -116,5 +143,5 @@ struct DottedBackground: View {
 }
 
 #Preview {
-    InfiniteCanvasView()
+    InfiniteCanvasView(store: ProjectStore())
 }

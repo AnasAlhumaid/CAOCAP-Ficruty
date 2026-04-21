@@ -3,10 +3,11 @@ import SwiftUI
 struct ContentView: View {
     @StateObject var commandPalette = CommandPaletteViewModel()
     @StateObject var coCaptain = CoCaptainViewModel()
+    @State private var projectStore = ProjectStore()
     
     var body: some View {
         ZStack {
-            InfiniteCanvasView()
+            InfiniteCanvasView(store: projectStore)
             
             FloatingCommandButton(onTap: {
                 commandPalette.setPresented(true)
