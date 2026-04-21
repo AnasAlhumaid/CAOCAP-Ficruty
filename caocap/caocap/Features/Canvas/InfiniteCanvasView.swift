@@ -22,8 +22,9 @@ struct InfiniteCanvasView: View {
                 ZStack {
                     ForEach(nodes) { node in
                         let currentOffset = nodeDragOffsets[node.id] ?? .zero
+                        let isDraggingThisNode = nodeDragOffsets[node.id] != nil
                         
-                        NodeView(node: node)
+                        NodeView(node: node, isDragging: isDraggingThisNode)
                             .position(
                                 x: center.x + node.position.x + currentOffset.width,
                                 y: center.y + node.position.y + currentOffset.height
@@ -38,12 +39,14 @@ struct InfiniteCanvasView: View {
                                         nodeDragOffsets[node.id] = value.translation
                                     }
                                     .onEnded { value in
-                                        if let index = nodes.firstIndex(where: { $0.id == node.id }) {
-                                            nodes[index].position.x += value.translation.width
-                                            nodes[index].position.y += value.translation.height
+                                        withAnimation(.spring(response: 0.4, dampingFraction: 0.75)) {
+                                            if let index = nodes.firstIndex(where: { $0.id == node.id }) {
+                                                nodes[index].position.x += value.translation.width
+                                                nodes[index].position.y += value.translation.height
+                                            }
+                                            nodeDragOffsets[node.id] = nil
+                                            isDraggingNode = false
                                         }
-                                        nodeDragOffsets[node.id] = nil
-                                        isDraggingNode = false
                                     }
                             )
                     }

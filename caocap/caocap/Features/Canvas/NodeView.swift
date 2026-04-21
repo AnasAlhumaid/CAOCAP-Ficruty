@@ -2,6 +2,7 @@ import SwiftUI
 
 struct NodeView: View {
     let node: SpatialNode
+    var isDragging: Bool = false
     @State private var isHovering = false
     
     var body: some View {
@@ -42,7 +43,7 @@ struct NodeView: View {
                     .fill(.ultraThinMaterial)
                 
                 RoundedRectangle(cornerRadius: 24, style: .continuous)
-                    .fill(themeColor.opacity(0.03))
+                    .fill(isDragging ? themeColor.opacity(0.08) : themeColor.opacity(0.03))
             }
         )
         .overlay(
@@ -50,18 +51,24 @@ struct NodeView: View {
                 .stroke(
                     LinearGradient(
                         colors: [
-                            .white.opacity(0.3),
+                            .white.opacity(isDragging ? 0.6 : 0.3),
                             .white.opacity(0.05),
-                            themeColor.opacity(0.3)
+                            themeColor.opacity(isDragging ? 0.6 : 0.3)
                         ],
                         startPoint: .topLeading,
                         endPoint: .bottomTrailing
                     ),
-                    lineWidth: 1
+                    lineWidth: isDragging ? 2 : 1
                 )
         )
-        .shadow(color: Color.black.opacity(0.15), radius: 20, x: 0, y: 10)
-        .scaleEffect(isHovering ? 1.02 : 1.0)
+        .shadow(
+            color: Color.black.opacity(isDragging ? 0.25 : 0.15),
+            radius: isDragging ? 30 : 20,
+            x: 0,
+            y: isDragging ? 20 : 10
+        )
+        .scaleEffect(isDragging ? 1.05 : (isHovering ? 1.02 : 1.0))
+        .animation(.spring(response: 0.3, dampingFraction: 0.7), value: isDragging)
         .animation(.spring(response: 0.3, dampingFraction: 0.7), value: isHovering)
     }
     
