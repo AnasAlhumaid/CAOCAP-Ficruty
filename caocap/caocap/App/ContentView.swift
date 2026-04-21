@@ -27,6 +27,7 @@ struct ContentView: View {
             
             CommandPaletteView(viewModel: commandPalette)
         }
+        .background(Color.black.ignoresSafeArea())
         .sheet(isPresented: $coCaptain.isPresented) {
             CoCaptainView(viewModel: coCaptain)
                 .presentationDetents([.medium, .large])

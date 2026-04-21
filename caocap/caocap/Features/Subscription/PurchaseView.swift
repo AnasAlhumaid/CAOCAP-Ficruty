@@ -11,10 +11,8 @@ struct PurchaseView: View {
     // Mock features based on CAOCAP Pro
     let features = [
         FeatureItem(icon: "sparkles", title: "AI Co-Captain", subtitle: "Unlimited intelligent design suggestions", color: Color(hex: "A855F7")),
-        FeatureItem(icon: "infinite", title: "Infinite Canvas", subtitle: "Zero limits on workspace size and nodes", color: Color(hex: "3B82F6")),
         FeatureItem(icon: "cloud.fill", title: "Cloud Sync", subtitle: "Access your projects from any device", color: Color(hex: "10B981")),
         FeatureItem(icon: "paintpalette.fill", title: "Custom Themes", subtitle: "Exclusive premium UI themes and colors", color: Color(hex: "F59E0B")),
-        FeatureItem(icon: "exportbox.fill", title: "High-Res Export", subtitle: "Export your designs in 4K resolution", color: Color(hex: "EC4899"))
     ]
     
     var body: some View {
@@ -25,10 +23,9 @@ struct PurchaseView: View {
             // Animated Mesh Background
             MeshBackgroundView()
                 .opacity(0.6)
-                .ignoresSafeArea()
             
             ScrollView(showsIndicators: false) {
-                VStack(spacing: 40) {
+                VStack(spacing: 48) {
                     // MARK: - Header
                     VStack(spacing: 20) {
                         ZStack {
@@ -91,7 +88,6 @@ struct PurchaseView: View {
                                 .animation(.spring(response: 0.6, dampingFraction: 0.8).delay(Double(index) * 0.1), value: appearAnimation)
                         }
                     }
-                    .padding(.horizontal, 28)
                     
                     // MARK: - Plans
                     VStack(spacing: 16) {
@@ -114,7 +110,7 @@ struct PurchaseView: View {
                             action: { withAnimation(.spring()) { selectedProductID = "com.caocap.pro.yearly" } }
                         )
                     }
-                    .padding(.horizontal, 24)
+                    .padding(.horizontal, 50)
                     .opacity(appearAnimation ? 1 : 0)
                     .offset(y: appearAnimation ? 0 : 30)
                     .animation(.spring().delay(0.5), value: appearAnimation)
@@ -148,6 +144,7 @@ struct PurchaseView: View {
                                 }
                             }
                         }
+                        .padding(.horizontal, 50)
                         .scaleEffect(isPurchasing ? 0.95 : 1.0)
                         .animation(.spring(), value: isPurchasing)
                         
@@ -164,12 +161,12 @@ struct PurchaseView: View {
                         .font(.system(size: 13, weight: .medium))
                         .foregroundStyle(.secondary)
                     }
-                    .padding(.horizontal, 24)
                     .padding(.bottom, 60)
                     .opacity(appearAnimation ? 1 : 0)
                     .animation(.easeIn.delay(0.7), value: appearAnimation)
                 }
             }
+            .padding(.horizontal, 20)
             
             // Close Button
             VStack {
@@ -199,6 +196,7 @@ struct PurchaseView: View {
         .task {
             await manager.fetchProducts()
         }
+        .preferredColorScheme(.dark)
     }
     
     private func purchaseAction() {
