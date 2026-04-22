@@ -85,7 +85,7 @@ public class AppRouter {
             SpatialNode(
                 id: webViewId,
                 type: .webView,
-                position: .zero,
+                position: CGPoint(x: 375, y: 0),
                 title: "Live Preview",
                 subtitle: "Your mini-game will render here.",
                 icon: "play.circle.fill",
@@ -121,7 +121,7 @@ public class AppRouter {
             ),
             SpatialNode(
                 id: srsId,
-                position: CGPoint(x: -450, y: -250),
+                position: CGPoint(x: -275, y: -200),
                 title: "Software Requirements (SRS)",
                 subtitle: "Define the core logic and rules here.",
                 icon: "doc.text.fill",
@@ -129,7 +129,7 @@ public class AppRouter {
             ),
             SpatialNode(
                 id: htmlId,
-                position: CGPoint(x: -450, y: 0),
+                position: CGPoint(x: -275, y: 0),
                 title: "HTML",
                 subtitle: "Document structure.",
                 icon: "chevron.left.slash.chevron.right",
@@ -138,7 +138,7 @@ public class AppRouter {
             ),
             SpatialNode(
                 id: cssId,
-                position: CGPoint(x: -550, y: 200),
+                position: CGPoint(x: -475, y: 200),
                 title: "CSS",
                 subtitle: "Styling and layout.",
                 icon: "paintpalette.fill",
@@ -147,7 +147,7 @@ public class AppRouter {
             ),
             SpatialNode(
                 id: jsId,
-                position: CGPoint(x: -350, y: 200),
+                position: CGPoint(x: -75, y: 200),
                 title: "JavaScript",
                 subtitle: "Interactivity and logic.",
                 icon: "script",
@@ -156,7 +156,7 @@ public class AppRouter {
             )
         ]
         
-        let newStore = ProjectStore(fileName: fileName, projectName: "New Project \(id)", initialNodes: initialNodes)
+        let newStore = ProjectStore(fileName: fileName, projectName: "New Project \(id)", initialNodes: initialNodes, initialViewportScale: 0.3)
         projects[fileName] = newStore
         
         navigate(to: .project(fileName), animated: true)

@@ -47,19 +47,21 @@ public class ProjectStore {
         return appSupport.appendingPathComponent(self.fileName)
     }
     
-    public init(fileName: String = "project_v1.json", projectName: String = "Untitled Project", initialNodes: [SpatialNode]? = nil) {
+    public init(fileName: String = "project_v1.json", projectName: String = "Untitled Project", initialNodes: [SpatialNode]? = nil, initialViewportScale: CGFloat = 1.0) {
         self.fileName = fileName
         self.projectName = projectName
-        load(initialNodes: initialNodes)
+        self.viewportScale = initialViewportScale
+        load(initialNodes: initialNodes, initialViewportScale: initialViewportScale)
     }
     
     /// Loads the project data from disk. If no file is found, initializes with default nodes.
-    public func load(initialNodes: [SpatialNode]? = nil) {
+    public func load(initialNodes: [SpatialNode]? = nil, initialViewportScale: CGFloat = 1.0) {
         let url = fileURL
         
         if !FileManager.default.fileExists(atPath: url.path) {
             logger.info("No saved project found for \(self.fileName). Initializing with defaults.")
             self.nodes = initialNodes ?? OnboardingProvider.manifestoNodes
+            self.viewportScale = initialViewportScale
             
             // Only perform an initial save for permanent project files.
             if !self.fileName.contains("onboarding") {
