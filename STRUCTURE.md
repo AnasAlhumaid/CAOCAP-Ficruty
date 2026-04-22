@@ -1,6 +1,6 @@
 # Ficruty Folder Structure
 
-This document outlines the architectural hierarchy of the Ficruty (caocap) codebase. We aim for a feature-based organization to ensure scalability and isolation.
+This document outlines the architectural hierarchy of the Ficruty (caocap) codebase. We utilize a domain-driven, feature-based organization to ensure maximum scalability, isolation, and developer focus.
 
 ## Root Directory
 - `caocap/`: The main Xcode project and source files.
@@ -13,42 +13,44 @@ This document outlines the architectural hierarchy of the Ficruty (caocap) codeb
 ## Source Structure (`caocap/caocap/`)
 
 ### 1. `App/`
-Entry points and system-level configurations.
-- `caocapApp.swift`: The main application entry point.
-- `Info.plist`: App configuration.
-- `caocap.entitlements`: App capabilities.
+The application shell and lifecycle management.
+- `caocapApp.swift`: Application entry point.
+- `ContentView.swift`: The root view that manages high-level workspace switching.
+- `Info.plist` & `caocap.entitlements`: System-level configuration.
 
-### 2. `Features/`
-The functional modules of the application. Each feature should contain its own Views, ViewModels, and Models.
+### 2. `Navigation/`
+Centralized routing and coordination.
+- `AppRouter.swift`: Manages the application's workspace state (.onboarding vs .home).
 
-- **`Canvas/`**: The spatial runtime where nodes live.
-  - `InfiniteCanvasView.swift`: The grid rendering and gesture logic.
-- **`Omnibox/`**: Navigation and intent-driven command palette.
-  - `CommandPaletteView.swift`: The UI for the palette.
-  - `CommandPaletteViewModel.swift`: Search logic and command execution.
-- **`CoCaptain/`**: The AI agentic interface.
-  - `CoCaptainView.swift`: The glassmorphic chat UI.
-  - `CoCaptainViewModel.swift`: Message handling and agent state.
-- **`Overlays/`**: Heads-up display and floating interface elements.
-  - `FloatingCommandButton.swift`: The AI-sparkle button.
+### 3. `Models/`
+Pure domain data structures, independent of UI or persistence logic.
+- `SpatialNode.swift`: The core model representing an object on the canvas.
+- `NodeTheme.swift`: Theming tokens for spatial nodes.
 
-### 3. `Core/`
-Shared primitives and infrastructure.
-- `DesignSystem/`: UI constants, glassmorphism tokens, and custom modifiers.
-- `Extensions/`: Utility extensions for SwiftUI and Foundation.
-- `Navigation/`: Global routing or coordination logic.
+### 4. `Services/`
+Global singletons, infrastructure, and heavy-lifting logic.
+- `ProjectStore.swift`: The persistence layer with asynchronous, debounced saving.
+- `SubscriptionManager.swift`: StoreKit 2 integration for premium features.
 
-### 4. `Resources/`
-Non-code assets.
-- `Assets.xcassets`: Images, colors, and icons.
+### 5. `Extensions/`
+Reusable language and framework extensions.
+- `Color+Hex.swift`: Hex-to-SwiftUI color conversion.
 
-### 5. `Preview Content/`
-Mock data and assets specifically for Xcode Previews.
+### 6. `Features/`
+Functional UI modules. Each feature contains its views and state.
 
----
+- **`Canvas/`**: The spatial runtime engine.
+  - `InfiniteCanvasView.swift`: The core spatial engine.
+  - `ViewportState.swift`: State tracker for pan/zoom levels.
+  - **`Components/`**: Reusable canvas UI elements (`NodeView`, `ConnectionLayer`, etc.).
+  - **`Providers/`**: Static and dynamic data generators (`HomeProvider`, `OnboardingProvider`).
+- **`Omnibox/`**: Intent-driven command palette.
+- **`CoCaptain/`**: AI agentic interface.
+- **`Overlays/`**: HUD and floating UI elements.
+- **`Subscription/`**: Monetization and purchase UI.
 
-## Migration Plan
-1. [x] Create the folder hierarchy in the filesystem.
-2. [x] Move `.swift` files to their respective feature folders.
-3. [x] Update the `.xcodeproj` file to reflect the new file paths.
-4. [x] Verify that the project builds and previews still work.
+### 7. `Resources/`
+Asset catalogs, fonts, and localization files.
+
+### 8. `Preview Content/`
+Assets specifically for Xcode Previews.

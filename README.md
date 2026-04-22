@@ -31,7 +31,7 @@ Ficruty is built with a focus on native performance and architectural predictabi
 
 - **Language**: [Swift 5.10+](https://swift.org) — Leveraging modern concurrency and performance.
 - **UI Framework**: [SwiftUI](https://developer.apple.com/xcode/swiftui/) — Native, gesture-driven interface with high-fidelity spatial interactions.
-- **State Management**: **Native SwiftUI** — Leveraging `@StateObject` and `@Published` for lightweight, performant, and reliable state flow. (Transitioned from TCA for installation stability).
+- **State Management**: **Native SwiftUI** — Leveraging the modern `@Observable` macro (iOS 17+) for lightweight, performant, and reliable state flow. (Transitioned from TCA for installation stability).
 - **Web Engine**: [WebKit](https://developer.apple.com/documentation/webkit) — Native high-performance rendering for the HTML5+ ecosystem.
 - **Spatial Engine**: [SwiftUI Canvas](https://developer.apple.com/documentation/swiftui/canvas) — Optimized infinite grid rendering for high-density node environments.
 
@@ -84,4 +84,11 @@ Distributed under the GNU General Public License v3.0. See [LICENSE](LICENSE) fo
 
 - **Decoupled from TCA**: Successfully transitioned the Command Palette to a native SwiftUI architecture to simplify the dependency graph and improve build times.
 - **Blueprint for Scale**: Established the [STRUCTURE.md](STRUCTURE.md) blueprint to move from a flat directory to a feature-based spatial architecture.
-- **Locked the "Vibe"**: Committed to a session of pure documentation and roadmap planning to ensure the "Soul" of the project is solid before the next sprint.
+
+### 2026-04-22: Senior/Junior Walkthrough & Refactoring
+
+- **Eliminated Technical Debt**:
+    - **Type-Safe Routing**: Replaced stringly-typed node actions with a strict `NodeAction` enum, ensuring compile-time safety for workspace navigation.
+    - **MainActor Unblocking**: Offloaded heavy disk I/O in `ProjectStore` to a background task, maintaining 120Hz canvas responsiveness during auto-saves.
+- **Architecture Solidified**: Implemented a domain-driven, feature-based folder structure (`Models`, `Services`, `Navigation`, `Extensions`) to improve long-term codebase maintainability.
+- **Knowledge Transfer**: Conducted a comprehensive Senior/Junior walkthrough to establish an architectural baseline and align on "Vibe Coding" standards.
