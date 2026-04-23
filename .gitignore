@@ -60,3 +60,15 @@ fastlane/report.xml
 fastlane/Preview.html
 fastlane/screenshots/**/*.png
 fastlane/test_output
+
+# Firebase
+GoogleService-Info.plist
+firebase-debug.log
+.firebase/
+
+# macOS
+.DS_Store
+
+# Xcode
+DerivedData/
+
