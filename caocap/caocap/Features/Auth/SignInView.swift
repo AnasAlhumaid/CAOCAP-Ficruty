@@ -54,11 +54,11 @@ struct SignInView: View {
 
                 Text("Save Your Work")
                     .font(.system(size: 28, weight: .bold, design: .rounded))
-                    .foregroundColor(.white)
+                    .foregroundColor(.primary)
 
                 Text("Sign in to sync your projects across\nall your devices. Your current work is preserved.")
                     .font(.system(size: 15, weight: .regular))
-                    .foregroundColor(.white.opacity(0.5))
+                    .foregroundColor(.secondary)
                     .multilineTextAlignment(.center)
                     .lineSpacing(5)
             }
@@ -72,11 +72,13 @@ struct SignInView: View {
             VStack(spacing: 12) {
                 SignInButton(
                     label: "Continue with Apple",
-                    foreground: .black,
-                    background: .white,
+                    foreground: .primary,
+                    background: Color(uiColor: .label),
+                    isApple: true,
                     leadingView: {
                         Image(systemName: "apple.logo")
                             .font(.system(size: 18, weight: .semibold))
+                            .foregroundStyle(Color(uiColor: .systemBackground))
                     }
                 ) {
                     await handleAppleSignIn()
@@ -86,9 +88,9 @@ struct SignInView: View {
 
                 SignInButton(
                     label: "Continue with Google",
-                    foreground: .white,
-                    background: Color(hex: "1C1C1C"),
-                    stroke: Color.white.opacity(0.1),
+                    foreground: .primary,
+                    background: Color(uiColor: .secondarySystemBackground),
+                    stroke: Color.primary.opacity(0.1),
                     leadingView: { GoogleLogoView() }
                 ) {
                     await handleGoogleSignIn()
@@ -98,9 +100,9 @@ struct SignInView: View {
 
                 SignInButton(
                     label: "Continue with GitHub",
-                    foreground: .white,
-                    background: Color(hex: "1C1C1C"),
-                    stroke: Color.white.opacity(0.1),
+                    foreground: .primary,
+                    background: Color(uiColor: .secondarySystemBackground),
+                    stroke: Color.primary.opacity(0.1),
                     leadingView: { GitHubLogoView() }
                 ) {
                     await handleGitHubSignIn()
@@ -126,7 +128,7 @@ struct SignInView: View {
             // Privacy note
             Text("By continuing, you agree to our Terms of Service and Privacy Policy.")
                 .font(.system(size: 12))
-                .foregroundColor(.white.opacity(0.28))
+                .foregroundColor(.secondary.opacity(0.6))
                 .multilineTextAlignment(.center)
                 .padding(.horizontal, 32)
                 .opacity(footerVisible ? 1 : 0)
@@ -137,7 +139,7 @@ struct SignInView: View {
         .background {
             // Layered background — sits behind the content without affecting layout
             ZStack {
-                Color.black
+                Color(uiColor: .systemBackground)
 
                 Circle()
                     .fill(
@@ -161,11 +163,11 @@ struct SignInView: View {
                     .ignoresSafeArea()
                 VStack(spacing: 16) {
                     ProgressView()
-                        .progressViewStyle(CircularProgressViewStyle(tint: .white))
+                        .progressViewStyle(CircularProgressViewStyle(tint: .primary))
                         .scaleEffect(1.4)
                     Text("Signing in...")
                         .font(.system(size: 14, weight: .medium))
-                        .foregroundColor(.white.opacity(0.6))
+                        .foregroundColor(.secondary)
                 }
             }
         }
@@ -280,6 +282,7 @@ private struct SignInButton<LeadingView: View>: View {
     let foreground: Color
     let background: Color
     var stroke: Color = .clear
+    var isApple: Bool = false
     let leadingView: () -> LeadingView
     let action: () async -> Void
 
@@ -295,6 +298,7 @@ private struct SignInButton<LeadingView: View>: View {
 
                 Text(label)
                     .font(.system(size: 16, weight: .semibold))
+                    .foregroundStyle(isApple ? Color(uiColor: .systemBackground) : foreground)
 
                 Spacer()
             }
