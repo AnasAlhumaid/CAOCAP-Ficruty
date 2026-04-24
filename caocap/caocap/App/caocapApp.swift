@@ -38,7 +38,7 @@ struct caocapApp: App {
             ContentView()
                 .environment(delegate.authManager)
                 .preferredColorScheme(colorScheme)
-                .environment(\.locale, LocalizationManager.shared.locale(for: selectedLanguage))
+                .environment(\.locale, Locale(identifier: "en"))
         }
     }
     
