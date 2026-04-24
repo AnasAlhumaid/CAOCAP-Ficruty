@@ -83,7 +83,15 @@ public final class CoCaptainViewModel {
                     items.append(CoCaptainTimelineItem(content: .reviewBundle(reviewBundle)))
                 }
             } catch {
-                updateMessage(id: aiMessageID, text: "Sorry, I hit an error: \(error.localizedDescription)")
+                let details = String(reflecting: error)
+                updateMessage(
+                    id: aiMessageID,
+                    text: """
+                    Sorry, I hit an error while contacting the model.
+
+                    \(details)
+                    """
+                )
             }
 
             isThinking = false

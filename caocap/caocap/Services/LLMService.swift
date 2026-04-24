@@ -18,29 +18,22 @@ public final class LLMService {
     // MARK: - Model & Session
 
     /// Lazily initialised so Firebase is guaranteed to be configured before first use.
-    private lazy var model: GenerativeModel = {
-        FirebaseAI.firebaseAI(backend: .googleAI()).generativeModel(
-            modelName: "gemini-3-flash-preview",
-            systemInstruction: ModelContent(
-                role: "system",
-                parts: """
-                You are Co-Captain, a spatial programming assistant for the Ficruty platform.
-                Your goal is to help users build web applications using a node-based spatial canvas.
+    private lazy var model: GenerativeModel = makeModel(modelName: preferredModelName)
 
-                Personality:
-                - Encouraging, technical, and concise.
-                - You embrace "vibe coding" — thinking in terms of intents, nodes, and flows.
-                - Your primary languages are HTML, CSS, and JavaScript.
-
-                Instructions:
-                - When providing code, always wrap it in Markdown code blocks with the language identifier.
-                - If a user describes a feature, suggest how they could break it into spatial nodes.
-                - Never reveal that you are an AI; simply act as the Co-Captain.
-                - When the prompt includes an agent contract, follow it exactly and append the requested fenced machine-readable block after the human-facing response.
-                """
-            )
-        )
-    }()
+    /// Currently-selected model name (can be overridden via `UserDefaults`).
+    ///
+    /// Rationale: `FirebaseAILogic.GenerateContentError` can surface as a generic `error 0`
+    /// for misconfigured/unsupported model names; using a stable default and allowing
+    /// overrides helps unblock runtime debugging without code changes.
+    private var preferredModelName: String {
+        if let overridden = UserDefaults.standard.string(forKey: "cocaptain.modelName"),
+           !overridden.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
+            return overridden
+        }
+        // Prefer a stable, non-retired model name.
+        // Firebase AI Logic retired all Gemini 1.5 models on 2025-09-24, and Gemini 2.x models on 2026-03-09.
+        return "gemini-3-flash-preview"
+    }
 
     /// The active chat session that maintains history.
     private var chat: Chat?
@@ -76,6 +69,8 @@ public final class LLMService {
     ) -> AsyncThrowingStream<String, Error> {
         // Initialize chat session if it doesn't exist
         if chat == nil {
+            // Ensure model is initialised with the latest preferred name at first use.
+            model = makeModel(modelName: preferredModelName)
             chat = model.startChat()
         }
 
@@ -90,6 +85,7 @@ public final class LLMService {
             let task = Task {
                 do {
                     logger.debug("Starting LLM stream with history.")
+                    logger.debug("Model: \(self.preferredModelName, privacy: .public) structured=\(expectsStructuredResponse, privacy: .public) contextChars=\((context ?? "").count, privacy: .public)")
                     
                     // Use sendMessageStream to participate in the multi-turn session
                     let stream = try chat!.sendMessageStream(prompt)
@@ -102,13 +98,42 @@ public final class LLMService {
                     continuation.finish()
                     logger.info("LLM stream completed.")
                 } catch {
-                    logger.error("LLM stream error: \(error.localizedDescription)")
+                    let reflected = String(reflecting: error)
+                    logger.error("LLM stream error: \(reflected, privacy: .public)")
+
+                    // Attempt a one-time recovery by resetting the chat session.
+                    // This helps when the underlying session is in a bad state.
+                    self.chat = nil
                     continuation.finish(throwing: error)
                 }
             }
             // Support cooperative cancellation from the caller side
             continuation.onTermination = { _ in task.cancel() }
         }
+    }
+
+    private func makeModel(modelName: String) -> GenerativeModel {
+        FirebaseAI.firebaseAI(backend: .googleAI()).generativeModel(
+            modelName: modelName,
+            systemInstruction: ModelContent(
+                role: "system",
+                parts: """
+                You are Co-Captain, a spatial programming assistant for the Ficruty platform.
+                Your goal is to help users build web applications using a node-based spatial canvas.
+
+                Personality:
+                - Encouraging, technical, and concise.
+                - You embrace "vibe coding" — thinking in terms of intents, nodes, and flows.
+                - Your primary languages are HTML, CSS, and JavaScript.
+
+                Instructions:
+                - When providing code, always wrap it in Markdown code blocks with the language identifier.
+                - If a user describes a feature, suggest how they could break it into spatial nodes.
+                - Never reveal that you are an AI; simply act as the Co-Captain.
+                - When the prompt includes an agent contract, follow it exactly and append the requested fenced machine-readable block after the human-facing response.
+                """
+            )
+        )
     }
 
     private func buildPrompt(

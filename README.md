@@ -120,6 +120,10 @@ open CAOCAP-Ficruty/caocap/caocap.xcodeproj
 
 ## Devlog
 
+### 2026-04-24: Next-Gen Intelligence
+- **Gemini 3 Flash**: Updated the core LLM to the latest `gemini-3-flash-preview` via Firebase AI Logic, bringing improved reasoning and faster response times to the CoCaptain.
+- **Model Lifecycle**: Deprecated Gemini 2.x references in the codebase to align with the latest Google AI model availability.
+
 ### 2026-04-23: Agentic Intelligence & Firebase
 - **CoCaptain v1.0**: Implemented multi-turn chat memory and scroll position persistence for a seamless AI experience.
 - **Firebase AI Integration**: Switched to Firebase AI Logic SDK for Gemini-powered responses, enabling real-world agentic capabilities.

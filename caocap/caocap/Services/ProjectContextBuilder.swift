@@ -12,7 +12,9 @@ public struct ProjectContextBuilder {
 
         let sections = NodeRole.allCases.compactMap { role -> String? in
             guard let node = node(for: role, in: store.nodes) else { return nil }
-            let content = trimmed(node.textContent ?? "", limit: 2400)
+            // Keep context compact; large prompts can cause Firebase AI Logic calls
+            // to fail with opaque errors (e.g. GenerateContentError error 0).
+            let content = trimmed(node.textContent ?? "", limit: 1000)
             guard !content.isEmpty else { return nil }
             return "\(role.displayName):\n\(content)"
         }

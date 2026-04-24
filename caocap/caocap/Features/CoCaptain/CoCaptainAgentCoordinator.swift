@@ -49,12 +49,42 @@ public final class CoCaptainAgentCoordinator {
         onVisibleText: @escaping (String) -> Void
     ) async throws -> CoCaptainAgentRunResult {
         let context = store.map { contextBuilder.buildPromptContext(from: $0) }
-        var responseText = ""
+        do {
+            return try await runOnce(
+                userMessage: userMessage,
+                context: context,
+                expectsStructuredResponse: true,
+                store: store,
+                dispatcher: dispatcher,
+                onVisibleText: onVisibleText
+            )
+        } catch {
+            // Fallback: if the structured+context prompt fails (often with opaque
+            // `GenerateContentError error 0`), retry with a minimal prompt so chat stays usable.
+            return try await runOnce(
+                userMessage: userMessage,
+                context: nil,
+                expectsStructuredResponse: false,
+                store: store,
+                dispatcher: dispatcher,
+                onVisibleText: onVisibleText
+            )
+        }
+    }
 
+    private func runOnce(
+        userMessage: String,
+        context: String?,
+        expectsStructuredResponse: Bool,
+        store: ProjectStore?,
+        dispatcher: (any AppActionPerforming)?,
+        onVisibleText: @escaping (String) -> Void
+    ) async throws -> CoCaptainAgentRunResult {
+        var responseText = ""
         let stream = llmClient.streamResponse(
             for: userMessage,
             context: context,
-            expectsStructuredResponse: true,
+            expectsStructuredResponse: expectsStructuredResponse,
             availableActions: dispatcher?.availableActions ?? []
         )
 
@@ -64,7 +94,7 @@ public final class CoCaptainAgentCoordinator {
         }
 
         let parsed = parser.parse(responseText)
-        let payload = parsed.payload
+        let payload = expectsStructuredResponse ? parsed.payload : nil
 
         let executionSummary = executeSafeActions(payload?.safeActions ?? [], dispatcher: dispatcher)
         let reviewBundle = buildReviewBundle(
