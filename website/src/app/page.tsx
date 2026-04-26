@@ -8,12 +8,12 @@ import {
   Sparkles,
   TestTube2
 } from "lucide-react";
+import Link from "next/link";
+import { SiteNav } from "./components/SiteNav";
 
 const appStoreUrl = "https://apps.apple.com/us/app/caocap/id1447742145";
 const testFlightUrl = "https://testflight.apple.com/join/aS7Jwlof";
 const githubUrl = "https://github.com/Azzam-Alrashed/CAOCAP-Ficruty";
-const privacyUrl = "/privacy";
-const termsUrl = "/terms";
 
 const ctas = [
   {
@@ -149,14 +149,7 @@ export default function Home() {
   return (
     <main>
       <section className="hero-section">
-        <nav className="site-nav" aria-label="Primary navigation">
-          <a className="brand-mark" href="#top" aria-label="CAOCAP home">
-            CAOCAP
-          </a>
-          <a className="nav-link" href={githubUrl} target="_blank" rel="noreferrer">
-            Contribute
-          </a>
-        </nav>
+        <SiteNav homeHref="#top" />
 
         <div className="hero-grid" id="top">
           <div className="hero-copy">
@@ -238,8 +231,8 @@ export default function Home() {
         <div className="footer-content">
           <p>© 2026 Azzam Alrashed. Built for the spatial era.</p>
           <div className="footer-links">
-            <a href={privacyUrl}>Privacy Policy</a>
-            <a href={termsUrl}>Terms of Service</a>
+            <Link href="/privacy">Privacy Policy</Link>
+            <Link href="/terms">Terms of Service</Link>
             <a href={githubUrl} target="_blank" rel="noreferrer">GitHub</a>
           </div>
         </div>

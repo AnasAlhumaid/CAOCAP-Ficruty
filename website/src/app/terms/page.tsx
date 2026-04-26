@@ -1,11 +1,10 @@
 import { FileText } from "lucide-react";
+import { SiteNav } from "../components/SiteNav";
 
 export default function TermsPage() {
   return (
     <main className="legal-page">
-      <nav className="site-nav">
-        <a className="brand-mark" href="/">CAOCAP</a>
-      </nav>
+      <SiteNav showContribute={false} />
 
       <div className="legal-container">
         <div className="legal-header">
@@ -29,7 +28,7 @@ export default function TermsPage() {
 
           <h2>3. Pro Subscriptions</h2>
           <p>
-            CAOCAP Pro is a subscription service. Payments are handled via Apple's StoreKit 2. Subscriptions automatically renew unless cancelled at least 24 hours before the end of the current period. You can manage your subscription in your App Store Account Settings.
+            CAOCAP Pro is a subscription service. Payments are handled via Apple&apos;s StoreKit 2. Subscriptions automatically renew unless cancelled at least 24 hours before the end of the current period. You can manage your subscription in your App Store Account Settings.
           </p>
 
           <h2>4. User Content</h2>
@@ -39,12 +38,12 @@ export default function TermsPage() {
 
           <h2>5. AI CoCaptain</h2>
           <p>
-            AI-generated code and suggestions are provided "as is." While CoCaptain is designed to be helpful, we do not guarantee the accuracy, security, or functionality of AI-proposed changes. Always review AI suggestions before applying them to your production projects.
+            AI-generated code and suggestions are provided &quot;as is.&quot; While CoCaptain is designed to be helpful, we do not guarantee the accuracy, security, or functionality of AI-proposed changes. Always review AI suggestions before applying them to your production projects.
           </p>
 
           <h2>6. Limitation of Liability</h2>
           <p>
-            CAOCAP is provided "as is" without warranties of any kind. We are not liable for any loss of data, profits, or damages resulting from the use or inability to use the software.
+            CAOCAP is provided &quot;as is&quot; without warranties of any kind. We are not liable for any loss of data, profits, or damages resulting from the use or inability to use the software.
           </p>
 
           <h2>7. Changes to Terms</h2>

@@ -21,13 +21,38 @@ export const metadata: Metadata = {
   }
 };
 
+const themeScript = `
+(function() {
+  try {
+    var key = "caocap-theme";
+    var preference = window.localStorage.getItem(key) || "system";
+    if (preference !== "system" && preference !== "light" && preference !== "dark") {
+      preference = "system";
+    }
+    var prefersDark = window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches;
+    var theme = preference === "system" ? (prefersDark ? "dark" : "light") : preference;
+    var root = document.documentElement;
+    root.dataset.theme = theme;
+    root.dataset.themePreference = preference;
+    root.style.colorScheme = theme;
+  } catch (error) {
+    document.documentElement.dataset.theme = "dark";
+    document.documentElement.dataset.themePreference = "system";
+    document.documentElement.style.colorScheme = "dark";
+  }
+})();
+`;
+
 export default function RootLayout({
   children
 }: Readonly<{
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
+      <head>
+        <script dangerouslySetInnerHTML={{ __html: themeScript }} />
+      </head>
       <body>{children}</body>
     </html>
   );

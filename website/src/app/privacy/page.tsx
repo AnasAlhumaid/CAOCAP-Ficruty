@@ -1,11 +1,10 @@
 import { Shield } from "lucide-react";
+import { SiteNav } from "../components/SiteNav";
 
 export default function PrivacyPage() {
   return (
     <main className="legal-page">
-      <nav className="site-nav">
-        <a className="brand-mark" href="/">CAOCAP</a>
-      </nav>
+      <SiteNav showContribute={false} />
 
       <div className="legal-container">
         <div className="legal-header">
@@ -35,12 +34,12 @@ export default function PrivacyPage() {
 
           <h2>3. AI Processing (CoCaptain)</h2>
           <p>
-            When you use the CoCaptain AI features, relevant snippets of your project context (SRS, HTML, CSS, JS) are sent to Google Gemini via Firebase AI Logic to generate suggestions. This data is processed transiently and is subject to Google's Enterprise Privacy standards.
+            When you use the CoCaptain AI features, relevant snippets of your project context (SRS, HTML, CSS, JS) are sent to Google Gemini via Firebase AI Logic to generate suggestions. This data is processed transiently and is subject to Google&apos;s Enterprise Privacy standards.
           </p>
 
           <h2>4. Your Rights</h2>
           <p>
-            You have the right to access, export, or delete your account at any time directly from the "Profile" section of the app. Deleting your account permanently removes all project data from our servers.
+            You have the right to access, export, or delete your account at any time directly from the &quot;Profile&quot; section of the app. Deleting your account permanently removes all project data from our servers.
           </p>
 
           <h2>5. Contact</h2>
