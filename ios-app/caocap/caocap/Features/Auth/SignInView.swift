@@ -126,29 +126,36 @@ struct SignInView: View {
             Spacer(minLength: 24)
 
             // Privacy note
-            HStack(spacing: 0) {
-                Text("By continuing, you agree to our ")
-                Button {
-                    if let url = URL(string: "https://www.azzam.ai/caocap/terms") {
-                        UIApplication.shared.open(url)
+            VStack(spacing: 4) {
+                Text("By continuing, you agree to our")
+                    .foregroundColor(.secondary.opacity(0.7))
+                
+                HStack(spacing: 4) {
+                    Button {
+                        if let url = URL(string: "https://www.azzam.ai/caocap/terms") {
+                            UIApplication.shared.open(url)
+                        }
+                    } label: {
+                        Text("Terms of Service")
+                            .underline()
+                            .foregroundColor(.primary.opacity(0.8))
                     }
-                } label: {
-                    Text("Terms of Service")
-                        .underline()
-                }
-                Text(" and ")
-                Button {
-                    if let url = URL(string: "https://www.azzam.ai/caocap/privacy") {
-                        UIApplication.shared.open(url)
+                    
+                    Text("and")
+                        .foregroundColor(.secondary.opacity(0.7))
+                    
+                    Button {
+                        if let url = URL(string: "https://www.azzam.ai/caocap/privacy") {
+                            UIApplication.shared.open(url)
+                        }
+                    } label: {
+                        Text("Privacy Policy")
+                            .underline()
+                            .foregroundColor(.primary.opacity(0.8))
                     }
-                } label: {
-                    Text("Privacy Policy")
-                        .underline()
                 }
-                Text(".")
             }
-            .font(.system(size: 11, weight: .medium))
-            .foregroundColor(.secondary.opacity(0.7))
+            .font(.system(size: 11, weight: .semibold))
             .multilineTextAlignment(.center)
             .padding(.horizontal, 32)
             .opacity(footerVisible ? 1 : 0)

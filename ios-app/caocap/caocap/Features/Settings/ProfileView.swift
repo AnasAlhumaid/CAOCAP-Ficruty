@@ -113,16 +113,22 @@ struct ProfileView: View {
                             
                             // Support & Legal
                             SettingsSection("Support & Legal") {
-                                Link(destination: URL(string: "https://www.azzam.ai/caocap/support")!) {
-                                    SettingsRow(icon: "questionmark.circle.fill", title: "Contact Support", color: .blue)
+                                SettingsRow(icon: "questionmark.circle.fill", title: "Contact Support", color: .blue) {
+                                    if let url = URL(string: "https://www.azzam.ai/caocap/support") {
+                                        UIApplication.shared.open(url)
+                                    }
                                 }
                                 
-                                Link(destination: URL(string: "https://www.azzam.ai/caocap/privacy")!) {
-                                    SettingsRow(icon: "shield.lefthalf.filled", title: "Privacy Policy", color: .secondary)
+                                SettingsRow(icon: "shield.lefthalf.filled", title: "Privacy Policy", color: .secondary) {
+                                    if let url = URL(string: "https://www.azzam.ai/caocap/privacy") {
+                                        UIApplication.shared.open(url)
+                                    }
                                 }
                                 
-                                Link(destination: URL(string: "https://www.azzam.ai/caocap/terms")!) {
-                                    SettingsRow(icon: "doc.text.fill", title: "Terms of Service", color: .secondary)
+                                SettingsRow(icon: "doc.text.fill", title: "Terms of Service", color: .secondary) {
+                                    if let url = URL(string: "https://www.azzam.ai/caocap/terms") {
+                                        UIApplication.shared.open(url)
+                                    }
                                 }
                             }
                         }
