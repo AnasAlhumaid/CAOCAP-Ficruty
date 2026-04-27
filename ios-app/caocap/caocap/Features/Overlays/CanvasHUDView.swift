@@ -109,7 +109,14 @@ struct CanvasHUDView: View {
                         .padding(.trailing, 16)
                         .padding(.leading, 4)
                     }
-                } else {
+                } else if authManager.authState == .loading {
+                    ProgressView()
+                        .tint(.secondary)
+                        .scaleEffect(0.7)
+                        .frame(width: 28, height: 28)
+                        .padding(.trailing, 16)
+                        .padding(.leading, 4)
+                } else if authManager.isAuthenticated {
                     Image(systemName: "checkmark.circle.fill")
                         .font(.system(size: 16))
                         .foregroundStyle(

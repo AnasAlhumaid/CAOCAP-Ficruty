@@ -100,7 +100,7 @@ struct PurchaseView: View {
                         } else {
                             PlanCard(
                                 id: "CAOCAP_Pro_Monthly",
-                                title: "Monthly",
+                                title: "CAOCAP Pro Monthly",
                                 price: productPrice(for: "CAOCAP_Pro_Monthly"),
                                 subtitle: "Billed monthly",
                                 trialPeriod: "7 DAYS FREE",
@@ -111,7 +111,7 @@ struct PurchaseView: View {
                             
                             PlanCard(
                                 id: "CAOCAP_Pro_Yearly",
-                                title: "Yearly",
+                                title: "CAOCAP Pro Yearly",
                                 price: productPrice(for: "CAOCAP_Pro_Yearly"),
                                 subtitle: "Billed annually",
                                 trialPeriod: "14 DAYS FREE",
@@ -167,9 +167,9 @@ struct PurchaseView: View {
                                 Task { try? await manager.restorePurchases() }
                             }
                             Circle().frame(width: 3, height: 3)
-                            Link("Terms", destination: URL(string: "https://www.azzam.ai/caocap/terms")!)
+                            Link("Terms of Use (EULA)", destination: URL(string: "https://www.azzam.ai/caocap/terms")!)
                             Circle().frame(width: 3, height: 3)
-                            Link("Privacy", destination: URL(string: "https://www.azzam.ai/caocap/privacy")!)
+                            Link("Privacy Policy", destination: URL(string: "https://www.azzam.ai/caocap/privacy")!)
                         }
                         .font(.system(size: 13, weight: .medium))
                         .foregroundStyle(.secondary)

@@ -55,9 +55,21 @@ struct ProfileView: View {
                             }
                             
                             VStack(spacing: 4) {
-                                Text(authManager.isAnonymous ? LocalizedStringKey("Guest Workspace") : LocalizedStringKey("Authenticated User"))
-                                    .font(.system(size: 20, weight: .bold, design: .rounded))
-                                    .foregroundStyle(.primary)
+                                Group {
+                                    switch authManager.authState {
+                                    case .loading:
+                                        Text("Syncing Session...")
+                                    case .anonymous:
+                                        Text("Guest Workspace")
+                                    case .authenticated:
+                                        Text("Authenticated User")
+                                    case .failed(let reason):
+                                        Text("Auth Error")
+                                            .onAppear { print("Auth failed: \(reason)") }
+                                    }
+                                }
+                                .font(.system(size: 20, weight: .bold, design: .rounded))
+                                .foregroundStyle(.primary)
                                 
                                 if let email = Auth.auth().currentUser?.email {
                                     Text(email)
@@ -92,8 +104,10 @@ struct ProfileView: View {
                                     }
                                 }
                                 
-                                SettingsRow(icon: "rectangle.portrait.and.arrow.right", title: "Sign Out", color: .red) {
-                                    showingSignOutAlert = true
+                                if authManager.isAuthenticated {
+                                    SettingsRow(icon: "rectangle.portrait.and.arrow.right", title: "Sign Out", color: .red) {
+                                        showingSignOutAlert = true
+                                    }
                                 }
                                 
                                 SettingsRow(icon: "trash.fill", title: "Delete Account", subtitle: "Permanently remove all data", color: .red) {

@@ -6,7 +6,8 @@ import Observation
 // MARK: - Auth State
 
 /// Represents the current authentication state of the user.
-enum AuthState: Equatable {
+/// Represents the current authentication state of the user.
+public enum AuthState: Equatable {
     /// No auth session exists yet. The app is checking for an existing user.
     case loading
     /// The user is signed in anonymously.
@@ -50,6 +51,11 @@ final class AuthenticationManager {
 
     var isAnonymous: Bool {
         if case .anonymous = authState { return true }
+        return false
+    }
+
+    var isAuthenticated: Bool {
+        if case .authenticated = authState { return true }
         return false
     }
 
@@ -176,12 +182,27 @@ final class AuthenticationManager {
                 
                 // FORCE UI UPDATE: Firebase listener might not fire immediately on link
                 handle(user: result.user)
-            } catch let error as NSError where error.code == AuthErrorCode.credentialAlreadyInUse.rawValue {
-                // The credential belongs to a different account — sign in to that account instead.
-                logger.warning("\(provider) credential already in use. Switching to existing account.")
-                let result = try await Auth.auth().signIn(with: credential)
-                logger.info("Signed into existing \(provider) account. UID: \(result.user.uid)")
-                handle(user: result.user)
+            } catch let error as NSError {
+                guard let errorCode = AuthErrorCode(rawValue: error.code) else {
+                    throw error
+                }
+                
+                let conflictCodes: [AuthErrorCode] = [
+                    .credentialAlreadyInUse,
+                    .emailAlreadyInUse,
+                    .accountExistsWithDifferentCredential
+                ]
+                
+                if conflictCodes.contains(errorCode) {
+                    // The credential belongs to a different account — sign in to that account instead.
+                    logger.warning("\(provider) credential conflict (code: \(error.code)). Switching to existing account.")
+                    let result = try await Auth.auth().signIn(with: credential)
+                    logger.info("Signed into existing \(provider) account. UID: \(result.user.uid)")
+                    handle(user: result.user)
+                } else {
+                    // It's a genuine error (network, cancel, etc) — rethrow
+                    throw error
+                }
             }
         } else {
             // Fresh sign-in (no anonymous session).
