@@ -34,6 +34,7 @@ public enum NodeRole: String, CaseIterable, Codable, Hashable {
 }
 
 public enum NodePatchOperationType: String, Codable, Hashable {
+    case replaceAll = "replace_all"
     case replaceExact = "replace_exact"
     case insertBeforeExact = "insert_before_exact"
     case insertAfterExact = "insert_after_exact"
@@ -101,6 +102,8 @@ public struct NodePatchEngine {
 
         for operation in operations {
             switch operation.type {
+            case .replaceAll:
+                updatedText = operation.content
             case .replaceExact:
                 guard let target = operation.target, let range = updatedText.range(of: target) else {
                     throw NodePatchError.conflict("Could not find exact text to replace.")

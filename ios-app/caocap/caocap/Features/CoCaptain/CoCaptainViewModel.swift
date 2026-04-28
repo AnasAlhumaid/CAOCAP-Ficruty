@@ -27,6 +27,14 @@ public final class CoCaptainViewModel {
     private var streamingTask: Task<Void, Never>?
 
     public var isThinking: Bool = false
+    public var isAwaitingFirstResponse: Bool {
+        guard isThinking,
+              let lastMessage,
+              !lastMessage.isUser else {
+            return false
+        }
+        return lastMessage.text.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
+    }
 
     public init() {
         self.items = [CoCaptainViewModel.greetingItem()]
@@ -51,6 +59,8 @@ public final class CoCaptainViewModel {
     }
 
     public func sendMessage(_ text: String) {
+        guard !isThinking else { return }
+
         let userItem = ChatBubbleItem(text: text, isUser: true)
         items.append(CoCaptainTimelineItem(content: .message(userItem)))
 
@@ -83,6 +93,11 @@ public final class CoCaptainViewModel {
                     items.append(CoCaptainTimelineItem(content: .reviewBundle(reviewBundle)))
                 }
             } catch {
+                if error is CancellationError || Task.isCancelled {
+                    removeEmptyMessage(id: aiMessageID)
+                    return
+                }
+
                 let details = String(reflecting: error)
                 updateMessage(
                     id: aiMessageID,
@@ -94,6 +109,16 @@ public final class CoCaptainViewModel {
             }
 
             isThinking = false
+        }
+    }
+
+    public func stopStreaming() {
+        streamingTask?.cancel()
+        streamingTask = nil
+        isThinking = false
+
+        if let lastMessage, !lastMessage.isUser {
+            removeEmptyMessage(id: lastMessage.id)
         }
     }
 
@@ -210,6 +235,22 @@ public final class CoCaptainViewModel {
             bubble.text = text
             items[index].content = .message(bubble)
         }
+    }
+
+    private func removeEmptyMessage(id: UUID) {
+        guard let index = items.firstIndex(where: { $0.id == id }),
+              case .message(let bubble) = items[index].content,
+              !bubble.isUser,
+              bubble.text.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else {
+            return
+        }
+
+        items.remove(at: index)
+    }
+
+    private var lastMessage: ChatBubbleItem? {
+        guard case .message(let bubble) = items.last?.content else { return nil }
+        return bubble
     }
 
     private static func greetingItem() -> CoCaptainTimelineItem {

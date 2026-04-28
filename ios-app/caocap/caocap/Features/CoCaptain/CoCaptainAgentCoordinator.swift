@@ -56,7 +56,8 @@ public final class CoCaptainAgentCoordinator {
                 expectsStructuredResponse: true,
                 store: store,
                 dispatcher: dispatcher,
-                onVisibleText: onVisibleText
+                onVisibleText: onVisibleText,
+                allowAgenticRetry: true
             )
         } catch {
             // Fallback: if the structured+context prompt fails (often with opaque
@@ -67,7 +68,8 @@ public final class CoCaptainAgentCoordinator {
                 expectsStructuredResponse: false,
                 store: store,
                 dispatcher: dispatcher,
-                onVisibleText: onVisibleText
+                onVisibleText: onVisibleText,
+                allowAgenticRetry: false
             )
         }
     }
@@ -78,7 +80,8 @@ public final class CoCaptainAgentCoordinator {
         expectsStructuredResponse: Bool,
         store: ProjectStore?,
         dispatcher: (any AppActionPerforming)?,
-        onVisibleText: @escaping (String) -> Void
+        onVisibleText: @escaping (String) -> Void,
+        allowAgenticRetry: Bool
     ) async throws -> CoCaptainAgentRunResult {
         var responseText = ""
         let stream = llmClient.streamResponse(
@@ -96,6 +99,21 @@ public final class CoCaptainAgentCoordinator {
         let parsed = parser.parse(responseText)
         let payload = expectsStructuredResponse ? parsed.payload : nil
 
+        if expectsStructuredResponse,
+           payload == nil,
+           allowAgenticRetry,
+           shouldRequireAgenticWork(for: userMessage) {
+            return try await runOnce(
+                userMessage: agenticRetryMessage(for: userMessage),
+                context: context,
+                expectsStructuredResponse: true,
+                store: store,
+                dispatcher: dispatcher,
+                onVisibleText: onVisibleText,
+                allowAgenticRetry: false
+            )
+        }
+
         let executionSummary = executeSafeActions(payload?.safeActions ?? [], dispatcher: dispatcher)
         let reviewBundle = buildReviewBundle(
             pendingActions: payload?.pendingActions ?? [],
@@ -109,6 +127,37 @@ public final class CoCaptainAgentCoordinator {
             executionSummary: executionSummary,
             reviewBundle: reviewBundle
         )
+    }
+
+    private func shouldRequireAgenticWork(for userMessage: String) -> Bool {
+        let lowercased = userMessage.lowercased()
+        let triggers = [
+            "build",
+            "make",
+            "create",
+            "add",
+            "change",
+            "update",
+            "fix",
+            "remove",
+            "style",
+            "implement",
+            "improve",
+            "game"
+        ]
+
+        return triggers.contains { lowercased.contains($0) }
+    }
+
+    private func agenticRetryMessage(for userMessage: String) -> String {
+        """
+        The previous response did not include executable Co-Captain work.
+
+        Retry this user request and include a `cocaptain-actions` fenced block with concrete nodeEdits. For full builds, games, or demos, use `replace_all` operations for the html, css, and javascript nodes.
+
+        Original user request:
+        \(userMessage)
+        """
     }
 
     private func executeSafeActions(

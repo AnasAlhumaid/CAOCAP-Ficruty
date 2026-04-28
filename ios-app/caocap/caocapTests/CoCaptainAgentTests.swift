@@ -42,6 +42,18 @@ struct CoCaptainAgentTests {
         #expect(result.contains("<footer>Done</footer>"))
     }
 
+    @Test func nodePatchEngineCanReplaceWholeNodeContent() throws {
+        let engine = NodePatchEngine()
+        let result = try engine.apply(
+            operations: [
+                NodePatchOperation(type: .replaceAll, content: "<main>New game shell</main>")
+            ],
+            to: "<h1>Old page</h1>"
+        )
+
+        #expect(result == "<main>New game shell</main>")
+    }
+
     @Test func nodePatchEngineThrowsWhenAnchorMissing() throws {
         let engine = NodePatchEngine()
 

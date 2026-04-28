@@ -13,11 +13,13 @@ struct CoCaptainView: View {
                     ScrollView {
                         VStack(alignment: .leading, spacing: 16) {
                             ForEach(viewModel.items) { item in
-                                TimelineItemView(item: item, viewModel: viewModel)
-                                    .id(item.id)
+                                if !item.isEmptyAssistantMessage {
+                                    TimelineItemView(item: item, viewModel: viewModel)
+                                        .id(item.id)
+                                }
                             }
 
-                            if viewModel.isThinking {
+                            if viewModel.isAwaitingFirstResponse {
                                 HStack(alignment: .bottom, spacing: 8) {
                                     Image("cocaptain")
                                         .resizable()
@@ -99,16 +101,24 @@ struct CoCaptainView: View {
                         .animation(.easeInOut(duration: 0.2), value: isFocused)
 
                         let isInputValid = !text.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
+                        let canSend = isInputValid && !viewModel.isThinking
 
                         Button(action: {
-                            if isInputValid {
+                            if viewModel.isThinking {
+                                viewModel.stopStreaming()
+                            } else if canSend {
                                 viewModel.sendMessage(text.trimmingCharacters(in: .whitespacesAndNewlines))
                                 text = ""
                                 isFocused = false
                             }
                         }) {
                             ZStack {
-                                if isInputValid {
+                                if viewModel.isThinking {
+                                    Image(systemName: "stop.circle.fill")
+                                        .font(.system(size: 38))
+                                        .frame(width: 38, height: 38)
+                                        .transition(.scale.combined(with: .opacity))
+                                } else if isInputValid {
                                     Image(systemName: "arrow.up.circle.fill")
                                         .font(.system(size: 38))
                                         .transition(.scale.combined(with: .opacity))
@@ -124,7 +134,9 @@ struct CoCaptainView: View {
                             .foregroundColor(.blue)
                             .shadow(color: .blue.opacity(0.3), radius: 6, y: 3)
                         }
+                        .disabled(!viewModel.isThinking && !canSend)
                         .animation(.spring(response: 0.3, dampingFraction: 0.7), value: isInputValid)
+                        .animation(.spring(response: 0.3, dampingFraction: 0.7), value: viewModel.isThinking)
                         .padding(.bottom, 5)
                     }
                     .padding(.horizontal, 12)
@@ -154,7 +166,7 @@ struct CoCaptainView: View {
     }
 
     private func scrollToBottom(proxy: ScrollViewProxy) {
-        if viewModel.isThinking {
+        if viewModel.isAwaitingFirstResponse {
             withAnimation {
                 proxy.scrollTo("thinking_indicator", anchor: .bottom)
             }
@@ -179,6 +191,17 @@ struct TimelineItemView: View {
         case .reviewBundle(let bundle):
             ReviewBundleView(bundle: bundle, viewModel: viewModel, bundleID: item.id)
         }
+    }
+}
+
+private extension CoCaptainTimelineItem {
+    var isEmptyAssistantMessage: Bool {
+        guard case .message(let bubble) = content,
+              !bubble.isUser else {
+            return false
+        }
+
+        return bubble.text.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
     }
 }
 

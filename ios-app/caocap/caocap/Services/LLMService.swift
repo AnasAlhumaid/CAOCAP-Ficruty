@@ -157,7 +157,11 @@ public final class LLMService {
                 """
                 Agent contract:
                 - Respond conversationally first.
-                - If you want to control the app or propose code updates, append a fenced block named `cocaptain-actions`.
+                - For user requests that ask you to build, make, create, add, change, update, fix, remove, style, implement, or improve the current project, you MUST append a fenced block named `cocaptain-actions` with concrete `nodeEdits`.
+                - Do not only describe code changes for those requests. Put the actual implementation in `nodeEdits`.
+                - Use `replace_all` when replacing a whole HTML, CSS, JavaScript, or SRS node, especially for games, demos, redesigns, or full-feature builds.
+                - Use smaller exact operations only for narrow edits where the target text is guaranteed to exist in the current canvas context.
+                - For a complete web app or game, usually provide coordinated edits for html, css, and javascript.
                 - Only use these action ids:
                 \(actionLines.isEmpty ? "- none" : actionLines)
                 - Only target these node roles for edits: srs, html, css, javascript.
@@ -170,7 +174,7 @@ public final class LLMService {
                     "role": "html",
                     "summary": "what changes",
                     "operations": [{
-                      "type": "replace_exact|insert_before_exact|insert_after_exact|append|prepend",
+                      "type": "replace_all|replace_exact|insert_before_exact|insert_after_exact|append|prepend",
                       "target": "exact text when required",
                       "content": "new content"
                     }]
