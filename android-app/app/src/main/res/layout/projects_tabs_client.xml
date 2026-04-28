@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<HorizontalScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content">
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="5dp"
+        android:gravity="center"
+
+        android:orientation="horizontal"
+        android:padding="5dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/bidsBtn"
+            style="@style/primary_material_outlined_btn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:text="العروض المستلمة" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/ongoingProjectsBtn"
+            style="@style/primary_material_outlined_btn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:text="قيد التنفيذ" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/completedProjectsBtn"
+            style="@style/primary_material_outlined_btn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="المشاريع المكتملة" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/createdProjectsBtn"
+            style="@style/primary_material_outlined_btn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="مشاريع مطروحة" />
+
+    </LinearLayout>
+</HorizontalScrollView>

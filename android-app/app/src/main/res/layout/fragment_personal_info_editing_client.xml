@@ -1,0 +1,425 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    style="@style/fragment_content"
+    tools:context=".ui.fragments.profiles.PersonalInfoUpdateFragment">
+
+    <androidx.cardview.widget.CardView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/default_margin_padding"
+        android:layout_marginTop="10dp"
+        android:layout_marginEnd="@dimen/default_margin_padding"
+        android:layout_marginBottom="10dp"
+        app:cardCornerRadius="30dp"
+        app:cardElevation="5dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/bg_10_top_curved_light_gray_borders_transparent_filled"
+            android:orientation="vertical">
+
+
+            <LinearLayout
+                android:id="@+id/generalInfoTitleLL"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/dropdown_label_bg"
+                android:clickable="true"
+                android:focusable="true"
+                android:gravity="center"
+                android:orientation="horizontal">
+
+                <com.google.android.material.textview.MaterialTextView
+                    android:id="@+id/generalInfoTV"
+                    style="@style/sub_title_textView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="0dp"
+                    android:padding="10dp"
+                    android:text="معلومات عامة"
+                    android:textColor="@color/accent"
+                    android:textSize="20sp"
+                    android:textStyle="bold"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/personal_information_tv" />
+
+                <View
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1" />
+
+                <ImageView
+                    android:id="@+id/generalInfoTitleIV"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical|end"
+                    android:padding="@dimen/default_margin_padding"
+                    app:srcCompat="@drawable/end_dropdown_icon"
+                    app:tint="#333333" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/generalInfoLL"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="4dp"
+                android:orientation="vertical"
+                android:padding="4dp"
+                android:visibility="visible"
+                tools:visibility="visible">
+
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_vertical"
+                    android:orientation="vertical"
+                    android:visibility="gone">
+
+                    <TextView
+                        style="@style/label_text_view"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/username"
+                        android:textColor="@color/black"
+                        android:textSize="18dp" />
+
+                    <com.google.android.material.textfield.TextInputLayout
+                        android:id="@+id/user_name_TIL"
+                        style="@style/TextInputLayout"
+                        app:endIconTintMode="multiply"
+                        app:startIconDrawable="@drawable/icon_user_data"
+                        app:startIconTintMode="src_atop">
+
+                        <com.google.android.material.textfield.TextInputEditText
+                            style="@style/TextInputEditText"
+                            android:hint="@string/username"
+                            android:inputType="textPhonetic"
+                            android:textSize="18sp" />
+                    </com.google.android.material.textfield.TextInputLayout>
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_vertical"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:id="@+id/first_name_tv"
+                        style="@style/material_textView"
+                        android:text="@string/first_name"
+                        android:textColor="@color/black"
+                        android:textSize="18sp" />
+
+                    <com.google.android.material.textfield.TextInputLayout
+                        android:id="@+id/first_name_TIL"
+                        style="@style/TextInputLayout"
+                        android:layout_width="match_parent"
+
+                        android:layout_height="wrap_content"
+                        app:endIconTintMode="multiply"
+                        app:startIconDrawable="@drawable/icon_user_data"
+                        app:startIconTintMode="src_atop">
+
+                        <com.google.android.material.textfield.TextInputEditText
+                            style="@style/TextInputEditText"
+                            android:hint="@string/first_name"
+                            android:inputType="textPhonetic"
+                            android:textSize="18sp" />
+                    </com.google.android.material.textfield.TextInputLayout>
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_vertical"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:id="@+id/second_name_tv"
+                        style="@style/material_textView"
+                        android:text="@string/last_name"
+                        android:textColor="@color/black"
+                        android:textSize="18sp" />
+
+                    <com.google.android.material.textfield.TextInputLayout
+                        android:id="@+id/second_name_TIL"
+                        style="@style/TextInputLayout"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        app:endIconTintMode="multiply"
+                        app:startIconDrawable="@drawable/icon_user_data"
+                        app:startIconTintMode="src_atop">
+
+                        <com.google.android.material.textfield.TextInputEditText
+                            style="@style/TextInputEditText"
+                            android:hint="@string/last_name"
+                            android:inputType="textPhonetic"
+                            android:textSize="18sp" />
+                    </com.google.android.material.textfield.TextInputLayout>
+
+                </LinearLayout>
+
+
+                <!--        <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_margin="4dp"
+                    android:gravity="center_vertical"
+                    android:orientation="vertical"
+                    android:padding="4dp">
+
+                    <TextView
+                        android:layout_width="80dp"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="@font/sakkal_majalla_regular"
+                        android:text="الجنسية"
+                        android:textColor="@color/black"
+                        android:textSize="18dp" />
+
+                    <AutoCompleteTextView
+                        android:id="@+id/nationality_ACTV"
+                        style="@style/appCompat_editText"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_margin="4dp"
+                        android:layout_weight="1"
+                        android:drawableEnd="@drawable/baseline_keyboard_arrow_down_24"
+                        android:drawablePadding="3dp"
+                        android:hint="الجنسية..."
+                        android:inputType="textPhonetic"
+                        android:padding="8dp"
+                        android:textSize="18dp" />
+                </LinearLayout> -->
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_vertical"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:id="@+id/phone_number_tv"
+                        style="@style/material_textView"
+                        android:text="@string/phone_number"
+                        android:textColor="@color/black"
+                        android:textSize="18sp" />
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:orientation="horizontal">
+
+                        <com.google.android.material.textfield.TextInputLayout
+                            android:id="@+id/phone_number_TIL"
+                            style="@style/TextInputLayout"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="2"
+                            app:endIconTintMode="multiply"
+                            app:startIconDrawable="@drawable/icon_phone"
+                            app:startIconTintMode="src_atop">
+
+                            <com.google.android.material.textfield.TextInputEditText
+                                style="@style/TextInputEditText"
+                                android:hint="@string/phone_number"
+                                android:inputType="phone"
+                                android:textAlignment="viewStart"
+                                android:textSize="18sp" />
+                        </com.google.android.material.textfield.TextInputLayout>
+
+                        <Spinner
+                            android:id="@+id/countryCodeSpnr"
+                            style="@style/spinner"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="top"
+                            android:layout_weight="1"
+                            android:padding="8dp"
+                            android:spinnerMode="dropdown"
+                            android:textSize="16sp"
+                            tools:listitem="list_item_spinner_country_code" />
+                    </LinearLayout>
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_vertical"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:id="@+id/email_tv"
+                        style="@style/material_textView"
+                        android:text="@string/email"
+                        android:textColor="@color/black"
+                        android:textSize="18sp" />
+
+                    <com.google.android.material.textfield.TextInputLayout
+                        android:id="@+id/email_TIL"
+                        style="@style/TextInputLayout"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        app:endIconTintMode="multiply"
+                        app:startIconDrawable="@drawable/icon_user_data"
+                        app:startIconTintMode="src_atop">
+
+                        <com.google.android.material.textfield.TextInputEditText
+                            style="@style/TextInputEditText"
+                            android:hint="@string/email"
+                            android:inputType="textEmailAddress"
+                            android:textSize="18sp" />
+                    </com.google.android.material.textfield.TextInputLayout>
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_vertical"
+                    android:orientation="vertical">
+
+                    <TextView
+                        style="@style/material_textView"
+                        android:text="الجنس"
+                        android:textColor="@color/black"
+                        android:textSize="18sp" />
+
+                    <RadioGroup
+                        android:id="@+id/genderRG"
+                        style="@style/RadioButton"
+                        android:orientation="horizontal">
+
+                        <com.google.android.material.radiobutton.MaterialRadioButton
+                            android:id="@+id/maleRadio"
+                            style="@style/MaterialRadioButton"
+                            android:checked="true"
+                            android:text="ذكر"
+                            android:textSize="18sp" />
+
+                        <RadioButton
+                            android:id="@+id/femaleRadio"
+                            style="@style/MaterialRadioButton"
+                            android:text="أنثى"
+                            android:textSize="18sp" />
+                    </RadioGroup>
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_vertical"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:id="@+id/user_name_tv"
+                        style="@style/material_textView"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="نبذة عن المستخدم"
+                        android:textColor="@color/black"
+                        android:textSize="18sp" />
+
+                    <EditText
+                        android:id="@+id/aboutET"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_margin="8dp"
+                        android:background="@drawable/input_bg_gray_borders_curved_5_transparent_filled"
+                        android:drawableTint="@color/gray_font"
+                        android:fontFamily="@font/sakkal_majalla"
+                        android:gravity="start|top"
+                        android:hint="نبذة عن المستخدم"
+                        android:inputType="textMultiLine"
+                        android:lines="4"
+                        android:padding="8dp"
+                        android:textSize="18sp" />
+                </LinearLayout>
+
+
+                <!--        <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_margin="4dp"
+                    android:gravity="center_vertical"
+                    android:orientation="vertical"
+                    android:padding="4dp">
+
+                    <TextView
+                        android:layout_width="80dp"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="@font/sakkal_majalla_regular"
+                        android:text="الجنسية"
+                        android:textColor="@color/black"
+                        android:textSize="18dp" />
+
+                    <AutoCompleteTextView
+                        android:id="@+id/nationality_ACTV"
+                        style="@style/appCompat_editText"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_margin="4dp"
+                        android:layout_weight="1"
+                        android:drawableEnd="@drawable/baseline_keyboard_arrow_down_24"
+                        android:drawablePadding="3dp"
+                        android:hint="الجنسية..."
+                        android:inputType="textPhonetic"
+                        android:padding="8dp"
+                        android:textSize="18dp" />
+                </LinearLayout> -->
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_vertical"
+                    android:orientation="vertical">
+
+                    <TextView
+                        style="@style/material_textView"
+                        android:text="نوع الحساب"
+                        android:textColor="@color/black"
+                        android:textSize="18sp" />
+
+                    <RadioGroup
+                        android:id="@+id/clientTypeRG"
+                        style="@style/RadioButton"
+                        android:orientation="horizontal">
+
+                        <com.google.android.material.radiobutton.MaterialRadioButton
+                            android:id="@+id/orgMRB"
+                            style="@style/MaterialRadioButton"
+                            android:checked="true"
+                            android:text="مؤسسة"
+                            android:textSize="18sp" />
+
+                        <com.google.android.material.radiobutton.MaterialRadioButton
+                            android:id="@+id/individualMRB"
+                            style="@style/MaterialRadioButton"
+                            android:text="فرد"
+                            android:textSize="18sp" />
+                    </RadioGroup>
+                </LinearLayout>
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:layout_margin="4dp"
+                    android:background="@color/divider_gray" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/submitBtn"
+                    style="@style/primary_material_btn"
+                    android:layout_width="wrap_content"
+                    android:layout_gravity="end"
+                    android:padding="10dp"
+                    android:text="تعديل"
+                    android:textSize="20sp" />
+            </LinearLayout>
+
+        </LinearLayout>
+    </androidx.cardview.widget.CardView>
+</androidx.core.widget.NestedScrollView>

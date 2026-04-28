@@ -1,0 +1,214 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:background="@color/dialog_bg_dim"
+    android:layout_gravity="center"
+
+    android:backgroundTintMode="add"
+    android:layoutDirection="rtl"
+    tools:context="ui.fragments.projects.details.SpamDialog">
+
+    <androidx.cardview.widget.CardView
+
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:cardCornerRadius="20dp"
+        app:cardElevation="10dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/bg_20_curved_borders_accent_filled"
+            android:orientation="vertical"
+            android:textDirection="rtl"
+            android:padding="4dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_margin="4dp"
+                android:gravity="center"
+                android:orientation="horizontal"
+                android:padding="4dp">
+
+                <TextView
+                    style="@style/material_textView"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="4dp"
+                    android:layout_weight="1"
+                    android:gravity="right"
+                    android:text="تبليغ"
+                    android:textColor="@color/white"
+                    android:textSize="20sp"
+                    android:textStyle="bold" />
+
+                <ImageButton
+                    android:id="@+id/cancelBtn"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="4dp"
+                    android:background="@color/transparent"
+                    android:scaleType="centerInside"
+                    app:srcCompat="@android:drawable/ic_menu_close_clear_cancel"
+                    app:tint="@color/white" />
+            </LinearLayout>
+
+            <View
+                android:id="@+id/divider7"
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="?android:attr/listDivider" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_margin="4dp"
+                android:gravity="center"
+                android:orientation="vertical"
+                android:padding="4dp">
+
+               <CheckBox
+
+                   android:id="@+id/checkbox1"
+                   android:layout_width="match_parent"
+                   android:layout_height="wrap_content"
+                   android:text="الإساءة"
+                   android:buttonTint="@color/white"
+
+                  android:background="@color/transparent"
+                   android:layout_margin="4dp"
+
+
+                   android:textColor="@color/white"
+                   android:textStyle="bold"
+
+                   />
+                <CheckBox
+                    android:id="@+id/checkbox2"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="تعليق غير لائق"
+                    style="@style/material_textView"
+                    android:background="@color/transparent"
+                    android:layout_margin="4dp"
+                    android:buttonTint="@color/white"
+                    android:textColor="@color/white"
+                    android:textStyle="bold"
+
+                    />
+                <CheckBox
+                    android:id="@+id/checkbox3"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="انتهاك خصوصية"
+                    style="@style/material_textView"
+                    android:background="@color/transparent"
+                    android:layout_margin="4dp"
+                    android:buttonTint="@color/white"
+                    android:textColor="@color/white"
+                    android:textStyle="bold"
+
+                    />
+
+
+                <CheckBox
+
+                    android:id="@+id/checkbox4"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="اخرى"
+                    android:buttonTint="@color/white"
+
+                    android:background="@color/transparent"
+                    android:layout_margin="4dp"
+
+
+                    android:textColor="@color/white"
+                    android:textStyle="bold"
+
+                    />
+<LinearLayout
+    android:id="@+id/otherComplaintLL"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    >
+
+
+                <EditText
+                    android:id="@+id/descriptionTV"
+                    style="@style/appCompat_editText"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="4dp"
+                    android:drawableStart="@drawable/feedback"
+                    android:hint="محتوى الشكوى ..."
+                    android:lines="3"
+                    android:textColor="@color/white"
+                    android:textColorHint="@color/white"
+                    android:textStyle="bold" />
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        style="@style/small_text_view"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_margin="1dp"
+                        android:textColor="@color/white"
+                        android:text="عدد الحروف المتاحة" />
+
+                    <TextView
+                        android:id="@+id/aboutUser_char_TV"
+                        style="@style/small_text_view"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_margin="1dp"
+                        android:textColor="@color/white"
+                        android:text="0" />
+
+                    <TextView
+                        style="@style/small_text_view"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_margin="1dp"
+                        android:textColor="@color/white"
+                        android:text="/" />
+
+                    <TextView
+                        android:id="@+id/aboutUserMax"
+                        style="@style/small_text_view"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_margin="1dp"
+                        android:textColor="@color/white"
+                        android:text="250" />
+                </LinearLayout>
+</LinearLayout>
+
+
+                </LinearLayout>
+
+
+
+
+                <Button
+                    android:id="@+id/submitBtn"
+                    style="@style/white_material_btn"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="10dp"
+                    android:text="رفع"
+                    android:textSize="25sp"
+                    android:textStyle="bold" />
+            </LinearLayout>
+
+    </androidx.cardview.widget.CardView>
+</FrameLayout>

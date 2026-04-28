@@ -1,0 +1,405 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    style="@style/fragment_content"
+    android:paddingStart="@dimen/list_item_margin_padding"
+    android:paddingEnd="@dimen/list_item_margin_padding"
+    tools:context=".ui.fragments.projects.client.ProjectsManagementClientFragment">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_margin="@dimen/list_item_margin_padding"
+        android:orientation="vertical">
+
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:orientation="horizontal">
+
+            <androidx.cardview.widget.CardView
+                android:id="@+id/completedProCard"
+                android:layout_width="160dp"
+                android:layout_height="wrap_content"
+                android:layout_margin="10dp"
+                app:cardCornerRadius="20dp"
+                app:cardElevation="10dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/bg_20_curved_light_gray_borders_white_filled"
+                    android:orientation="vertical">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="center"
+                        android:orientation="horizontal">
+
+                        <ImageView
+                            style="@style/accent_image_view"
+                            android:layout_width="50dp"
+                            android:layout_height="50dp"
+                            android:layout_margin="@dimen/list_item_margin_padding"
+                            android:padding="@dimen/list_item_margin_padding"
+                            app:srcCompat="@drawable/institution_projects" />
+
+                        <LinearLayout
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:orientation="vertical">
+
+                            <TextView
+                                android:id="@+id/noCompletedProTV"
+                                style="@style/material_textView"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_margin="@dimen/list_item_margin_padding"
+                                android:padding="@dimen/list_item_margin_padding"
+                                android:text="0"
+                                android:textColor="@color/accent"
+                                android:textSize="16sp"
+                                android:textStyle="bold" />
+
+                            <TextView
+                                style="@style/material_textView"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_margin="@dimen/list_item_margin_padding"
+                                android:padding="@dimen/list_item_margin_padding"
+                                android:text="مشروع مكتمل"
+                                android:textColor="@color/accent"
+                                android:textSize="16sp"
+                                android:textStyle="bold" />
+                        </LinearLayout>
+
+                    </LinearLayout>
+
+                    <View style="@style/horizontal_divider" />
+
+                    <FrameLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
+
+                        <Button
+                            android:id="@+id/completedProBtn"
+                            style="@style/primary_material_textBtn"
+                            android:layout_gravity="end"
+                            android:layout_margin="@dimen/list_item_margin_padding"
+                            android:drawableEnd="@drawable/baseline_accent_circle_arrow_24"
+                            android:drawableTint="@android:color/transparent"
+                            android:text="التفاصيل"
+                            android:textStyle="bold" />
+                    </FrameLayout>
+
+                </LinearLayout>
+            </androidx.cardview.widget.CardView>
+
+            <androidx.cardview.widget.CardView
+                android:id="@+id/ongoingProCard"
+                android:layout_width="160dp"
+                android:layout_height="match_parent"
+                android:layout_margin="10dp"
+                app:cardCornerRadius="20dp"
+                app:cardElevation="10dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:background="@drawable/bg_20_curved_light_gray_borders_white_filled"
+                    android:orientation="vertical">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="0dp"
+                        android:layout_weight="1"
+                        android:gravity="center"
+                        android:orientation="horizontal">
+
+                        <ImageView
+                            style="@style/accent_image_view"
+                            android:layout_width="50dp"
+                            android:layout_height="50dp"
+                            android:layout_margin="@dimen/list_item_margin_padding"
+                            android:padding="@dimen/list_item_margin_padding"
+                            app:srcCompat="@drawable/institution_projects" />
+
+                        <LinearLayout
+                            android:layout_width="0dp"
+                            android:layout_height="match_parent"
+                            android:layout_weight="1"
+                            android:gravity="center_vertical"
+                            android:orientation="vertical">
+
+                            <TextView
+                                android:id="@+id/noOngoingProTV"
+                                style="@style/material_textView"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_margin="1dp"
+                                android:padding="1dp"
+                                android:text="0"
+                                android:textColor="@color/accent"
+                                android:textSize="15sp" />
+
+                            <TextView
+                                style="@style/material_textView"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_margin="1dp"
+                                android:padding="1dp"
+                                android:text="مشروع قيد التنفيذ"
+                                android:textColor="@color/accent"
+                                android:textSize="15sp"
+                                android:textStyle="bold" />
+                        </LinearLayout>
+
+                    </LinearLayout>
+
+                    <View
+                        android:id="@+id/view2"
+                        style="@style/horizontal_divider" />
+
+                    <FrameLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
+
+                        <Button
+                            android:id="@+id/ongoingProBtn"
+                            style="@style/primary_material_textBtn"
+                            android:layout_gravity="end"
+                            android:layout_margin="@dimen/list_item_margin_padding"
+                            android:drawableEnd="@drawable/baseline_accent_circle_arrow_24"
+                            android:drawableTint="@android:color/transparent"
+                            android:text="التفاصيل" />
+                    </FrameLayout>
+
+                </LinearLayout>
+            </androidx.cardview.widget.CardView>
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:orientation="horizontal">
+
+            <androidx.cardview.widget.CardView
+                android:id="@+id/bidsCard"
+                android:layout_width="160dp"
+                android:layout_height="wrap_content"
+                android:layout_margin="10dp"
+                app:cardCornerRadius="20dp"
+                app:cardElevation="10dp"
+                app:layout_constraintEnd_toEndOf="@+id/completedProCard"
+                app:layout_constraintStart_toStartOf="@+id/completedProCard"
+                app:layout_constraintTop_toBottomOf="@+id/completedProCard">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/bg_20_curved_light_gray_borders_white_filled"
+                    android:orientation="vertical">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="center"
+                        android:orientation="horizontal">
+
+                        <ImageView
+                            style="@style/accent_image_view"
+                            android:layout_width="50dp"
+                            android:layout_height="50dp"
+                            android:layout_margin="@dimen/list_item_margin_padding"
+                            android:padding="@dimen/list_item_margin_padding"
+                            app:srcCompat="@drawable/institution_projects" />
+
+                        <LinearLayout
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:orientation="vertical">
+
+                            <TextView
+                                android:id="@+id/noBidsTV"
+                                style="@style/material_textView"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_margin="@dimen/list_item_margin_padding"
+                                android:padding="@dimen/list_item_margin_padding"
+                                android:text="0"
+                                android:textColor="@color/accent"
+                                android:textSize="16sp"
+                                android:textStyle="bold" />
+
+                            <TextView
+                                style="@style/material_textView"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_margin="@dimen/list_item_margin_padding"
+                                android:padding="@dimen/list_item_margin_padding"
+                                android:text="عروض مستلمة"
+                                android:textColor="@color/accent"
+                                android:textSize="16sp"
+                                android:textStyle="bold" />
+                        </LinearLayout>
+
+                    </LinearLayout>
+
+                    <View
+                        android:id="@+id/view3"
+                        style="@style/horizontal_divider" />
+
+                    <FrameLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
+
+                        <Button
+                            android:id="@+id/bidsBtn"
+                            style="@style/primary_material_textBtn"
+                            android:layout_gravity="end"
+                            android:layout_margin="@dimen/list_item_margin_padding"
+                            android:drawableEnd="@drawable/baseline_accent_circle_arrow_24"
+                            android:drawableTint="@android:color/transparent"
+                            android:text="التفاصيل"
+                            android:textStyle="bold" />
+                    </FrameLayout>
+
+                </LinearLayout>
+            </androidx.cardview.widget.CardView>
+
+            <androidx.cardview.widget.CardView
+                android:id="@+id/canceledProCard"
+                android:layout_width="160dp"
+                android:layout_height="wrap_content"
+                android:layout_margin="10dp"
+                app:cardCornerRadius="20dp"
+                app:cardElevation="10dp"
+                app:layout_constraintBottom_toBottomOf="@+id/bidsCard"
+                app:layout_constraintEnd_toEndOf="@+id/ongoingProCard"
+                app:layout_constraintStart_toStartOf="@+id/ongoingProCard"
+                app:layout_constraintTop_toTopOf="@+id/bidsCard">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/bg_20_curved_light_gray_borders_white_filled"
+                    android:orientation="vertical">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="center"
+                        android:orientation="horizontal">
+
+                        <ImageView
+                            style="@style/accent_image_view"
+                            android:layout_width="50dp"
+                            android:layout_height="50dp"
+                            android:layout_margin="@dimen/list_item_margin_padding"
+                            android:padding="@dimen/list_item_margin_padding"
+                            app:srcCompat="@drawable/institution_projects" />
+
+                        <LinearLayout
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:orientation="vertical">
+
+                            <TextView
+                                android:id="@+id/canceledProTV"
+                                style="@style/material_textView"
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:layout_margin="@dimen/list_item_margin_padding"
+                                android:padding="@dimen/list_item_margin_padding"
+                                android:text="0"
+                                android:textColor="@color/accent"
+                                android:textSize="16sp" />
+
+                            <TextView
+                                style="@style/material_textView"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_margin="@dimen/list_item_margin_padding"
+                                android:padding="@dimen/list_item_margin_padding"
+                                android:text="مشروع ملغي"
+                                android:textColor="@color/accent"
+                                android:textSize="16sp"
+                                android:textStyle="bold" />
+                        </LinearLayout>
+
+                    </LinearLayout>
+
+                    <View
+                        android:id="@+id/view4"
+                        style="@style/horizontal_divider" />
+
+                    <FrameLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
+
+                        <Button
+                            android:id="@+id/canceledProBtn"
+                            style="@style/primary_material_textBtn"
+                            android:layout_gravity="end"
+                            android:layout_margin="@dimen/list_item_margin_padding"
+                            android:drawableEnd="@drawable/baseline_accent_circle_arrow_24"
+                            android:drawableTint="@android:color/transparent"
+                            android:text="التفاصيل"
+                            android:textStyle="bold" />
+                    </FrameLayout>
+
+                </LinearLayout>
+            </androidx.cardview.widget.CardView>
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/newProLL"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:gravity="center"
+            android:orientation="vertical"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/bidsCard">
+
+            <TextView
+                style="@style/material_textView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="4dp"
+                android:padding="8dp"
+                android:text="المشاريع الحديثة"
+                android:textColor="@color/accent"
+                android:textSize="18sp"
+                android:textStyle="bold" />
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/newProjectBidsRV"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="4dp"
+                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                tools:itemCount="2"
+                tools:listitem="@layout/list_item_new_projects_client" />
+
+            <Button
+                android:id="@+id/addNewProjectBtn"
+                style="@style/material_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="4dp"
+                android:text="إضافة مشروع جديد"
+                android:textStyle="bold"
+                android:visibility="gone" />
+        </LinearLayout>
+    </LinearLayout>
+</androidx.core.widget.NestedScrollView>

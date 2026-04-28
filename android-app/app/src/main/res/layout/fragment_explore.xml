@@ -1,0 +1,219 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<ScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_height="wrap_content"
+android:background="@color/fragment_bg_color"
+    tools:context=".ui.fragments.ExploreFragment"
+
+     android:layout_width="match_parent"
+
+    >
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:background="@color/fragment_bg_color"
+        android:paddingTop="@dimen/tool_bar_height"
+
+        >
+
+        <LinearLayout
+            android:id="@+id/constraintLayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:background="@drawable/bg_5_curved_accent_borders_transparent_filled"
+            android:orientation="horizontal"
+            android:layout_margin="5dp"
+            app:layout_constraintBottom_toTopOf="@id/AddButtonLL"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <TextView
+                android:id="@+id/freelancers_tab"
+                style="@style/tab_item_sub_title"
+                android:background="@drawable/title_bg_selector_curved_accent_transparent_5"
+                android:text="مقدِّمو الخدمات"
+                android:textColor="@color/text_view_color_selector_accent_font_color" />
+
+            <TextView
+                android:id="@+id/projects_tab"
+                style="@style/tab_item_sub_title"
+                android:background="@drawable/title_bg_selector_curved_accent_transparent_5"
+                android:text="الخدمات"
+                android:textColor="@color/text_view_color_selector_accent_font_color" />
+
+
+        </LinearLayout>
+        <LinearLayout
+            android:id="@+id/AddButtonLL"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="end"
+            android:layout_margin="5dp"
+
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintBottom_toTopOf="@id/browsingItems"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <Button
+                android:id="@+id/AddButton"
+                style="@style/primary_material_btn"
+                android:layout_width="wrap_content"
+
+                android:layout_height="wrap_content"
+
+
+                android:text="طلب خدمة +"
+
+
+                >
+
+            </Button>
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/browsingItems"
+            android:layout_width="match_parent"
+            android:layout_height="800dp"
+            android:background="@color/fragment_bg_color"
+            android:orientation="vertical">
+
+        </LinearLayout>
+
+
+        <!--    <androidx.viewpager2.widget.ViewPager2-->
+        <!--        android:id="@+id/viewPager2"-->
+        <!--        android:layout_width="match_parent"-->
+        <!--        android:layout_height="match_parent"/>-->
+
+
+        <!--    <androidx.constraintlayout.widget.ConstraintLayout -->
+        <!--        android:layout_width="match_parent"-->
+        <!--        android:layout_height="match_parent"-->
+        <!--        tools:context=".ui.fragments.ExploreFragment">-->
+
+
+        <!--        <androidx.cardview.widget.CardView-->
+        <!--            android:id="@+id/projectsCard"-->
+        <!--            android:layout_width="200dp"-->
+        <!--            android:layout_height="200dp"-->
+        <!--            android:clickable="true"-->
+        <!--            android:focusable="true"-->
+        <!--            android:rotation="-45"-->
+        <!--            app:cardCornerRadius="40dp"-->
+        <!--            app:cardElevation="20dp"-->
+        <!--            app:layout_constraintBottom_toTopOf="@id/freelancersCard"-->
+        <!--            app:layout_constraintEnd_toEndOf="parent"-->
+        <!--            app:layout_constraintStart_toStartOf="@+id/freelancersCard"-->
+        <!--            app:layout_constraintTop_toTopOf="parent">-->
+
+        <!--            <FrameLayout-->
+        <!--                android:layout_width="match_parent"-->
+        <!--                android:layout_height="match_parent"-->
+        <!--                android:background="@drawable/bg_40_curved_light_gray_borders_white_filled">-->
+
+        <!--                <LinearLayout-->
+        <!--                    android:id="@+id/projects_LL"-->
+        <!--                    android:layout_width="match_parent"-->
+        <!--                    android:layout_height="match_parent"-->
+        <!--                    android:layout_gravity="center"-->
+        <!--                    android:gravity="center"-->
+        <!--                    android:orientation="vertical"-->
+        <!--                    android:padding="20dp"-->
+        <!--                    android:rotation="45">-->
+
+        <!--                    <ImageView-->
+        <!--                        android:layout_width="match_parent"-->
+        <!--                        android:layout_height="0dp"-->
+        <!--                        android:layout_margin="1dp"-->
+        <!--                        android:layout_weight="1"-->
+        <!--                        android:src="@drawable/explore_projects_"-->
+        <!--                        app:srcCompat="@drawable/explore_projects_" />-->
+
+        <!--                    <TextView-->
+        <!--                        android:layout_width="wrap_content"-->
+        <!--                        android:layout_height="wrap_content"-->
+        <!--                        android:layout_gravity="center"-->
+        <!--                        android:layout_margin="1dp"-->
+        <!--                        android:fontFamily="@font/sakkal_majalla_regular"-->
+        <!--                        android:text="@string/projects"-->
+        <!--                        android:textAlignment="center"-->
+        <!--                        android:textColor="@color/accent"-->
+        <!--                        android:textSize="24sp"-->
+        <!--                        android:textStyle="bold" />-->
+        <!--                </LinearLayout>-->
+        <!--            </FrameLayout>-->
+
+        <!--        </androidx.cardview.widget.CardView>-->
+
+        <!--        <androidx.cardview.widget.CardView-->
+        <!--            android:id="@+id/freelancersCard"-->
+        <!--            android:layout_width="200dp"-->
+        <!--            android:layout_height="200dp"-->
+        <!--            android:clickable="true"-->
+        <!--            android:focusable="true"-->
+        <!--            android:rotation="-45"-->
+        <!--            app:cardCornerRadius="40dp"-->
+        <!--            app:cardElevation="20dp"-->
+        <!--            app:layout_constraintBottom_toBottomOf="parent"-->
+        <!--            app:layout_constraintEnd_toEndOf="@id/projectsCard"-->
+        <!--            app:layout_constraintStart_toStartOf="parent"-->
+        <!--            app:layout_constraintTop_toBottomOf="@id/projectsCard">-->
+
+        <!--            <FrameLayout-->
+        <!--                android:layout_width="match_parent"-->
+        <!--                android:layout_height="match_parent"-->
+        <!--                android:background="@drawable/bg_40_curved_light_gray_borders_white_filled">-->
+
+        <!--                <LinearLayout-->
+        <!--                    android:id="@+id/freelancers_LL"-->
+        <!--                    android:layout_width="match_parent"-->
+        <!--                    android:layout_height="match_parent"-->
+        <!--                    android:layout_gravity="center"-->
+        <!--                    android:clickable="false"-->
+        <!--                    android:gravity="center"-->
+        <!--                    android:orientation="vertical"-->
+        <!--                    android:padding="20dp"-->
+        <!--                    android:rotation="45">-->
+
+        <!--                    <ImageView-->
+        <!--                        android:layout_width="match_parent"-->
+        <!--                        android:layout_height="0dp"-->
+        <!--                        android:layout_margin="1dp"-->
+        <!--                        android:layout_weight="1"-->
+        <!--                        android:scaleType="center"-->
+        <!--                        app:srcCompat="@drawable/freelancer_user" />-->
+
+        <!--                    <TextView-->
+        <!--                        android:layout_width="match_parent"-->
+        <!--                        android:layout_height="wrap_content"-->
+        <!--                        android:layout_margin="1dp"-->
+        <!--                        android:fontFamily="@font/sakkal_majalla"-->
+        <!--                        android:text="@string/freelancers"-->
+        <!--                        android:textAlignment="center"-->
+        <!--                        android:textColor="@color/accent"-->
+        <!--                        android:textSize="24sp"-->
+        <!--                        android:textStyle="bold" />-->
+        <!--                </LinearLayout>-->
+        <!--            </FrameLayout>-->
+
+        <!--        </androidx.cardview.widget.CardView>-->
+
+
+        <!--    </androidx.constraintlayout.widget.ConstraintLayout>-->
+
+    </LinearLayout>
+
+
+
+</ScrollView>

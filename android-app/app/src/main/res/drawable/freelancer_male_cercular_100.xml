@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layer-list
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    >
+
+    <item
+        android:width="75dp"
+        android:height="75dp"
+        android:gravity="center"
+        android:drawable="@drawable/bg_oval_circle_accent_border_1"
+        />
+    <item
+        android:width="72dp"
+        android:height="72dp"
+        android:gravity="center"
+        android:drawable="@drawable/freelancer_male_png" />
+</layer-list>

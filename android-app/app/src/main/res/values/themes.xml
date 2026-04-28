@@ -1,0 +1,512 @@
+<resources
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    >
+    <!-- Base application theme. -->
+
+    <style name="Base.Theme.Dal" parent="Theme.MaterialComponents.Light.NoActionBar">
+        <!-- Customize your light theme here. -->
+
+        <item name="android:windowTranslucentStatus">false</item>
+        <item name="android:windowTranslucentNavigation">true</item>
+        <item name="android:statusBarColor">@android:color/transparent</item>
+
+    </style>
+
+    <style name="Theme.Dal" parent="Base.Theme.Dal" >
+        <!--        <item name="colorPrimary">@color/primary</item>-->
+        <!--        <item name="colorPrimaryDark">@color/primary_dark</item>-->
+        <item name="colorPrimary">@color/green</item>
+        <item name="colorAccent">@color/accent</item>
+        <item name="colorPrimaryDark">@color/light_green_bg</item>
+<!--        <item name="autoCompleteTextViewStyle">@style/cursorColor</item>-->
+
+<!--        <item name="colorButtonNormal">@color/accent</item>-->
+<!--        <item name="colorControlHighlight">@color/accent</item>-->
+<!--        <item name="colorPrimaryVariant">@color/light_green_bg</item>-->
+        <item name="fontFamily">@font/sakkal_majalla</item>
+        <item name="font">@font/sakkal_majalla</item>
+<!--        <item name="buttonTint">@color/accent</item>-->
+<!--        <item name="android:buttonTint">@color/accent</item>-->
+        <item name="android:textColor">@color/gray_font</item>
+        <item name="bottomSheetDialogTheme">@style/ModalBottomSheetDialog</item>
+        <item name="snackbarStyle">@style/MySnackBarStyle</item>
+    </style>
+
+    <style name="ProgressBarStyle" parent="@android:style/Widget.ProgressBar">
+        <item name="android:indeterminateDrawable">@drawable/progress_bar_indeterminate</item>
+    </style>
+
+    <style name="MySnackBarStyle" parent="Widget.MaterialComponents.Snackbar">
+            <item name="android:background">@color/gray_font</item>
+        <item name="android:backgroundTint">@color/gray_font</item>
+    </style>
+
+    <style name="PrimaryButton" parent="@android:style/Widget.Material.Button.Small">
+        <item name="android:padding">1dp</item>
+        <item name="android:background">@drawable/button_bg</item>
+        <item name="textAllCaps">false</item>
+    </style>
+
+    <style name="SecondaryButton" parent="@android:style/Widget.Material.Button.Small">
+<!--        <item name="android:padding">1dp</item>-->
+<!--        <item name="android:background">@drawable/button_bg_gray</item>-->
+<!--        <item name="textAllCaps">false</item>-->
+    </style>
+
+
+    <style name="Theme.Dal.NoActionBar">
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+    </style>
+<!--    <style name="Theme.Dal.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" >-->
+    <style name="Theme.Dal.AppBarOverlay" parent="ThemeOverlay.MaterialComponents.Dark.ActionBar" >
+        <item name="colorControlNormal">@color/white</item>
+    </style>
+
+    <style name="Theme.Dal.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
+
+    <style name="ModalBottomSheet" parent="Widget.MaterialComponents.BottomSheet.Modal">
+        <!-- Apply attributes here -->
+    </style>
+    <style name="ModalBottomSheetDialog" parent="ThemeOverlay.MaterialComponents.BottomSheetDialog">
+        <item name="bottomSheetStyle">@style/ModalBottomSheet</item>
+    </style>
+
+
+    <style name="appCompat_editText" parent="Widget.AppCompat.EditText">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_margin">5dp</item>
+        <item name="android:background">@drawable/input_bg_gray_borders_curved_5_transparent_filled</item>
+        <item name="android:drawablePadding">5dp</item>
+        <item name="android:drawableTint">@color/input_icon_tint</item>
+        <item name="android:ems">10</item>
+        <item name="android:padding">10dp</item>
+        <item name="android:textSize">@dimen/label_input_fields_text_size</item>
+        <item name="android:textColorHint">@color/input_hint_color</item>
+        <item name="android:gravity">start|center_vertical</item>
+    </style>
+
+
+    <style name="AutoCompleteTV" parent="Widget.AppCompat.EditText">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_margin">5dp</item>
+        <item name="android:drawablePadding">5dp</item>
+        <item name="android:drawableTint">@color/input_icon_tint</item>
+        <item name="android:ems">10</item>
+        <item name="android:padding">10dp</item>
+        <item name="android:textColorHint">@color/input_hint_color</item>
+        <item name="android:gravity">start|center_vertical</item>
+    </style>
+
+
+<!--    <style name="textView" parent="Widget.AppCompat.TextView">-->
+    <style name="material_textView" parent="Widget.MaterialComponents.TextView">
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:textColor">@color/dark_font_gray</item>
+        <item name="android:padding">5dp</item>
+<!--        <item name="android:layout_margin">5dp</item>-->
+        <item name="android:textSize">16sp</item>
+        <item name="drawableTint">@color/dark_font_gray</item>
+        <item name="android:drawablePadding">5dp</item>
+        <item name="android:gravity">center_vertical</item>
+    </style>
+    <style name="small_text_view" parent="material_textView">
+        <item name="android:padding">@dimen/list_item_margin_padding</item>
+        <item name="android:layout_margin">@dimen/list_item_margin_padding</item>
+        <item name="android:drawablePadding">2dp</item>
+
+        <item name="android:textSize">@dimen/small_text_size</item>
+
+    </style>
+
+    <style name="tiny_text_view" parent="material_textView">
+        <item name="android:padding">@dimen/list_item_margin_padding</item>
+        <item name="android:layout_margin">@dimen/list_item_margin_padding</item>
+        <item name="android:drawablePadding">2dp</item>
+        <item name="android:textSize">10sp</item>
+
+    </style>
+
+    <style name="label_text_view" parent="material_textView">
+        <item name="android:layout_margin">0dp</item>
+        <item name="android:textColor">@color/black</item>
+        <item name="android:textSize">@dimen/label_input_fields_text_size</item>
+    </style>
+
+    <style name="sub_title_textView" parent="material_textView">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:textColor">@color/accent</item>
+        <item name="android:textSize">@dimen/sub_title_text_size</item>
+
+    </style>
+
+    <style name="title_textView" parent="sub_title_textView">
+        <item name="android:layout_width">0dp</item>
+        <item name="android:textColor">@color/accent</item>
+        <item name="android:textSize">@dimen/medium_title_text_size</item>
+        <item name="android:layout_margin">0dp</item>
+        <item name="android:layout_weight">1</item>
+        <item name="android:gravity">center</item>
+        <item name="android:padding">10dp</item>
+    </style>
+
+    <style name="tab_item_sub_title" parent="sub_title_textView">
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_margin">0dp</item>
+        <item name="android:layout_weight">1</item>
+        <item name="android:gravity">center</item>
+        <item name="android:padding">8dp</item>
+    </style>
+
+    <style name="tab_item_normal" parent="material_textView">
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_margin">0dp</item>
+        <item name="android:layout_weight">1</item>
+        <item name="android:gravity">center</item>
+        <item name="android:padding">10dp</item>
+    </style>
+
+    <style name="big_title_textView" parent="material_textView">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:textColor">@color/accent</item>
+        <item name="android:textSize">@dimen/big_title_text_size</item>
+    </style>
+
+    <style name="display1TextAppearance" parent="TextAppearance.AppCompat.Display1">
+        <item name="android:textStyle">bold</item>
+    </style>
+
+
+
+<!--    <style name="material_button" parent="Widget.MaterialComponents.Button">-->
+    <style name="material_button" parent="Widget.MaterialComponents.Button">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_margin">5dp</item>
+        <item name="android:textAllCaps">false</item>
+        <item name="android:textSize">16sp</item>
+        <item name="android:textStyle">bold</item>
+        <item name="cornerRadius">10dp</item>
+        <item name="iconPadding">5dp</item>
+    </style>
+
+    <style name="material_outlined_btn" parent="Widget.MaterialComponents.Button.OutlinedButton">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_margin">5dp</item>
+        <item name="android:textAllCaps">false</item>
+        <item name="android:textSize">16sp</item>
+        <item name="android:textStyle">bold</item>
+        <item name="cornerRadius">10dp</item>
+        <item name="iconPadding">5dp</item>
+    </style>
+
+
+    <style name="primary_material_outlined_btn" parent="material_outlined_btn">
+        <item name="android:drawableTint">@color/accent</item>
+        <item name="iconSize">25dp</item>
+        <item name="iconTint">@color/accent</item>
+        <item name="strokeColor">@color/accent</item>
+    </style>
+
+<!--    <style name="primary_material_borderless_btn" parent="@android:style/Widget.Material.Button.Borderless.Small">-->
+    <style name="primary_small_material_borderless_btn" parent="@android:style/Widget.Material.Button.Borderless.Small">>
+        <item name="android:drawableTint">@color/accent</item>
+        <item name="iconSize">25dp</item>
+        <item name="iconTint">@color/accent</item>
+        <item name="strokeColor">@color/accent</item>
+    </style>
+
+    <style name="while_label_material_btn" parent="material_button">
+        <item name="android:drawableTint">@color/dark_font_gray</item>
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:textColor">@color/dark_font_gray</item>
+        <item name="backgroundTint">#f8f8f8</item>
+        <item name="elevation">@dimen/default_margin_padding</item>
+        <item name="android:gravity">start</item>
+        <item name="android:paddingLeft">20dp</item>
+        <item name="android:paddingTop">5dp</item>
+        <item name="android:paddingRight">20dp</item>
+        <item name="android:paddingBottom">5dp</item>
+        <item name="android:textSize">@dimen/sub_title_text_size</item>
+        <item name="cornerRadius">15dp</item>
+        <item name="iconPadding">15dp</item>
+        <item name="iconTint">@color/dark_font_gray</item>
+    </style>
+    <style name="primary_material_btn" parent="material_button">
+        <item name="android:drawableTint">@color/white</item>
+        <item name="android:backgroundTint">@color/accent</item>
+    </style>
+
+    <style name="white_material_btn" parent="material_button">
+        <item name="android:textColor">@color/accent</item>
+        <item name="backgroundTint">@color/secondary_text_light_gray</item>
+        <item name="iconTint">@color/accent</item>
+    </style>
+
+    <style name="secondary_material_btn" parent="material_button">
+        <item name="android:textColor">@color/secondary_text_light_gray</item>
+        <item name="backgroundTint">@color/secondary_bg_gray</item>
+        <item name="iconTint">@color/secondary_text_light_gray</item>
+    </style>
+
+    <style name="secondary_material_btn_black" parent="material_button">
+        <item name="android:textColor">@color/black</item>
+        <item name="backgroundTint">@color/secondary_bg_gray</item>
+        <item name="iconTint">@color/black</item>
+    </style>
+
+
+    <style name="material_textButton" parent="@style/Widget.MaterialComponents.Button.TextButton">
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:textColor">@color/gray_font</item>
+        <item name="android:drawableTint">@color/gray_font</item>
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_margin">4dp</item>
+        <item name="android:textAllCaps">false</item>
+        <item name="android:textSize">16dp</item>
+        <item name="android:textStyle">bold</item>
+        <item name="iconTint">@color/gray_font</item>
+    </style>
+
+    <style name="primary_material_textBtn" parent="@style/material_textButton">
+        <item name="android:textColor">@color/accent</item>
+        <item name="android:drawableTint">@color/accent</item>
+    </style>
+
+    <style name="secondary_material_textBtn" parent="@style/material_textButton">
+        <item name="android:textColor">@color/gray_font</item>
+        <item name="android:drawableTint">@color/gray_font</item>
+    </style>
+
+    <style name="gray_button" parent="material_button">
+        <item name="android:drawableTint">@color/gray_font</item>
+    </style>
+
+<!--    <style name="small_button" parent="Widget.AppCompat.Button.Small">-->
+    <style name="small_button" parent="Widget.AppCompat.Button.Small">
+<!--        <item name="android:padding">3dp</item>-->
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:drawableTint">@color/gray_font</item>
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_margin">@dimen/list_item_margin_padding</item>
+        <item name="android:textAllCaps">false</item>
+        <item name="android:textStyle">bold</item>
+<!--        <item name="android:textSize">12sp</item>-->
+        <item name="android:textColor">@color/gray_font</item>
+        <item name="android:textSize">14dp</item>
+    </style>
+
+    <style name="primary_small_button" parent="small_button">
+        <item name="android:textColor">@color/accent</item>
+        <item name="android:drawableTint">@color/accent</item>
+    </style>
+
+    <style name="primary_small_btn" parent="small_button">
+        <item name="android:drawableTint">@color/white</item>
+        <item name="android:backgroundTint">@color/accent</item>
+        <item name="android:textColor">@color/white</item>
+        <item name="backgroundTint">@color/accent</item>
+        <item name="iconTint">@color/secondary_text_light_gray</item>
+    </style>
+
+    <style name="spinner" parent="Widget.AppCompat.Spinner">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:padding">10dp</item>
+        <item name="android:spinnerMode">dropdown</item>
+        <item name="android:textDirection">rtl</item>
+
+        <item name="android:drawablePadding">3dp</item>
+        <item name="android:fontFamily">@font/sakkal_majalla</item>
+        <item name="android:textSize">10sp</item>
+        <item name="android:focusable">auto</item>
+    </style>
+
+    <style name="spinner_dark" parent="spinner">
+        <item name="android:textColor">@color/white</item>
+<!--        <item name="android:popupBackground">@color/accent</item>-->
+    </style>
+
+    <style name="spinner_container" >
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_margin">5dp</item>
+        <item name="android:background">@drawable/input_bg_gray_borders_curved_5_transparent_filled</item>
+        <item name="android:orientation">horizontal</item>
+        <item name="android:gravity">center</item>
+        <item name="android:padding">1dp</item>
+    </style>
+
+    <style name="TextInputLayout" parent="Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="endIconMode">clear_text</item>
+        <item name="errorEnabled">true</item>
+        <item name="hintEnabled">false</item>
+        <item name="startIconScaleType">fitCenter</item>
+        <item name="startIconTint">@color/input_icon_tint</item>
+        <item name="endIconTint">@color/input_icon_tint</item>
+<!--        <item name="materialThemeOverlay">@style/ThemeOverlay.App.TextInputLayout</item>-->
+<!--        <item name="shapeAppearance">@style/ShapeAppearance.App.SmallComponent</item>-->
+<!--        <item name="hintTextColor">?attr/colorOnSurface</item>-->
+    </style>
+    <style name="ThemeOverlay.App.TextInputLayout" parent="">
+<!--        <item name="colorPrimary">@color/shrine_pink_100</item>-->
+<!--        <item name="colorOnSurface">@color/shrine_pink_900</item>-->
+<!--        <item name="colorError">@color/shrine_red</item>-->
+        <item name="textAppearanceSubtitle1">@style/TextAppearance.App.Subtitle1</item>
+        <item name="textAppearanceCaption">@style/TextAppearance.App.Caption</item>
+        <item name="colorAccent">@color/white</item>
+<!--        <item name="editTextStyle">@style/Widget.MaterialComponents.TextInputEditText.*</item>-->
+    </style>
+    <style name="ShapeAppearance.App.SmallComponent" parent="ShapeAppearance.MaterialComponents.SmallComponent">
+        <item name="cornerFamily">cut</item>
+        <item name="cornerSize">4dp</item>
+    </style>
+    <style name="TextAppearance.App.Subtitle1" parent="TextAppearance.MaterialComponents.Subtitle1">
+<!--        <item name="fontFamily">@font/rubik</item>-->
+<!--        <item name="android:fontFamily">@font/rubik</item>-->
+    </style>
+    <style name="TextAppearance.App.Caption" parent="TextAppearance.MaterialComponents.Caption">
+<!--        <item name="fontFamily">@font/rubik</item>-->
+<!--        <item name="android:fontFamily">@font/rubik</item>-->
+    </style>
+
+    <style name="TextInputEditText" parent="Widget.AppCompat.EditText">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:padding">0dp</item>
+        <item name="android:ems">10</item>
+        <item name="android:textColorHint">@color/input_hint</item>
+    </style>
+
+<!--    <style name="RadioButton" parent="Widget.Material.Light.CompoundButton.RadioButton">-->
+    <style name="RadioButton" parent="Widget.Material3.CompoundButton.RadioButton">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:orientation">vertical</item>
+        <item name="android:layout_margin">@dimen/default_margin_padding</item>
+        <item name="android:padding">@dimen/default_margin_padding</item>
+    </style>
+
+    <style name="MaterialRadioButton" parent="@style/Widget.MaterialComponents.CompoundButton.RadioButton">
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_margin">@dimen/default_margin_padding</item>
+        <item name="android:layout_weight">1</item>
+        <item name="android:padding">@dimen/default_margin_padding</item>
+        <item name="android:textColor">@color/black</item>
+        <item name="android:textSize">16sp</item>
+    </style>
+
+    <style name="IconImageView">
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_width">wrap_content</item>
+        <item name="tint">@color/input_hint</item>
+    </style>
+
+    <style name="accent_image_view">
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_width">wrap_content</item>
+        <item name="tint">@color/accent</item>
+        <item name="android:tint">@color/accent</item>
+    </style>
+
+    <style name="horizontal_divider">
+        <item name="android:layout_height">1dp</item>
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:background">@color/divider_gray</item>
+        <item name="android:layout_margin">0dp</item>
+    </style>
+
+    <style name="vertical_divider">
+        <item name="android:layout_height">match_parent</item>
+        <item name="android:layout_width">1dp</item>
+        <item name="android:background">@color/divider_gray</item>
+        <item name="android:layout_margin">0dp</item>
+    </style>
+
+    <style name="fragment_content">
+        <item name="android:layout_height">match_parent</item>
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:background">@color/fragment_bg_color</item>
+        <item name="android:paddingStart">@dimen/default_margin_padding</item>
+        <item name="android:paddingTop">@dimen/tool_bar_height</item>
+        <item name="android:paddingEnd">@dimen/default_margin_padding</item>
+        <item name="android:paddingBottom">@dimen/default_margin_padding</item>
+<!--        <item name="android:paddingBottom">@dimen/system_nav_bar</item>-->
+    </style>
+    <style name="recycler_view">
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_margin">1dp</item>
+        <item name="android:orientation">vertical</item>
+        <item name="layoutManager">androidx.recyclerview.widget.LinearLayoutManager</item>
+        <item name="android:layoutDirection">rtl</item>
+    </style>
+
+    <style name="material_small_rating_bar" parent="@android:style/Widget.Material.RatingBar.Small">
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_margin">@dimen/list_item_margin_padding</item>
+        <item name="maxHeight">40dp</item>
+
+    </style>
+
+    <style name="material_small_rating_bar_on_accent_bg" parent="material_small_rating_bar">
+        <item name="colorControlNormal">#066330</item>
+        <item name="colorControlActivated">@color/white</item>
+
+    </style>
+    <style name="small_rating_bar_on_accent_bg" parent="Widget.AppCompat.RatingBar.Small">
+        <item name="android:layout_margin">@dimen/list_item_margin_padding</item>
+        <item name="android:progressBackgroundTint">@color/white</item>
+        <item name="android:progressTint">#066330</item>
+        <item name="android:stepSize">.25</item>
+    </style>
+
+
+
+    <style name="rating_bar_on_dark_bg" parent="Widget.AppCompat.RatingBar">
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_margin">@dimen/default_margin_padding</item>
+<!--        <item name="maxHeight">40dp</item>-->
+<!--        <item name="android:isIndicator">true</item>-->
+        <item name="android:numStars">5</item>
+        <item name="android:stepSize">.25</item>
+<!--        <item name="colorControlNormal">@color/empty_rating_bar</item>-->
+<!--        <item name="colorControlActivated">@color/filled_rating_bar</item>-->
+        <item name="android:secondaryProgressTint">@android:color/transparent</item>
+        <item name="android:progressBackgroundTint">@color/empty_rating_bar</item>
+        <item name="android:progressTint">@color/filled_rating_bar</item>
+
+    </style>
+
+    <style name="rating_bar" parent="Widget.AppCompat.RatingBar">
+    </style>
+
+    <style name="image_button" parent="Widget.AppCompat.ImageButton">
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_width">wrap_content</item>
+    </style>
+
+    <style name="small_image_button" parent="image_button">
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_width">wrap_content</item>
+    </style>
+
+<!--    <style name="cursorColor" parent="Widget.AppCompat.AutoCompleteTextView">-->
+<!--        <item name="android:textCursorDrawable">@drawable/cursor</item>-->
+<!--    </style>-->
+
+    <style name="active_bottom_navigation_item" >
+        <item name="itemIconTint">@color/white</item>
+    </style>
+
+</resources>

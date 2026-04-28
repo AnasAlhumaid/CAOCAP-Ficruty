@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android"
+    android:paddingBottom="5dp"
+    android:paddingEnd="5dp"
+    android:paddingTop="5dp"
+    android:paddingStart="5dp"
+    >
+
+    <!--    <item-->
+    <!--        android:width="40dp"-->
+    <!--        android:height="40dp"-->
+    <!--        android:drawable="@drawable/input_drwable_bg_gray_borders_curved_5_transparent_filled"-->
+    <!--        android:gravity="center"-->
+    <!--        />-->
+
+    <item
+        android:id="@+id/incideIcon"
+        android:gravity="center"
+        android:width="20dp"
+        android:height="20dp"
+
+        android:drawable="@drawable/camer_image_icon" />
+</layer-list>

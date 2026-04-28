@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/fl"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:padding="@dimen/list_item_margin_padding">
+
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/speciality"
+        style="@style/material_textView"
+        android:background="@drawable/tag_background"
+        android:drawablePadding="3dp"
+        android:gravity="center"
+        android:padding="4dp"
+        android:text="@string/speciality"
+        android:textColor="@color/black"
+        android:textSize="18dp"
+        app:drawableEndCompat="@drawable/icon_close"
+        app:drawableTint="@color/black" />
+</FrameLayout>

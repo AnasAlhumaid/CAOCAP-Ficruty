@@ -1,0 +1,1142 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/mobile_navigation"
+    app:startDestination="@id/viewPagerFragment2">
+    <fragment
+        android:id="@+id/homeFragment"
+        android:name="sa.gov.ksaa.dal.ui.fragments.HomeFragment"
+        android:label="الخدمات"
+        tools:layout="@layout/fragment_home">
+        <action
+            android:id="@+id/action_homeFragment_to_contactUsFragment"
+            app:destination="@id/contactUsFragment" />
+        <action
+            android:id="@+id/action_homeFragment_to_userProfileFragment2"
+            app:destination="@id/userProfileFragment" />
+        <action
+            android:id="@+id/action_homeFragment_to_userLoginFragment"
+            app:destination="@id/userLoginFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/notifcation"
+        android:name="sa.gov.ksaa.dal.ui.fragments.notifcation.NotifcationFragment"
+        android:label="الاشعارات"
+
+        tools:layout="@layout/fragment_notifcation">
+
+        <action
+            android:id="@+id/action_notifcation_to_getStartedToLogin"
+            app:destination="@id/getStartedToLogin" />
+
+        <action
+            android:id="@+id/action_notifcation_to_projectsBidsCientFragment"
+            app:destination="@id/projectsBidsCientFragment" />
+        <action
+            android:id="@+id/action_notifcation_to_projectsBidsFragment"
+            app:destination="@id/projectsBidsFragment" />
+
+    </fragment>
+    <fragment
+        android:id="@+id/exploreFragment"
+        android:name="sa.gov.ksaa.dal.ui.fragments.ExploreFragment"
+        android:label="تصفح"
+
+        tools:layout="@layout/fragment_explore">
+        <action
+            android:id="@+id/action_exploreFragment_to_exploreProjectsFragment"
+            app:destination="@id/exploreProjectsFragment" />
+        <action
+            android:id="@+id/action_exploreFragment_to_exploreFreelancersFragment"
+            app:destination="@id/exploreFreelancersFragment" />
+        <action
+            android:id="@+id/action_exploreFragment_to_freelancerProfileFragment"
+            app:destination="@id/freelancerProfileFragment" />
+        <action
+            android:id="@+id/action_exploreFragment_to_projectDetailsFragment"
+            app:destination="@id/projectDetailsFragment" />
+        <action
+            android:id="@+id/action_exploreFragment_to_addEditQuotationFragment"
+            app:destination="@id/addEditQuotationFragment" />
+        <action
+            android:id="@+id/action_exploreFragment_to_addEditProjectFragment"
+            app:destination="@id/addEditProjectFragment" />
+
+
+    </fragment>
+    <fragment
+        android:id="@+id/contactUsFragment"
+        android:name="sa.gov.ksaa.dal.ui.fragments.technicalSupport.ContactUsFragment"
+        android:label="المساعدة والدعم"
+        tools:layout="@layout/fragment_tech_support_contact_us">
+        <action
+            android:id="@+id/action_contactUsFragment_to_liveChatFragment"
+            app:destination="@id/liveChatFragment" />
+        <action
+            android:id="@+id/action_contactUsFragment_to_userLoginFragment"
+            app:destination="@id/userLoginFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/freelancerRegisterationFragment2"
+        android:name="sa.gov.ksaa.dal.ui.fragments.auth.signUp.freelancer.FreelancerRegistration2Experience"
+        android:label="بيانات مقدم الخدمة"
+        tools:layout="@layout/fragment_sign_up_4_freelancer_1">
+        <action
+            android:id="@+id/action_freelancerRegisterationFragment2_to_freelancerRegisterationFragment3"
+            app:destination="@id/freelancerRegisterationFragment3" />
+        <action
+            android:id="@+id/action_freelancerRegisterationFragment2_to_addEditExperience"
+            app:destination="@id/addEditExperience" />
+    </fragment>
+    <fragment
+        android:id="@+id/freelancerRegisterationFragment3"
+        android:name="sa.gov.ksaa.dal.ui.fragments.auth.signUp.freelancer.FreelancerRegistration3Education"
+        android:label="بيانات مقدم الخدمة"
+        tools:layout="@layout/fragment_sign_up_5_freelancer_2">
+        <action
+            android:id="@+id/action_freelancerRegisterationFragment3_to_freelancerIdentityVerificationFragment3"
+            app:destination="@id/freelancerIdentityVerificationFragment3" />
+    </fragment>
+    <fragment
+        android:id="@+id/selectingAccountTypeFragment"
+        android:name="sa.gov.ksaa.dal.ui.fragments.auth.signUp.SelectingAccountTypeRegistrationFragment"
+        android:label="نوع الحساب المسجَّل"
+        tools:layout="@layout/fragment_sign_up_2_account_type">
+        <action
+            android:id="@+id/action_selectingAccountTypeFragment_to_clientRegistrationFragment"
+            app:destination="@id/clientRegistrationFragment" />
+        <action
+            android:id="@+id/action_selectingAccountTypeFragment_to_freelancerRegistrationFragment1"
+            app:destination="@id/freelancerRegistrationFragment1" />
+    </fragment>
+    <fragment
+        android:id="@+id/viewPagerFragment2"
+        android:name="sa.gov.ksaa.dal.ui.fragments.starter.ViewPagerFragment"
+        android:label="جولة تعريفية بالمنصة"
+        tools:layout="@layout/fragment_slider_view_pager">
+        <action
+            android:id="@+id/action_viewPagerFragment2_to_homeFragment"
+            app:destination="@id/homeFragment"
+            app:popUpTo="@id/viewPagerFragment2" />
+        <action
+            android:id="@+id/action_viewPagerFragment2_to_userLoginFragment"
+            app:destination="@id/userLoginFragment" />
+        <action
+            android:id="@+id/action_viewPagerFragment2_to_signUpFragment"
+            app:destination="@id/signUpFragment" />
+
+        <action
+            android:id="@+id/action_viewPagerFragment2_to_forgetPasswordFragment"
+            app:destination="@id/forgetPasswordFragment" />
+        <action
+            android:id="@+id/viewPagerFragment2_to_OtpFragment"
+            app:destination="@id/OtpFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/exploreProjectsFragment"
+        android:name="sa.gov.ksaa.dal.ui.fragments.projects.explore.ProjectsFragment"
+        android:label=""
+        tools:layout="@layout/fragment_projects" >
+        <argument
+            android:name="show"
+            app:argType="string"
+            app:nullable="true" />
+        <action
+            android:id="@+id/action_exploreProjectsFragment_to_projectDetailsFragment"
+            app:destination="@id/projectDetailsFragment" />
+        <action
+            android:id="@+id/action_exploreProjectsFragment_to_addEditProjectCommentFragment"
+            app:destination="@id/addEditProjectCommentFragment" />
+        <action
+            android:id="@+id/action_exploreProjectsFragment_to_addEditQuotationFragment"
+            app:destination="@id/addEditQuotationFragment" />
+        <action
+            android:id="@+id/action_exploreProjectsFragment_to_projectsFilterBottomSheetModal"
+            app:destination="@id/projectsFilterBottomSheetModal" />
+        <action
+            android:id="@+id/action_exploreProjectsFragment_to_addEditProjectFragment"
+            app:destination="@id/addEditProjectFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/userLoginFragment"
+        android:name="sa.gov.ksaa.dal.ui.fragments.auth.UserLoginFragment"
+        android:label="تسجيل الدخول"
+        tools:layout="@layout/fragment_sign_in">
+        <action
+            android:id="@+id/action_userLoginFragment_to_resetPasswordFragment"
+            app:destination="@id/forgetPasswordFragment" />
+        <action
+            android:id="@+id/action_userLoginFragment_to_slide5Fragment"
+            app:destination="@id/signUpFragment"
+            app:popUpTo="@id/userLoginFragment"
+            app:popUpToInclusive="true" />
+        <action
+            android:id="@+id/action_userLoginFragment_to_exploreFragment"
+            app:destination="@id/homeFragment"
+            />
+        <action
+            android:id="@+id/action_userLoginFragment_to_userProfileFragment"
+            app:destination="@id/userProfileFragment" />
+        <action
+            android:id="@+id/action_userLoginFragment_to_OtpFragment"
+            app:destination="@id/OtpFragment" />
+
+    </fragment>
+
+    <fragment
+        android:id="@+id/OtpFragment"
+        android:name="sa.gov.ksaa.dal.ui.fragments.auth.OtpFragment"
+        tools:layout="@layout/opt_fragment"
+        android:label="التحقق">
+        <action
+            android:id="@+id/action_OtpFragment_to_userProfileFragment"
+            app:destination="@id/userProfileFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/slider_5"
+        android:name="sa.gov.ksaa.dal.ui.fragments.starter.Slider5ServicesFragment"
+        tools:layout="@layout/fragment_slider_5_services"
+        android:label="الخدمات">
+
+    </fragment>
+    <fragment
+        android:id="@+id/getStartedToLogin"
+        android:name="sa.gov.ksaa.dal.ui.fragments.profiles.GetStartedToLogin"
+        tools:layout="@layout/start_to_login_fragment"
+        android:label="">
+        <action
+            android:id="@+id/action_getStartedToLogin_to_userLoginFragment"
+
+            app:destination="@id/userLoginFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/userProfileFragment"
+        android:name="sa.gov.ksaa.dal.ui.fragments.profiles.UserProfileFragment"
+        tools:layout="@layout/fragment_profile_user"
+        android:label="">
+        <action
+            android:id="@+id/action_userProfileFragment_to_getStartedToLogin"
+            app:destination="@id/getStartedToLogin"
+            app:popUpTo="@id/userProfileFragment"
+            app:popUpToInclusive="true" />
+        <action
+            android:id="@+id/action_userProfileFragment_to_addEditProjectFragment"
+            app:destination="@id/addEditProjectFragment" />
+
+        <action
+            android:id="@+id/action_userProfileFragment_to_projectsManagementFragment"
+            app:destination="@id/projectsManagementFragment" />
+        <action
+            android:id="@+id/action_userProfileFragment_to_personalInfoUpdateFragment"
+            app:destination="@id/personalInfoUpdateFragment" />
+        <action
+            android:id="@+id/action_userProfileFragment_to_projectInvitationsFragment"
+            app:destination="@id/projectInvitationsFragment" />
+        <action
+            android:id="@+id/action_userProfileFragment_to_reviewsFragment"
+            app:destination="@id/reviewsFragment" />
+        <action
+            android:id="@+id/action_userProfileFragment_to_technicalSupportTicketsFragment"
+            app:destination="@id/technicalSupportTicketsFragment" />
+        <action
+            android:id="@+id/action_userProfileFragment_to_projectsManagmentClientFragment"
+            app:destination="@id/projectsManagmentClientFragment" />
+        <action
+            android:id="@+id/action_userProfileFragment_to_clientWalletFragment"
+            app:destination="@id/clientWalletFragment" />
+        <action
+            android:id="@+id/action_userProfileFragment_to_freelancerWalletFragment"
+            app:destination="@id/freelancerWalletFragment" />
+        <action
+            android:id="@+id/action_userProfileFragment_to_favouriteFreelancersFragment"
+            app:destination="@id/favouriteFreelancersFragment" />
+        <action
+            android:id="@+id/action_userProfileFragment_to_favouriteProjectsFragment"
+            app:destination="@id/favouriteProjectsFragment" />
+        <action
+            android:id="@+id/action_userProfileFragment_to_freelancerPersonalInfoEditingFragment"
+            app:destination="@id/freelancerPersonalInfoEditingFragment" />
+        <action
+            android:id="@+id/action_userProfileFragment_to_projectsBidsFragment"
+            app:destination="@id/projectsBidsFragment" />
+        <action
+            android:id="@+id/action_userProfileFragment_to_projectsBidsCientFragment"
+            app:destination="@id/projectsBidsCientFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/freelancerProfileFragment"
+        android:name="sa.gov.ksaa.dal.ui.fragments.freelancers.FreelancerProfileFragment"
+        android:label="تفاصيل مقدم الخدمة"
+        tools:layout="@layout/fragment_profiles_freelancer">
+        <action
+            android:id="@+id/action_freelancerProfileFragment_to_projectDetailsFragment"
+            app:destination="@id/projectDetailsFragment" />
+
+        <action
+            android:id="@+id/action_freelancerProfileFragment_to_exploreFragment"
+            app:destination="@id/exploreFragment" />
+        <action
+            android:id="@+id/action_freelancerProfileFragment_to_clientProfileFragment"
+            app:destination="@id/clientProfileFragment" />
+        <argument
+            android:name="freelancerUserId"
+            app:argType="integer"
+            android:defaultValue="0" />
+    </fragment>
+    <fragment
+        android:id="@+id/forgetPasswordFragment"
+        android:name="sa.gov.ksaa.dal.ui.fragments.auth.signInOut.password.ForgetPasswordFragment"
+        android:label="إستعادة كلمة المرور"
+        tools:layout="@layout/fragment_password_forget">
+        <action
+            android:id="@+id/action_resetPasswordFragment_to_selectingAccountTypeFragment"
+            app:destination="@id/selectingAccountTypeFragment" />
+        <action
+            android:id="@+id/action_resetPasswordFragment_to_userLoginFragment"
+            app:destination="@id/userLoginFragment" />
+        <action
+            android:id="@+id/action_forgetPasswordFragment_to_resetPasswordFragment"
+            app:destination="@id/resetPasswordFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/extendTimeForOffring"
+        android:name="sa.gov.ksaa.dal.ui.fragments.projects.explore.ExtendTimeOffer"
+        android:label="تمديد مدة العروض"
+        tools:layout="@layout/fragment_extent_time_offring">
+<!--        <action-->
+<!--            android:id="@+id/action_resetPasswordFragment_to_selectingAccountTypeFragment"-->
+<!--            app:destination="@id/selectingAccountTypeFragment" />-->
+
+    </fragment>
+    <fragment
+        android:id="@+id/exploreFreelancersFragment"
+        android:name="sa.gov.ksaa.dal.ui.fragments.freelancers.ExploreFreelancersFragment"
+        tools:layout="@layout/fragment_freelancers">
+        <action
+            android:id="@+id/action_exploreFreelancersFragment_to_freelancerProfileFragment"
+            app:destination="@id/freelancerProfileFragment" />
+        <action
+            android:id="@+id/action_exploreFreelancersFragment_to_projectDetailsFragment"
+            app:destination="@id/projectDetailsFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/projectDetailsFragment"
+        android:name="sa.gov.ksaa.dal.ui.fragments.projects.details.ProjectDetailsFragment"
+        android:label="تفاصيل المشروع"
+        tools:layout="@layout/fragment_project_details">
+        <argument
+            android:name="projectId"
+            app:argType="integer" />
+        <action
+            android:id="@+id/action_projectDetailsFragment_to_addEditProjectCommentFragment"
+            app:destination="@id/addEditProjectCommentFragment" />
+        <action
+            android:id="@+id/action_projectDetailsFragment_to_addEditQuotationFragment"
+            app:destination="@id/addEditQuotationFragment" />
+        <action
+            android:id="@+id/action_projectDetailsFragment_to_clientProfileFragment"
+            app:destination="@id/clientProfileFragment" />
+        <action
+            android:id="@+id/action_projectDetailsFragment_to_extendTimeForOffring"
+            app:destination="@id/extendTimeForOffring" />
+        <action
+            android:id="@+id/action_projectDetailsFragment_to_spamDialog"
+            app:destination="@id/spamDialog" />
+        <action
+            android:id="@+id/action_projectDetailsFragment_to_exploreFragment"
+            app:destination="@id/exploreFragment"
+            app:popUpTo="@id/exploreFragment"
+            app:popUpToInclusive="false" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/spamDialog"
+        android:name="sa.gov.ksaa.dal.ui.fragments.projects.details.SpamDialog"
+        android:label="تفاصيل المشروع"
+        tools:layout="@layout/fragment_dialog_spam">
+
+
+
+
+
+    </fragment>
+
+    <fragment
+        android:id="@+id/DetailProjectManagmentFragment"
+        android:name="sa.gov.ksaa.dal.ui.fragments.projects.client.DetailProjectManagmentFragment"
+        android:label="تفاصيل المشروع"
+        tools:layout="@layout/fragment_project_details">
+        <argument
+            android:name="projectId"
+            app:argType="integer" />
+
+        <action
+            android:id="@+id/action_DetailProjectManagmentFragment_to_clientProfileFragment"
+            app:destination="@id/clientProfileFragment" />
+        <action
+            android:id="@+id/action_DetailProjectManagmentFragment_to_extendTimeForOffring"
+            app:destination="@id/extendTimeForOffring" />
+
+
+    </fragment>
+    <fragment
+        android:id="@+id/signUpFragment"
+        android:name="sa.gov.ksaa.dal.ui.fragments.auth.signUp.SignUpFragment"
+        android:label="تسجيل جديد"
+        tools:layout="@layout/fragment_sign_up_1">
+        <action
+            android:id="@+id/action_slide5Fragment_to_userLoginFragment"
+            app:destination="@id/userLoginFragment" />
+        <action
+            android:id="@+id/action_slide5Fragment_to_selectingAccountTypeFragment"
+            app:destination="@id/selectingAccountTypeFragment" />
+        <action
+            android:id="@+id/action_SignUpFragment_to_exploreFragment"
+            app:destination="@id/exploreFragment"
+            app:popUpTo="@id/userProfileFragment"
+            app:popUpToInclusive="true" />
+        <action
+            android:id="@+id/action_signUpFragment_to_newTermsAndConditionFragment"
+            app:destination="@id/newTermsAndConditionFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/addEditProjectFragment"
+        android:name="sa.gov.ksaa.dal.ui.fragments.projects.client.addEditProject.AddEditProject1Fragment"
+        tools:layout="@layout/fragment_projects_add_edit"
+        android:label="@string/add_edit_a_project">
+        <action
+            android:id="@+id/action_addEditProjectFragment_to_addEditProject2Fragment"
+            app:destination="@id/addEditProject2Fragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/addEditProject2Fragment"
+        android:name="sa.gov.ksaa.dal.ui.fragments.projects.client.addEditProject.AddEditProject2Fragment"
+        android:label="@string/add_edit_a_project"
+        tools:layout="@layout/fragment_projects_add_edit2" >
+        <action
+            android:id="@+id/action_addEditProject2Fragment_to_projectDetailsFragment"
+            app:destination="@id/projectDetailsFragment"
+            app:popUpTo="@id/userProfileFragment"
+            app:popUpToInclusive="true" />
+        <action
+            android:id="@+id/action_addEditProject2Fragment_to_freelancersToBeInvitedFragment"
+            app:destination="@id/freelancersToBeInvitedFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/projectsManagementFragment"
+        android:name="sa.gov.ksaa.dal.ui.fragments.projects.freelancer.ProjectsManagementFragment"
+        android:label="إدارة الخدمات"
+        tools:layout="@layout/fragment_projects_management_freelancer" >
+        <action
+            android:id="@+id/action_projectsManagementFragment_to_completedProjectsFragment"
+            app:destination="@id/completedProjectsFragment" />
+        <action
+            android:id="@+id/action_projectsManagementFragment_to_projectsBidsFragment"
+            app:destination="@id/projectsBidsFragment" />
+        <action
+            android:id="@+id/action_projectsManagementFragment_to_projectsInProgressFragment"
+            app:destination="@id/projectsInProgressFragment" />
+        <action
+            android:id="@+id/action_projectsManagementFragment_to_projectDetailsFragment"
+            app:destination="@id/projectDetailsFragment" />
+        <action
+            android:id="@+id/action_projectsManagementFragment_to_canceledProjectsFreelancerFragment"
+            app:destination="@id/canceledProjectsFreelancerFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/resetPasswordFragment"
+        android:name="sa.gov.ksaa.dal.ui.fragments.auth.signInOut.password.ResetPasswordFragment"
+        android:label="إعادة ضبط كلمة المرور"
+        tools:layout="@layout/fragment_reset_password">
+        <action
+            android:id="@+id/action_resetPasswordFragment_to_userLoginFragment2"
+            app:destination="@id/userLoginFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/liveChatFragment"
+        android:name="sa.gov.ksaa.dal.ui.fragments.technicalSupport.liveChat.TechnicalSupportLiveChatFragment"
+        android:label="الدعم الفني"
+        tools:layout="@layout/fragment_technical_support_live_chat" />
+    <fragment
+        android:id="@+id/projectInvitationsFragment"
+        android:name="sa.gov.ksaa.dal.ui.fragments.projects.freelancer.invitations.ProjectInvitationsFragment"
+        android:label="دعوات إنشاء الخدمات"
+        tools:layout="@layout/fragment_project_invitations" >
+        <action
+            android:id="@+id/action_projectInvitationsFragment_to_invitationFragment"
+            app:destination="@id/invitationFragment" />
+        <action
+            android:id="@+id/action_projectInvitationsFragment_to_projectsBidsFragment"
+            app:destination="@id/projectsBidsFragment"
+            app:popUpTo="@id/userProfileFragment"/>
+        <action
+            android:id="@+id/action_projectInvitationsFragment_to_projectsInProgressFragment"
+            app:destination="@id/projectsInProgressFragment"
+            app:popUpTo="@id/userProfileFragment"/>
+        <action
+            android:id="@+id/action_projectInvitationsFragment_to_completedProjectsFragment"
+            app:destination="@id/completedProjectsFragment"
+            app:popUpTo="@id/userProfileFragment"/>
+    </fragment>
+    <fragment
+        android:id="@+id/quotationFragment"
+        android:name="sa.gov.ksaa.dal.ui.fragments.projects.freelancer.bids.QuotationFragment"
+        android:label="عرض سعر"
+        tools:layout="@layout/fragment_quotation" />
+    <fragment
+        android:id="@+id/personalInfoUpdateFragment"
+        android:name="sa.gov.ksaa.dal.ui.fragments.profiles.PersonalInfoUpdateFragment"
+        android:label="المعلومات الشخصية"
+        tools:layout="@layout/fragment_personal_info_editing_client" />
+    <fragment
+        android:id="@+id/reviewsFragment"
+        android:name="sa.gov.ksaa.dal.ui.fragments.reviews.ReviewsFragment"
+        android:label="التقييمات"
+        tools:layout="@layout/fragment_reviews" />
+    <fragment
+        android:id="@+id/technicalSupportTicketsFragment"
+        android:name="sa.gov.ksaa.dal.ui.fragments.technicalSupport.TechnicalSupportTicketsFragment"
+        android:label="طلبات الدعم الفني"
+        tools:layout="@layout/fragment_technical_support_tickets" >
+        <action
+            android:id="@+id/action_technicalSupportTicketsFragment_to_technicalSupportRepliesFragment"
+            app:destination="@id/technicalSupportRepliesFragment" />
+        <action
+            android:id="@+id/action_technicalSupportTicketsFragment_to_techSupportDetailsFragment"
+            app:destination="@id/techSupportDetailFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/technicalSupportRepliesFragment"
+        android:name="sa.gov.ksaa.dal.ui.fragments.technicalSupport.TechnicalSupportRepliesFragment"
+        android:label="الردود على طلبات الدعم الفني"
+        tools:layout="@layout/fragment_technical_support_replies" />
+    <fragment
+        android:id="@+id/projectsManagmentClientFragment"
+        android:name="sa.gov.ksaa.dal.ui.fragments.projects.client.ProjectsManagementClientFragment"
+        android:label="إدارة الخدمات"
+        tools:layout="@layout/fragment_projects_managment_client">
+        <action
+            android:id="@+id/action_projectsManagmentClientFragment_to_completedProjectsClientFragment"
+            app:destination="@id/completedProjectsClientFragment" />
+        <action
+            android:id="@+id/action_projectsManagmentClientFragment_to_canceledProjectsClientFragment"
+            app:destination="@id/canceledProjectsClientFragment" />
+        <action
+            android:id="@+id/action_projectsManagmentClientFragment_to_ongoingProjectsClientFragment"
+            app:destination="@id/ongoingProjectsClientFragment" />
+        <action
+            android:id="@+id/action_projectsManagmentClientFragment_to_projectsBidsCientFragment"
+            app:destination="@id/projectsBidsCientFragment" />
+        <action
+            android:id="@+id/action_projectsManagmentClientFragment_to_addEditProjectFragment"
+            app:destination="@id/addEditProjectFragment" />
+        <action
+            android:id="@+id/action_projectsManagmentClientFragment_to_projectDetailsFragment"
+            app:destination="@id/projectDetailsFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/completedProjectsClientFragment"
+        android:name="sa.gov.ksaa.dal.ui.fragments.projects.client.completed.CompletedProjectsForClientFragment"
+        android:label="الخدمات المكتملة"
+        tools:layout="@layout/fragment_projects_completed_client" >
+        <action
+            android:id="@+id/action_completedProjectsClientFragment_to_addEditReviewDialogFragment"
+            app:destination="@id/addEditReviewDialogFragment" />
+        <action
+            android:id="@+id/action_completedProjectsClientFragment_to_completedProjectForClientFragment"
+            app:destination="@id/completedProjectForClientFragment" />
+        <action
+            android:id="@+id/action_completedProjectsClientFragment_to_projectsBidsCientFragment"
+            app:destination="@id/projectsBidsCientFragment"
+            app:popUpTo="@id/userProfileFragment" />
+        <action
+            android:id="@+id/action_completedProjectsClientFragment_to_ongoingProjectsClientFragment"
+            app:destination="@id/ongoingProjectsClientFragment"
+            app:popUpTo="@id/userProfileFragment" />
+        <action
+            android:id="@+id/action_completedProjectsClientFragment_to_allProjectsClientFragment"
+            app:destination="@id/allProjectsClientFragment"
+            app:popUpTo="@id/userProfileFragment" />
+        <action
+            android:id="@+id/action_completedProjectsClientFragment_to_freelancerProfileFragment"
+            app:destination="@id/freelancerProfileFragment" />
+        <action
+            android:id="@+id/action_completedProjectsClientFragment_to_waitingProjectsClientFragment"
+            app:destination="@id/waitingProjectsClientFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/canceledProjectsClientFragment"
+        android:name="sa.gov.ksaa.dal.ui.fragments.projects.client.CanceledProjectsClientFragment"
+        android:label="المشاريع الملغية"
+        tools:layout="@layout/fragment_projects_canceled_client" />
+    <fragment
+        android:id="@+id/ongoingProjectsClientFragment"
+        android:name="sa.gov.ksaa.dal.ui.fragments.projects.client.ongoing.ProjectsInProgressClientFragment"
+        android:label="الخدمات قيد التنفيذ"
+        tools:layout="@layout/fragment_projects_in_progress_client" >
+        <action
+            android:id="@+id/action_ongoingProjectsClientFragment_to_onGoingProjectForClientFragment"
+            app:destination="@id/onGoingProjectForClientFragment" />
+        <action
+            android:id="@+id/action_ongoingProjectsClientFragment_to_projectsBidsCientFragment"
+            app:destination="@id/projectsBidsCientFragment"
+            app:popUpTo="@id/userProfileFragment" />
+        <action
+            android:id="@+id/action_ongoingProjectsClientFragment_to_completedProjectsClientFragment"
+            app:destination="@id/completedProjectsClientFragment"
+            app:popUpTo="@id/userProfileFragment" />
+        <action
+            android:id="@+id/action_ongoingProjectsClientFragment_to_allProjectsClientFragment"
+            app:destination="@id/allProjectsClientFragment"
+            app:popUpTo="@id/userProfileFragment" />
+        <action
+            android:id="@+id/action_ongoingProjectsClientFragment_to_freelancerProfileFragment"
+            app:destination="@id/freelancerProfileFragment" />
+        <action
+            android:id="@+id/action_ongoingProjectsClientFragment_to_waitingProjectsClientFragment"
+            app:destination="@id/waitingProjectsClientFragment" />
+
+    </fragment>
+    <fragment
+        android:id="@+id/projectsBidsCientFragment"
+        android:name="sa.gov.ksaa.dal.ui.fragments.projects.client.bids.ProjectsBidsClientFragment"
+        android:label="العروض المستلمة"
+        tools:layout="@layout/fragment_projects_bids_cient" >
+        <action
+            android:id="@+id/action_projectsBidsCientFragment_to_quotationFragment"
+            app:destination="@id/quotationFragment" />
+        <action
+            android:id="@+id/action_projectsBidsCientFragment_to_projectQuotationDetailsForClientFragment"
+            app:destination="@id/projectQuotationDetailsForClientFragment" />
+        <action
+            android:id="@+id/action_projectsBidsCientFragment_to_ongoingProjectsClientFragment"
+            app:destination="@id/ongoingProjectsClientFragment"
+            app:popUpTo="@id/userProfileFragment"/>
+        <action
+            android:id="@+id/action_projectsBidsCientFragment_to_completedProjectsClientFragment"
+            app:destination="@id/completedProjectsClientFragment"
+            app:popUpTo="@id/userProfileFragment"/>
+        <action
+            android:id="@+id/action_projectsBidsCientFragment_to_allProjectsClientFragment"
+            app:destination="@id/allProjectsClientFragment"
+            app:popUpTo="@id/userProfileFragment"/>
+        <action
+            android:id="@+id/action_projectsBidsCientFragmen_to_waitingProjectsClientFragment"
+            app:destination="@id/waitingProjectsClientFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/completedProjectsFragment"
+        android:name="sa.gov.ksaa.dal.ui.fragments.projects.freelancer.closed.CompletedProjectsForFreelancerFragment"
+        tools:layout="@layout/fragment_projects_completed_freelancer"
+        android:label="الخدمات المكتملة" >
+        <action
+            android:id="@+id/action_completedProjectsFragment_to_addEditReviewDialogFragment"
+            app:destination="@id/addEditReviewDialogFragment" />
+        <action
+            android:id="@+id/action_completedProjectsFragment_to_completedProjectForFreelancerFragment"
+            app:destination="@id/completedProjectForFreelancerFragment" />
+        <action
+            android:id="@+id/action_completedProjectsFragment_to_projectsBidsFragment"
+            app:destination="@id/projectsBidsFragment"
+            app:popUpTo="@id/userProfileFragment" />
+        <action
+            android:id="@+id/action_completedProjectsFragment_to_projectsInProgressFragment"
+            app:destination="@id/projectsInProgressFragment"
+            app:popUpTo="@id/userProfileFragment"/>
+        <action
+            android:id="@+id/action_completedProjectsFragment_to_projectInvitationsFragment"
+            app:destination="@id/projectInvitationsFragment"
+            app:popUpTo="@id/userProfileFragment"/>
+    </fragment>
+    <fragment
+        android:id="@+id/projectsBidsFragment"
+        android:name="sa.gov.ksaa.dal.ui.fragments.projects.freelancer.bids.ProjectsBidsFragment"
+        tools:layout="@layout/fragment_projects_bids"
+        android:label="عروض مرسلة" >
+        <action
+            android:id="@+id/action_projectsBidsFragment_to_quotationFragment"
+            app:destination="@id/quotationFragment" />
+        <action
+            android:id="@+id/action_projectsBidsFragment_to_projectsInProgressFragment"
+            app:destination="@id/projectsInProgressFragment"
+            app:popUpTo="@id/userProfileFragment"/>
+        <action
+            android:id="@+id/action_projectsBidsFragment_to_completedProjectsFragment"
+            app:destination="@id/completedProjectsFragment"
+            app:popUpTo="@id/userProfileFragment"/>
+        <action
+            android:id="@+id/action_projectsBidsFragment_to_projectInvitationsFragment"
+            app:destination="@id/projectInvitationsFragment"
+            app:popUpTo="@id/userProfileFragment"/>
+        <action
+            android:id="@+id/action_projectsBidsFragment_to_clientProfileFragment"
+            app:destination="@id/clientProfileFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/projectsInProgressFragment"
+        tools:layout="@layout/fragment_projects_in_progress"
+        android:name="sa.gov.ksaa.dal.ui.fragments.projects.freelancer.ongoing.ProjectsInProgressFragment"
+        android:label="مشاريع قيد التنفيذ" >
+        <action
+            android:id="@+id/action_projectsInProgressFragment_to_onGoingProjectForFreelancerFragment"
+            app:destination="@id/onGoingProjectForFreelancerFragment" />
+        <action
+            android:id="@+id/action_projectsInProgressFragment_to_projectsBidsFragment"
+            app:destination="@id/projectsBidsFragment"
+            app:popUpTo="@id/userProfileFragment"/>
+
+        <action
+            android:id="@+id/action_projectsInProgressFragment_to_projectInvitationsFragment"
+            app:destination="@id/projectInvitationsFragment"
+            app:popUpTo="@id/userProfileFragment"/>
+        <action
+            android:id="@+id/action_projectsInProgressFragment_to_completedProjectsFragment"
+            app:destination="@id/completedProjectsFragment"
+            app:popUpTo="@id/userProfileFragment"/>
+    </fragment>
+    <fragment
+        android:id="@+id/clientWalletFragment"
+        android:name="sa.gov.ksaa.dal.ui.fragments.wallet.ClientWalletFragment"
+        android:label="المحفظة"
+        tools:layout="@layout/fragment_client_wallet" />
+    <fragment
+        android:id="@+id/freelancerWalletFragment"
+        android:name="sa.gov.ksaa.dal.ui.fragments.wallet.FreelancerWalletFragment"
+        android:label="المحفظة"
+        tools:layout="@layout/fragment_freelancer_wallet" />
+    <fragment
+        android:id="@+id/favouriteFreelancersFragment"
+        android:name="sa.gov.ksaa.dal.ui.fragments.favourite.FavouriteFreelancersFragment"
+        android:label="المفضلة"
+        tools:layout="@layout/fragment_favourite_freelancers" >
+        <action
+            android:id="@+id/action_favouriteFreelancersFragment_to_freelancerProfileFragment"
+            app:destination="@id/freelancerProfileFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/favouriteProjectsFragment"
+        android:name="sa.gov.ksaa.dal.ui.fragments.favourite.FavouriteProjectsFragment"
+        android:label="المفضلة"
+        tools:layout="@layout/fragment_favourite_projects">
+        <action
+            android:id="@+id/action_favouriteProjectsFragment_to_projectDetailsFragment"
+            app:destination="@id/projectDetailsFragment" />
+        <action
+            android:id="@+id/action_favouriteProjectsFragment_to_addEditProjectCommentFragment"
+            app:destination="@id/addEditProjectCommentFragment" />
+        <action
+            android:id="@+id/action_favouriteProjectsFragment_to_addEditQuotationFragment"
+            app:destination="@id/addEditQuotationFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/freelancersToBeInvitedFragment"
+        android:name="sa.gov.ksaa.dal.ui.fragments.projects.client.addEditProject.FreelancersToBeInvitedFragment"
+        android:label="يرجى تحديد مقدمي الخدمات"
+        tools:layout="@layout/fragment_freelancers_to_be_invited">
+        <action
+            android:id="@+id/action_freelancersToBeInvitedFragment_to_projectDetailsFragment"
+            app:destination="@id/projectDetailsFragment"
+            app:popUpTo="@id/userProfileFragment"
+            app:popUpToInclusive="true" />
+        <action
+            android:id="@+id/action_freelancersToBeInvitedFragment_to_freelancerProfileFragment"
+            app:destination="@id/freelancerProfileFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/onGoingProjectForClientFragment"
+        android:name="sa.gov.ksaa.dal.ui.fragments.projects.client.ongoing.OngoingProjectForClientFragment"
+        android:label="خدمة قيد التنفيذ"
+        tools:layout="@layout/fragment_project_ongoing_for_client">
+        <argument
+            android:name="onGgoinProjectId"
+            android:defaultValue="0"
+            app:argType="integer" />
+        <action
+            android:id="@+id/action_onGoingProjectForClientFragment_to_technicalSupportTicketsFragment"
+            app:destination="@id/technicalSupportTicketsFragment" />
+        <action
+            android:id="@+id/action_onGoingProjectForClientFragment_to_completedProjectsClientFragment"
+            app:destination="@id/completedProjectsClientFragment"
+            app:popUpTo="@id/ongoingProjectsClientFragment"
+            app:popUpToInclusive="true" />
+        <action
+            android:id="@+id/action_onGoingProjectForClientFragment_to_closing_aProjectDialogFfragment"
+            app:destination="@id/closing_aProjectDialogFfragment" />
+        <action
+            android:id="@+id/action_onGoingProjectForClientFragment_to_closing_deletefragment"
+            app:destination="@id/deletefragment" />
+        <action
+            android:id="@+id/action_onGoingProjectForClientFragment_to_addEditReviewDialogFragment"
+            app:destination="@id/addEditReviewDialogFragment" />
+        <action
+            android:id="@+id/action_onGoingProjectForClientFragment_to_fileViewerFragment"
+            app:destination="@id/fileViewerFragment" />
+        <action
+            android:id="@+id/action_onGoingProjectForClientFragment_to_projectLiveChatFragment"
+            app:destination="@id/projectLiveChatFragment" />
+        <action
+            android:id="@+id/action_onGoingProjectForClientFragment_to_freelancerProfileFragment"
+            app:destination="@id/freelancerProfileFragment" />
+        <action
+            android:id="@+id/action_onGoingProjectForClientFragment_to_deletefragment"
+            app:destination="@id/deletefragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/onGoingProjectForFreelancerFragment"
+        android:name="sa.gov.ksaa.dal.ui.fragments.projects.freelancer.ongoing.OnGoingProjectForFreelancerFragment"
+        android:label="خدمة قيد التنفيذ"
+        tools:layout="@layout/fragment_project_ongoing_for_freelancer" >
+        <argument
+            android:name="onGgoinProjectId"
+            app:argType="integer"
+            android:defaultValue="0" />
+        <action
+            android:id="@+id/action_onGoingProjectForFreelancerFragment_to_technicalSupportTicketsFragment"
+            app:destination="@id/technicalSupportTicketsFragment" />
+        <action
+            android:id="@+id/action_onGoingProjectForFreelancerFragment_to_clientProfileFragment"
+            app:destination="@id/clientProfileFragment" />
+        <action
+            android:id="@+id/action_onGoingProjectForFreelancerFragment_to_fileViewerFragment"
+            app:destination="@id/fileViewerFragment" />
+        <action
+            android:id="@+id/action_onGoingProjectForFreelancerFragment_to_projectLiveChatFragment"
+            app:destination="@id/projectLiveChatFragment" />
+        <action
+            android:id="@+id/action_onGoingProjectForFreelancerFragment_to_deletefragment"
+            app:destination="@id/deletefragment" />
+    </fragment>
+    <dialog
+        android:id="@+id/deletefragment"
+        android:name="sa.gov.ksaa.dal.ui.fragments.projects.freelancer.ongoing.DeleteDialog"
+        android:label="DeleteFragment"
+        tools:layout="@layout/fragment_delete_conformation_dialog">
+
+
+    </dialog>
+    <fragment
+        android:id="@+id/projectQuotationDetailsForClientFragment"
+        android:name="sa.gov.ksaa.dal.ui.fragments.projects.client.bids.ProjectQuotationDetailsForClientFragment"
+        android:label="عرض مستلم"
+        tools:layout="@layout/fragment_project_quotation_details_for_client">
+        <argument
+            android:name="bidId"
+            android:defaultValue="0"
+            app:argType="integer" />
+<!--        <action-->
+<!--            android:id="@+id/action_projectQuotationDetailsForClientFragment_to_ongoingProjectsClientFragment"-->
+<!--            app:destination="@id/ongoingProjectsClientFragment" />-->
+        <action
+            android:id="@+id/action_projectQuotationDetailsForClientFragment_to_bidRejectionDialogFragment"
+            app:destination="@id/bidRejectionDialogFragment" />
+        <action
+            android:id="@+id/action_projectQuotationDetailsForClientFragment_to_bidAcceptanceDialogFragment"
+            app:destination="@id/bidAcceptanceDialogFragment" />
+        <action
+            android:id="@+id/action_projectQuotationDetailsForClientFragment_to_freelancerProfileFragment"
+            app:destination="@id/freelancerProfileFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/liveChatFragment2"
+        android:name="sa.gov.ksaa.dal.LiveChatFragment"
+        android:label="fragment_live_chat"
+        tools:layout="@layout/fragment_live_chat" />
+
+    <fragment
+        android:id="@+id/newTermsAndConditionFragment"
+        android:name="sa.gov.ksaa.dal.ui.fragments.auth.signUp.NewTermsAndConditionFragment"
+        android:label="الشروط و الأحكام"
+        tools:layout="@layout/fragment_new_terms_and_condition" />
+    <fragment
+        android:id="@+id/freelancerIdentityVerificationFragment3"
+        android:name="sa.gov.ksaa.dal.ui.fragments.auth.signUp.freelancer.FreelancerIdentityVerificationFragment"
+        android:label="بيانات مقدم الخدمة"
+        tools:layout="@layout/fragment_sign_up_6_freelancer_identity_verification" >
+        <action
+            android:id="@+id/action_freelancerIdentityVerificationFragment3_to_userProfileFragment"
+            app:destination="@id/userProfileFragment" />
+        <action
+            android:id="@+id/action_freelancerIdentityVerificationFragment3_to_userLoginFragment"
+            app:destination="@id/userLoginFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/clientIdentityVerificationFragment"
+        android:name="sa.gov.ksaa.dal.ui.fragments.auth.signUp.client.ClientIdentityVerificationFragment"
+        android:label="بيانات طالب الخدمة"
+        tools:layout="@layout/fragment_sign_up_6_user_identity_verification" >
+        <action
+            android:id="@+id/action_clientIdentityVerificationFragment_to_userProfileFragment"
+            app:destination="@id/userProfileFragment"
+            app:popUpTo="@id/viewPagerFragment2"
+            app:popUpToInclusive="false"
+            />
+        <action
+            android:id="@+id/action_clientIdentityVerificationFragment_to_userLoginFragment"
+            app:destination="@id/userLoginFragment"
+
+            />
+    </fragment>
+    <fragment
+        android:id="@+id/clientRegistrationFragment"
+        android:name="sa.gov.ksaa.dal.ui.fragments.auth.signUp.client.ClientRegistrationFragment1"
+        android:label="بيانات طالب الخدمة"
+        tools:layout="@layout/fragment_sign_up_3_client_1" >
+        <action
+            android:id="@+id/action_clientRegistrationFragment_to_clientRegistrationFragment2"
+            app:destination="@id/clientRegistrationFragment2" />
+    </fragment>
+    <fragment
+        android:id="@+id/freelancerRegistrationFragment1"
+        android:name="sa.gov.ksaa.dal.ui.fragments.auth.signUp.freelancer.FreelancerRegistration1BasicInfo"
+        android:label="بيانات مقدم الخدمة"
+        tools:layout="@layout/fragment_sign_up_3_freelancer" >
+        <action
+            android:id="@+id/action_freelancerRegistrationFragment1_to_freelancerRegisterationFragment2"
+            app:destination="@id/freelancerRegisterationFragment2" />
+    </fragment>
+    <fragment
+        android:id="@+id/addEditProjectCommentFragment"
+        android:name="sa.gov.ksaa.dal.ui.fragments.projects.details.AddEditProjectCommentFragment"
+        android:label="إرسال إستفسار"
+        tools:layout="@layout/fragment_dialog_project_enquiry" />
+    <fragment
+        android:id="@+id/addEditQuotationFragment"
+        android:name="sa.gov.ksaa.dal.ui.fragments.bids.AddEditQuotationFragment"
+        android:label="عرض سعر جديد"
+        tools:layout="@layout/fragment_send_quotation">
+        <argument
+            android:name="projectId"
+            app:argType="integer"
+            android:defaultValue="0" />
+    </fragment>
+    <fragment
+        android:id="@+id/freelancerPersonalInfoEditingFragment"
+        android:name="sa.gov.ksaa.dal.ui.fragments.profiles.FreelancerPersonalInfoEditingFragment"
+        android:label="المعلومات الشخصية"
+        tools:layout="@layout/fragment_personal_info_editing_freelancer" >
+        <action
+            android:id="@+id/action_freelancerPersonalInfoEditingFragment_to_addEditExperience"
+            app:destination="@id/addEditExperience" />
+    </fragment>
+    <dialog
+        android:id="@+id/bidRejectionDialogFragment"
+        android:name="sa.gov.ksaa.dal.ui.fragments.projects.client.bids.BidRejectionDialogFragment"
+        android:label="رفض عرض سعر"
+        tools:layout="@layout/fragment_dialog_bid_rejection_confirmation"/>
+    <fragment
+        android:id="@+id/invitationFragment"
+        android:name="sa.gov.ksaa.dal.ui.fragments.projects.freelancer.invitations.InvitationFragment"
+        android:label="InvitationFragment"
+        tools:layout="@layout/fragment_project_invitations">
+        <action
+            android:id="@+id/action_invitationFragment_to_addEditQuotationFragment"
+            app:destination="@id/addEditQuotationFragment" />
+        <action
+            android:id="@+id/action_invitationFragment_to_clientProfileFragment"
+            app:destination="@id/clientProfileFragment" />
+        <action
+            android:id="@+id/action_invitationFragment_to_invitationRejectionDialogFragment"
+            app:destination="@id/invitationRejectionDialogFragment"
+            app:popUpTo="@id/projectInvitationsFragment" />
+    </fragment>
+    <dialog
+        android:id="@+id/invitationRejectionDialogFragment"
+        android:name="sa.gov.ksaa.dal.ui.fragments.projects.freelancer.invitations.InvitationRejectionDialogFragment"
+        android:label="InvitationRejectionDialogFragment"
+        tools:layout="@layout/fragment_dialog_bid_rejection_confirmation"/>
+    <dialog
+        android:id="@+id/addEditReviewDialogFragment"
+        android:name="sa.gov.ksaa.dal.ui.fragments.reviews.AddEditReviewDialogFragment"
+        android:label="AddEditReviewDialogFragment"
+        tools:layout="@layout/fragment_dialog_add_edit_a_review">
+        <argument
+            android:name="completedProjectId"
+            app:argType="integer"
+            android:defaultValue="0" />
+        <argument
+            android:name="revieweeId"
+            app:argType="integer"
+            android:defaultValue="0" />
+        <action
+            android:id="@+id/action_addEditReviewDialogFragment_to_completedProjectsClientFragment"
+            app:destination="@id/completedProjectsClientFragment"
+            app:popUpTo="@id/ongoingProjectsClientFragment" />
+    </dialog>
+    <dialog
+        android:id="@+id/bidAcceptanceDialogFragment"
+        android:name="sa.gov.ksaa.dal.ui.fragments.projects.client.bids.BidAcceptanceDialogFragment"
+        android:label="fragment_dialog_bid_acceptance_confirmation"
+        tools:layout="@layout/fragment_dialog_bid_acceptance_confirmation" >
+        <action
+            android:id="@+id/action_bidAcceptanceDialogFragment_to_ongoingProjectsClientFragment"
+            app:destination="@id/ongoingProjectsClientFragment"
+            app:popUpTo="@id/projectsBidsCientFragment" />
+    </dialog>
+    <dialog
+        android:id="@+id/closing_aProjectDialogFfragment"
+        android:name="sa.gov.ksaa.dal.ui.fragments.projects.client.ongoing.Closing_aProjectDialogFfragment"
+        android:label="fragment_dialog_closing_a_project_confirmation"
+        tools:layout="@layout/fragment_dialog_closing_a_project_confirmation" >
+        <action
+            android:id="@+id/action_closing_aProjectDialogFfragment_to_completedProjectsClientFragment"
+            app:destination="@id/completedProjectsClientFragment"
+            app:popUpTo="@id/ongoingProjectsClientFragment" />
+        <action
+            android:id="@+id/action_closing_aProjectDialogFfragment_to_addEditReviewDialogFragment"
+            app:destination="@id/addEditReviewDialogFragment" />
+    </dialog>
+    <fragment
+        android:id="@+id/clientRegistrationFragment2"
+        android:name="sa.gov.ksaa.dal.ui.fragments.auth.signUp.client.ClientRegistrationFragment2"
+        android:label="بيانات طالب الخدمة"
+        tools:layout="@layout/fragment_sign_up_3_client_2">
+        <action
+            android:id="@+id/action_clientRegistrationFragment2_to_clientIdentityVerificationFragment"
+            app:destination="@id/clientIdentityVerificationFragment" />
+
+        <action
+            android:id="@+id/action_clientRegistrationFragment2_to_userLoginFragment"
+            app:destination="@id/userLoginFragment"
+
+            />
+    </fragment>
+    <fragment
+        android:id="@+id/completedProjectForClientFragment"
+        android:name="sa.gov.ksaa.dal.ui.fragments.projects.client.completed.CompletedProjectForClientFragment"
+        android:label="خدمة مكتملة"
+        tools:layout="@layout/fragment_project_completed_4_client" >
+        <argument
+            android:name="closedProjectId"
+            app:argType="integer"
+            android:defaultValue="0" />
+        <action
+            android:id="@+id/action_completedProjectForClientFragment_to_fileViewerFragment"
+            app:destination="@id/fileViewerFragment" />
+        <action
+            android:id="@+id/action_completedProjectForClientFragment_to_freelancerProfileFragment"
+            app:destination="@id/freelancerProfileFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/completedProjectForFreelancerFragment"
+        android:name="sa.gov.ksaa.dal.ui.fragments.projects.freelancer.closed.CompletedProjectForFreelancerFragment"
+        android:label="خدمة مكتملة"
+        tools:layout="@layout/fragment_project_completed_4_freelancer" >
+        <argument
+            android:name="closedProjectId"
+            app:argType="integer"
+            android:defaultValue="0" />
+        <action
+            android:id="@+id/action_completedProjectForFreelancerFragment_to_clientProfileFragment"
+            app:destination="@id/clientProfileFragment" />
+        <action
+            android:id="@+id/action_completedProjectForFreelancerFragment_to_fileViewerFragment"
+            app:destination="@id/fileViewerFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/canceledProjectsFreelancerFragment"
+        android:name="sa.gov.ksaa.dal.ui.fragments.projects.freelancer.CanceledProjectsFreelancerFragment"
+        android:label="المشاريع الملغاة"
+        tools:layout="@layout/fragment_projects_canceled_freelancer" />
+    <fragment
+        android:id="@+id/clientProfileFragment"
+        android:name="sa.gov.ksaa.dal.ui.fragments.client.ClientProfileFragment"
+        android:label="طالب خدمة"
+        tools:layout="@layout/fragment_profiles_client" >
+        <argument
+            android:name="userIdKey"
+            app:argType="integer"
+            android:defaultValue="0" />
+        <action
+            android:id="@+id/action_clientProfileFragment_to_freelancerProfileFragment"
+            app:destination="@id/freelancerProfileFragment" />
+        <action
+            android:id="@+id/action_clientProfileFragment_to_projectDetailsFragment"
+            app:destination="@id/projectDetailsFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/techSupportDetailFragment"
+        android:name="sa.gov.ksaa.dal.ui.fragments.technicalSupport.TechSupportDetailFragment"
+        android:label="طلبات الدعم الفني"
+        tools:layout="@layout/fragment_tech_support_detail" />
+    <fragment
+        android:id="@+id/allProjectsClientFragment"
+        android:name="sa.gov.ksaa.dal.ui.fragments.projects.client.AllProjectsClientFragment"
+        android:label="الخدمات المطروحة"
+        tools:layout="@layout/fragment_projects_new_client">
+        <action
+            android:id="@+id/action_allProjectsClientFragment_to_projectsBidsCientFragment"
+            app:destination="@id/projectsBidsCientFragment"
+            app:popUpTo="@id/userProfileFragment" />
+        <action
+            android:id="@+id/action_allProjectsClientFragment_to_ongoingProjectsClientFragment"
+            app:destination="@id/ongoingProjectsClientFragment"
+            app:popUpTo="@id/userProfileFragment" />
+        <action
+            android:id="@+id/action_allProjectsClientFragment_to_completedProjectsClientFragment"
+            app:destination="@id/completedProjectsClientFragment"
+            app:popUpTo="@id/userProfileFragment"/>
+        <action
+            android:id="@+id/action_allProjectsClientFragment_to_DetailProjectManagmentFragment"
+            app:destination="@id/DetailProjectManagmentFragment" />
+        <action
+            android:id="@+id/action_allProjectsClientFragment_to_waitingProjectsClientFragment"
+            app:destination="@id/waitingProjectsClientFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/waitingProjectsClientFragment"
+        android:name="sa.gov.ksaa.dal.ui.fragments.projects.client.witing.witingProjectsFragment"
+        android:label="قيد المراجعة"
+        tools:layout="@layout/fragment_projects_waiting_cient">
+        <action
+            android:id="@+id/action_waitingProjectsClientFragment_to_projectsBidsCientFragment"
+            app:destination="@id/projectsBidsCientFragment"
+            app:popUpTo="@id/userProfileFragment" />
+        <action
+            android:id="@+id/action_waitingProjectsClientFragment_to_ongoingProjectsClientFragment"
+            app:destination="@id/ongoingProjectsClientFragment"
+            app:popUpTo="@id/userProfileFragment" />
+        <action
+            android:id="@+id/action_waitingProjectsClientFragment_to_completedProjectsClientFragment"
+            app:destination="@id/completedProjectsClientFragment"
+            app:popUpTo="@id/userProfileFragment"/>
+        <action
+            android:id="@+id/action_waitingProjectsClientFragment_to_projectDetailsFragment"
+            app:destination="@id/projectDetailsFragment" />
+        <action
+            android:id="@+id/action_waitingProjectsClientFragment_to_allProjectsClientFragment"
+            app:destination="@id/allProjectsClientFragment" />
+        <action
+            android:id="@+id/action_waitingProjectsClientFragment_to_DetailProjectManagmentFragment"
+            app:destination="@id/DetailProjectManagmentFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/fileViewerFragment"
+        android:name="sa.gov.ksaa.dal.FileViewerFragment"
+        android:label="fragment_file_viewer"
+        tools:layout="@layout/fragment_file_viewer" />
+
+
+    <fragment
+        android:id="@+id/projectLiveChatFragment"
+        android:name="sa.gov.ksaa.dal.ui.fragments.projects.ProjectLiveChatFragment"
+        android:label=""
+        tools:layout="@layout/fragment_project_live_chat" />
+    <dialog
+        android:id="@+id/projectsFilterBottomSheetModal"
+        android:name="sa.gov.ksaa.dal.ui.fragments.projects.explore.ProjectsFilterBottomSheetModal"
+        android:label="ترشيح حسب"
+        tools:layout="@layout/modal_bottom_sheet_projects_filter" />
+    <dialog
+        android:id="@+id/freelancerAttemptToSubmitBidDialogFragment"
+        android:name="sa.gov.ksaa.dal.ui.fragments.projects.explore.FreelancerAttemptToSubmitBidDialogFragment"
+        android:label="fragment_dialog_not_acceptable_level"
+        tools:layout="@layout/fragment_dialog_not_acceptable_level" />
+    <dialog
+        android:id="@+id/addEditExperience"
+        android:name="sa.gov.ksaa.dal.ui.fragments.auth.signUp.freelancer.AddEditExperience"
+        android:label="fragment_dialog_add_edit_experience"
+        tools:layout="@layout/fragment_dialog_add_edit_experience" />
+
+</navigation>

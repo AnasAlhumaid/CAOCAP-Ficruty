@@ -1,0 +1,270 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    style="@style/fragment_content"
+    tools:context=".ui.fragments.projects.client.addEditProject.AddEditProject2Fragment">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/default_margin_padding"
+        android:orientation="vertical"
+        android:padding="@dimen/default_margin_padding">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+
+            android:orientation="vertical"
+            >
+
+            <TextView
+                android:id="@+id/textView34"
+                style="@style/label_text_view"
+                android:labelFor="@id/noQuotaionsET"
+                android:text="عدد العروض المرغوب استقبالها" />
+
+            <EditText
+                android:id="@+id/noQuotaionsET"
+                style="@style/appCompat_editText"
+                android:maxLength="2"
+                android:drawableStart="@drawable/dollar_on_hand"
+                android:background="@drawable/input_focuswd"
+                android:hint="عدد العروض المرغوب استقبالها"
+                android:inputType="number" />
+            <TextView
+
+                style="@style/label_text_view"
+                android:textSize="@dimen/small_text_size"
+                android:textColor="@color/input_hint_color"
+                android:fontFamily="@font/sakkal_majalla_regular"
+                android:text="عدد العروض المقدمة من مقدمي الخدمات" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+
+            android:orientation="vertical"
+          >
+<LinearLayout
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content">
+    <TextView
+        style="@style/label_text_view"
+        android:labelFor="@id/projectMilestoneET"
+        android:text="الوقت المتوقع لإنجاز الخدمة" />
+    <TextView
+        style="@style/material_textView"
+        android:text="*"
+        android:textColor="@color/red"
+        android:textSize="18dp" />
+</LinearLayout>
+
+
+            <EditText
+                android:id="@+id/projectMilestoneET"
+                style="@style/appCompat_editText"
+                android:drawableStart="@drawable/baseline_access_time_24"
+                android:background="@drawable/input_focuswd"
+                android:hint="الوقت المتوقع لإنجاز الخدمة"
+                android:inputType="numberDecimal"
+                android:visibility="gone" />
+
+            <FrameLayout
+                android:id="@+id/durationSpnrFL"
+                style="@style/spinner_container">
+
+                <Spinner
+                    android:id="@+id/durationSpnr"
+                    style="@style/spinner"
+                    android:textDirection="rtl"
+                    android:entries="@array/project_duration" />
+            </FrameLayout>
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+
+            android:orientation="vertical"
+            >
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content">
+                <TextView
+                    android:id="@+id/textView17"
+                    style="@style/label_text_view"
+                    android:labelFor="@id/levelSpnrFL"
+                    android:text="@string/freelancers_level" />
+                <TextView
+                    style="@style/material_textView"
+                    android:text="*"
+                    android:textColor="@color/red"
+                    android:textSize="18dp" />
+            </LinearLayout>
+
+
+
+            <FrameLayout
+                android:id="@+id/levelSpnrFL"
+                style="@style/spinner_container">
+
+                <Spinner
+                    android:id="@+id/freelancerLevelSpnr"
+                    style="@style/spinner"
+                    android:entries="@array/freelancer_levels_New" />
+            </FrameLayout>
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/freelancerLevelsRV"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layoutDirection="locale"
+                android:orientation="horizontal"
+                android:textDirection="locale"
+                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                tools:listitem="@layout/list_item_domain" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+
+            android:orientation="vertical"
+            >
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/textView23"
+                    style="@style/label_text_view"
+                    android:labelFor="@id/pubTypeRG"
+                    android:text="@string/send_the_bid" />
+
+
+                <TextView
+                    style="@style/material_textView"
+                    android:text="*"
+                    android:textColor="@color/red"
+                    android:textSize="18dp" />
+            </LinearLayout>
+
+
+
+            <RadioGroup
+                android:id="@+id/pubTypeRG"
+                style="@style/RadioButton">
+
+                <com.google.android.material.radiobutton.MaterialRadioButton
+                    android:id="@+id/publicRadio"
+                    style="@style/MaterialRadioButton"
+                    android:layout_width="match_parent"
+                    android:background="@drawable/radio_bg_selector_curved_light_gray_transparent_5"
+                    android:checked="true"
+                    android:text="@string/public_bid" />
+
+                <com.google.android.material.radiobutton.MaterialRadioButton
+                    android:id="@+id/privateRadio"
+                    style="@style/MaterialRadioButton"
+                    android:layout_width="match_parent"
+                    android:background="@drawable/radio_bg_selector_curved_light_gray_transparent_5"
+                    android:text="@string/private_bid" />
+            </RadioGroup>
+
+            <Button
+                android:id="@+id/addFreelancer"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                style="@style/primary_material_btn"
+                android:text="اضافة مستقل"
+
+                />
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/recyclerViewFreelancer"
+                android:layout_width="match_parent"
+                android:layout_height="200dp"
+                tools:itemCount="3"
+                tools:listitem="@layout/invited_freelancer_list_item"
+                >
+
+
+            </androidx.recyclerview.widget.RecyclerView>
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+
+            android:orientation="vertical"
+            >
+<LinearLayout
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content">
+    <TextView
+        android:id="@+id/textView26"
+        style="@style/label_text_view"
+        android:labelFor="@id/quotationsDeadlineET"
+        android:text="آخر موعد لاستقبال العروض" />
+    <TextView
+        style="@style/material_textView"
+        android:text="*"
+        android:textColor="@color/red"
+        android:textSize="18dp" />
+</LinearLayout>
+
+
+            <EditText
+                android:id="@+id/quotationsDeadlineET"
+                style="@style/appCompat_editText"
+
+                android:clickable="false"
+                android:cursorVisible="false"
+                android:focusable="false"
+                android:focusableInTouchMode="false"
+                android:background="@drawable/input_focuswd"
+                android:drawableStart="@drawable/baseline_access_time_24"
+                android:hint="آخر موعد لاستقبال العروض"
+                android:inputType="date" />
+
+        </LinearLayout>
+
+        <View style="@style/horizontal_divider" />
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_margin="@dimen/default_margin_padding"
+            android:padding="@dimen/default_margin_padding">
+
+            <Button
+                android:id="@+id/nextBtn"
+                style="@style/primary_material_btn"
+                android:padding="10dp"
+                android:text="@string/next"
+                android:textSize="18sp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/prevBtn"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <Button
+                android:id="@+id/prevBtn"
+                style="@style/secondary_material_btn"
+                android:padding="10dp"
+                android:text="@string/previous"
+                android:textSize="18sp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@id/nextBtn"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+    </LinearLayout>
+</androidx.core.widget.NestedScrollView>
+

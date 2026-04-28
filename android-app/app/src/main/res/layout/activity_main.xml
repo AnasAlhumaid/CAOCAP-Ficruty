@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.coordinatorlayout.widget.CoordinatorLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fitsSystemWindows="false"
+    tools:context="ui.MainActivity">
+
+    <com.google.android.material.appbar.AppBarLayout
+        android:id="@+id/appBarLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        tools:visibility="visible">
+        <!--        android:fitsSystemWindows="true"-->
+
+        <!--        <com.google.android.material.appbar.CollapsingToolbarLayout-->
+        <!--            android:id="@+id/collapsing_toolbar_layout"-->
+        <!--            android:layout_width="match_parent"-->
+        <!--            android:layout_height="match_parent"-->
+        <!--            app:contentScrim="?attr/colorPrimary"-->
+        <!--            app:expandedTitleGravity="top"-->
+        <!--            app:layout_scrollFlags="scroll|exitUntilCollapsed|snap">-->
+
+<!--        android:theme="@style/ThemeOverlay.AppCompat.ActionBar"-->
+        <com.google.android.material.appbar.MaterialToolbar
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/tool_bar_height"
+            android:background="@color/accent"
+            android:elevation="5dp"
+            android:gravity="center"
+            android:paddingTop="@dimen/status_bar_size"
+            android:theme="@style/Theme.Dal.AppBarOverlay"
+            app:buttonGravity="center_vertical"
+            app:navigationIconTint="@color/white"
+            app:popupTheme="@style/ThemeOverlay.AppCompat.Dark"
+            app:subtitleCentered="true"
+            app:subtitleTextColor="@color/white"
+            app:title="منصة دال لخدمات اللغة العربية"
+            app:titleCentered="true"
+            app:titleTextAppearance="@style/display1TextAppearance"
+            app:titleTextColor="@color/white">
+            <!--                app:layout_collapseMode="pin"-->
+            <!--            android:layout_height="?attr/actionBarSize"-->
+
+        </com.google.android.material.appbar.MaterialToolbar>
+        <!--        <com.google.android.material.tabs.TabLayout-->
+        <!--            />-->
+
+        <!--        </com.google.android.material.appbar.CollapsingToolbarLayout>-->
+    </com.google.android.material.appbar.AppBarLayout>
+
+    <!--    <androidx.drawerlayout.widget.DrawerLayout-->
+    <!--        xmlns:android="http://schemas.android.com/apk/res/android"-->
+    <!--        xmlns:app="http://schemas.android.com/apk/res-auto"-->
+    <!--        android:id="@+id/drawer_layout"-->
+    <!--        android:layout_width="match_parent"-->
+    <!--        android:layout_height="match_parent"-->
+    <!--        android:fitsSystemWindows="true">-->
+
+
+    <!--        <com.google.android.material.navigation.NavigationView-->
+    <!--            android:id="@+id/nav_view"-->
+    <!--            android:layout_width="wrap_content"-->
+    <!--            android:layout_height="match_parent"-->
+    <!--            android:layout_gravity="start"-->
+    <!--            android:fitsSystemWindows="true" />-->
+    <!--    </androidx.drawerlayout.widget.DrawerLayout>-->
+
+
+    <include
+        layout="@layout/content_main"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:layout_anchor="@+id/progress_bar"
+        app:layout_anchorGravity="center" />
+
+<!--    <ProgressBar-->
+<!--        android:id="@+id/progress_bar"-->
+<!--        style="@style/ProgressBarStyle"-->
+<!--        android:layout_width="wrap_content"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:layout_gravity="center"-->
+<!--        android:visibility="invisible" />-->
+
+    <ImageView
+        android:id="@+id/progress_bar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:visibility="invisible" />
+
+    <!--    <com.google.android.material.floatingactionbutton.FloatingActionButton-->
+    <!--        android:id="@+id/fab"-->
+    <!--        android:layout_width="wrap_content"-->
+    <!--        android:layout_height="wrap_content"-->
+    <!--        android:layout_gravity="bottom|end"-->
+    <!--        android:layout_marginEnd="@dimen/fab_margin"-->
+    <!--        android:layout_marginBottom="16dp"-->
+    <!--        app:srcCompat="@android:drawable/ic_dialog_email" />-->
+
+    <WebView
+        android:id="@+id/loaderWV"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:visibility="gone" />
+
+    <FrameLayout
+        android:id="@+id/bottom_sheet_modal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior"
+        >
+
+        <!-- Bottom sheet contents. -->
+
+    </FrameLayout>
+
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

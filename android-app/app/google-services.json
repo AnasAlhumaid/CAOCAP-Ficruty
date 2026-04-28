@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "859600070947",
+    "project_id": "dal-platform-f94fe",
+    "storage_bucket": "dal-platform-f94fe.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:859600070947:android:2674e9d6d7e27813498496",
+        "android_client_info": {
+          "package_name": "sa.gov.ksaa.dal"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAO2Wv1kaMcKpJoKqdL2qpW9L4p2ZkF08I"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

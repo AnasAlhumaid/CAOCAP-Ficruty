@@ -1,0 +1,1071 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    style="@style/fragment_content"
+    tools:context=".ui.fragments.profiles.FreelancerPersonalInfoEditingFragment">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/default_margin_padding"
+        android:layout_marginBottom="@dimen/default_margin_padding"
+
+        android:orientation="vertical"
+        android:paddingTop="@dimen/default_margin_padding"
+        android:paddingBottom="@dimen/default_margin_padding">
+
+        <androidx.cardview.widget.CardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/default_margin_padding"
+            app:cardCornerRadius="30dp"
+            app:cardElevation="5dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="5dp"
+                android:background="@drawable/bg_10_top_curved_light_gray_borders_transparent_filled"
+                android:orientation="vertical">
+
+
+                <LinearLayout
+                    android:id="@+id/generalInfoTitleLL"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/dropdown_label_bg"
+                    android:orientation="horizontal">
+
+                    <com.google.android.material.textview.MaterialTextView
+                        android:id="@+id/generalInfoTV"
+                        style="@style/sub_title_textView"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_margin="0dp"
+                        android:layout_weight="1"
+                        android:padding="10dp"
+                        android:text="معلومات عامة"
+                        android:textColor="@color/accent"
+                        android:textSize="18sp"
+                        android:textStyle="bold"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/personal_information_tv" />
+
+                    <ImageView
+                        android:id="@+id/generalInfoTitleIV"
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:padding="@dimen/default_margin_padding"
+                        app:srcCompat="@drawable/end_dropdown_icon"
+                        app:tint="#333333" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/generalInfoLL"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+
+                    android:visibility="gone"
+                    tools:visibility="visible">
+
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="center_vertical"
+                        android:orientation="vertical"
+                        android:visibility="gone">
+
+                        <TextView
+                            style="@style/material_textView"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/username"
+                            android:textColor="@color/black"
+                            android:textSize="18sp" />
+
+                        <com.google.android.material.textfield.TextInputLayout
+                            android:id="@+id/user_name_TIL"
+                            style="@style/TextInputLayout"
+                            app:endIconTintMode="multiply"
+                            app:startIconDrawable="@drawable/icon_user_data"
+                            app:startIconTintMode="src_atop">
+
+                            <com.google.android.material.textfield.TextInputEditText
+                                style="@style/TextInputEditText"
+                                android:hint="@string/username"
+                                android:inputType="textPhonetic"
+                                android:textSize="18sp" />
+                        </com.google.android.material.textfield.TextInputLayout>
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="center_vertical"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:id="@+id/first_name_tv"
+                            style="@style/material_textView"
+                            android:text="@string/first_name"
+                            android:textColor="@color/black"
+                            android:textSize="18sp" />
+
+                        <com.google.android.material.textfield.TextInputLayout
+                            android:id="@+id/first_name_TIL"
+                            style="@style/TextInputLayout"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            app:endIconTintMode="multiply"
+                            app:startIconDrawable="@drawable/icon_user_data"
+                            app:startIconTintMode="src_atop">
+
+                            <com.google.android.material.textfield.TextInputEditText
+                                style="@style/TextInputEditText"
+                                android:hint="@string/first_name"
+                                android:inputType="textPhonetic"
+                                android:textSize="18sp" />
+                        </com.google.android.material.textfield.TextInputLayout>
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="center_vertical"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:id="@+id/second_name_tv"
+                            style="@style/material_textView"
+                            android:text="@string/last_name"
+                            android:textColor="@color/black"
+                            android:textSize="18sp" />
+
+                        <com.google.android.material.textfield.TextInputLayout
+                            android:id="@+id/second_name_TIL"
+                            style="@style/TextInputLayout"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            app:endIconTintMode="multiply"
+                            app:startIconDrawable="@drawable/icon_user_data"
+                            app:startIconTintMode="src_atop">
+
+                            <com.google.android.material.textfield.TextInputEditText
+                                style="@style/TextInputEditText"
+                                android:hint="@string/last_name"
+                                android:inputType="textPhonetic"
+                                android:textSize="18sp" />
+                        </com.google.android.material.textfield.TextInputLayout>
+
+                    </LinearLayout>
+
+
+                    <!--        <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_margin="4dp"
+                        android:gravity="center_vertical"
+                        android:orientation="vertical"
+                        android:padding="4dp">
+
+                        <TextView
+                            android:layout_width="80dp"
+                            android:layout_height="wrap_content"
+                            android:fontFamily="@font/sakkal_majalla_regular"
+                            android:text="الجنسية"
+                            android:textColor="@color/black"
+                            android:textSize="18sp" />
+
+                        <AutoCompleteTextView
+                            android:id="@+id/nationality_ACTV"
+                            style="@style/appCompat_editText"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_margin="4dp"
+                            android:layout_weight="1"
+                            android:drawableEnd="@drawable/baseline_keyboard_arrow_down_24"
+                            android:drawablePadding="3dp"
+                            android:hint="الجنسية..."
+                            android:inputType="textPhonetic"
+                            android:padding="8dp"
+                            android:textSize="18sp" />
+                    </LinearLayout> -->
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="center_vertical"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:id="@+id/phone_number_tv"
+                            style="@style/material_textView"
+                            android:text="@string/phone_number"
+                            android:textColor="@color/black"
+                            android:textSize="18sp" />
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:orientation="horizontal">
+
+                            <com.google.android.material.textfield.TextInputLayout
+                                android:id="@+id/phone_number_TIL"
+                                style="@style/TextInputLayout"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="2"
+                                app:endIconTintMode="multiply"
+                                app:startIconDrawable="@drawable/icon_phone"
+                                app:startIconTintMode="src_atop">
+
+                                <com.google.android.material.textfield.TextInputEditText
+                                    style="@style/TextInputEditText"
+                                    android:hint="@string/phone_number"
+                                    android:inputType="phone"
+                                    android:textAlignment="viewStart"
+                                    android:textSize="18sp" />
+                            </com.google.android.material.textfield.TextInputLayout>
+
+                            <Spinner
+                                android:id="@+id/countryCodeSpnr"
+                                style="@style/spinner"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_gravity="top"
+                                android:layout_weight="1"
+                                android:padding="8dp"
+                                android:spinnerMode="dropdown"
+                                android:textSize="16sp"
+                                tools:listitem="list_item_spinner_country_code" />                        </LinearLayout>
+
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="center_vertical"
+                        android:orientation="vertical">
+
+                        <TextView
+                            style="@style/material_textView"
+                            android:text="@string/email"
+                            android:textColor="@color/black"
+                            android:textSize="18sp" />
+
+                        <com.google.android.material.textfield.TextInputLayout
+                            android:id="@+id/email_TIL"
+                            style="@style/TextInputLayout"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            app:endIconTintMode="multiply"
+                            app:startIconDrawable="@drawable/icon_user_data"
+                            app:startIconTintMode="src_atop">
+
+                            <com.google.android.material.textfield.TextInputEditText
+                                style="@style/TextInputEditText"
+                                android:hint="@string/email"
+                                android:inputType="textEmailAddress"
+                                android:textSize="18sp" />
+                        </com.google.android.material.textfield.TextInputLayout>
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="center_vertical"
+                        android:orientation="vertical">
+
+                        <TextView
+                            style="@style/material_textView"
+                            android:text="الجنس"
+                            android:textColor="@color/black"
+                            android:textSize="18sp" />
+
+                        <RadioGroup
+                            android:id="@+id/genderRG"
+                            style="@style/RadioButton"
+                            android:orientation="horizontal">
+
+                            <com.google.android.material.radiobutton.MaterialRadioButton
+                                android:id="@+id/maleRadio"
+                                style="@style/MaterialRadioButton"
+                                android:checked="true"
+                                android:text="ذكر"
+                                android:textSize="18sp" />
+
+                            <RadioButton
+                                android:id="@+id/femaleRadio"
+                                style="@style/MaterialRadioButton"
+                                android:text="أنثى"
+                                android:textSize="18sp" />
+                        </RadioGroup>
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal"
+                        android:visibility="gone">
+
+                        <LinearLayout
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:gravity="center"
+                            android:orientation="vertical"
+                            android:padding="1dp">
+
+                            <TextView
+                                style="@style/material_textView"
+                                android:layout_gravity="start"
+                                android:text="* الصورة"
+                                android:textColor="@color/black"
+                                android:textSize="18sp" />
+
+                            <com.google.android.material.textview.MaterialTextView
+                                android:id="@+id/photoFileNameTV"
+                                style="@style/material_textView"
+                                android:background="@drawable/tag_background"
+                                android:drawablePadding="3dp"
+                                android:gravity="center"
+                                android:padding="4dp"
+                                android:text="اسم الملف"
+                                android:textColor="@color/black"
+                                android:textSize="16sp"
+                                app:drawableEndCompat="@drawable/icon_close"
+                                app:drawableTint="@color/black" />
+
+                            <com.google.android.material.button.MaterialButton
+                                android:id="@+id/photoFileBtn"
+                                style="@style/primary_material_btn"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:fontFamily="@font/sakkal_majalla_regular"
+                                android:padding="10dp"
+                                android:text="@string/add_a_file"
+                                android:textAllCaps="false"
+                                android:textSize="16sp" />
+                        </LinearLayout>
+
+                        <ImageView
+                            android:id="@+id/userIV"
+                            android:layout_width="0dp"
+                            android:layout_height="match_parent"
+                            android:layout_margin="@dimen/default_margin_padding"
+                            android:layout_weight="1"
+                            android:src="@drawable/freelancer_male_cercular_old" />
+
+                    </LinearLayout>
+
+                    <TextView
+                        style="@style/material_textView"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="* يجب أن لا يتجاوز حجم الملف \u0662\u0660 ك.ب."
+                        android:visibility="gone" />
+
+                </LinearLayout>
+
+            </LinearLayout>
+        </androidx.cardview.widget.CardView>
+
+        <androidx.cardview.widget.CardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/default_margin_padding"
+            app:cardCornerRadius="30dp"
+            app:cardElevation="5dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="5dp"
+                android:background="@drawable/bg_10_top_curved_light_gray_borders_transparent_filled"
+                android:orientation="vertical">
+
+                <LinearLayout
+                    android:id="@+id/domainOfExpertiseTtlLL"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+
+                    android:background="@drawable/dropdown_label_bg"
+                    android:orientation="horizontal">
+
+                    <com.google.android.material.textview.MaterialTextView
+                        android:id="@+id/domainOfExpertiseTV"
+                        style="@style/sub_title_textView"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_margin="0dp"
+                        android:layout_weight="1"
+                        android:padding="10dp"
+                        android:text="المجالات و الخبرات"
+                        android:textColor="@color/accent"
+                        android:textSize="18sp"
+                        android:textStyle="bold"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/personal_information_tv" />
+
+                    <ImageView
+                        android:id="@+id/domainOfExpertiseTtlIV"
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:padding="@dimen/default_margin_padding"
+                        app:srcCompat="@drawable/end_dropdown_icon"
+                        app:tint="#333333" />
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/domainOfExpertiseLL"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                   >
+
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="center_vertical"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:id="@+id/user_name_tv"
+                            style="@style/material_textView"
+                            android:text="نبذة عن المستخدم"
+                            android:textColor="@color/black"
+                            android:textSize="18sp" />
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:orientation="vertical"
+                            android:layout_height="wrap_content">
+
+                            <com.google.android.material.textfield.TextInputLayout
+                                android:id="@+id/about_TIL"
+                                style="@style/TextInputLayout"
+                                app:endIconTintMode="multiply"
+                                app:errorEnabled="false"
+                                app:startIconScaleType="centerInside"
+                                app:startIconTintMode="src_atop">
+
+                                <com.google.android.material.textfield.TextInputEditText
+                                    style="@style/TextInputEditText"
+
+                                    android:gravity="top"
+                                    android:hint="نبذة عن المستخدم"
+                                    android:inputType="textMultiLine"
+                                    android:lines="3"
+                                    android:textSize="18sp" />
+                            </com.google.android.material.textfield.TextInputLayout>
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:orientation="horizontal">
+
+                                <TextView
+                                    style="@style/small_text_view"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_margin="1dp"
+                                    android:text="عدد الحروف المتاحة" />
+
+                                <TextView
+                                    android:id="@+id/aboutUser_char_TV"
+                                    style="@style/small_text_view"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_margin="1dp"
+                                    android:text="0" />
+
+                                <TextView
+                                    style="@style/small_text_view"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_margin="1dp"
+                                    android:text="/" />
+
+                                <TextView
+                                    android:id="@+id/aboutUserMax"
+                                    style="@style/small_text_view"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_margin="1dp"
+                                    android:text="250" />
+                            </LinearLayout>
+
+                        </LinearLayout>
+
+
+
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="center_vertical"
+                        android:orientation="vertical">
+
+                        <TextView
+                            style="@style/material_textView"
+                            android:text="@string/add_experience"
+                            android:textColor="@color/black"
+                            android:textSize="18sp" />
+
+                        <com.google.android.material.textfield.TextInputLayout
+                            android:id="@+id/experiences_TIL"
+                            style="@style/TextInputLayout"
+                            app:endIconTintMode="multiply"
+                            app:startIconScaleType="fitStart">
+
+                            <com.google.android.material.textfield.TextInputEditText
+                                style="@style/TextInputEditText"
+
+                                android:gravity="top"
+                                android:hint="@string/add_experience"
+                                android:inputType="textMultiLine"
+                                android:lines="3"
+                                android:textSize="18sp" />
+                        </com.google.android.material.textfield.TextInputLayout>
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal">
+
+                        <TextView
+                            style="@style/material_textView"
+                            android:text="عدد سنوات الخبرة"
+                            android:textColor="@color/black"
+
+                            android:textSize="18dp" />
+
+                        <com.google.android.material.textfield.TextInputLayout
+                            android:id="@+id/exp_years_TIL"
+                            style="@style/TextInputLayout"
+
+
+                            app:startIconDrawable="@drawable/baseline_add_24"
+                            app:endIconDrawable="@drawable/round_horizontal_rule_24"
+                            app:endIconTintMode="multiply"
+                           app:startIconScaleType="center"
+                            app:endIconMode= "custom"
+
+                            >
+<!--                            app:endIconMode="custom"-->
+<!--                            app:startIconMode="custom"-->
+
+                            <com.google.android.material.textfield.TextInputEditText
+                                style="@style/TextInputEditText"
+
+                                android:gravity="top"
+                                android:hint="@string/add_experience"
+                                android:inputType="number|numberDecimal"
+                                android:padding="10dp"
+                                android:textSize="18sp" />
+                        </com.google.android.material.textfield.TextInputLayout>
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:gravity="center_vertical"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:id="@+id/domans_tv"
+                            style="@style/material_textView"
+                            android:text="@string/domains"
+                            android:textColor="@color/black"
+                            android:textSize="18dp" />
+
+                        <FrameLayout
+                            style="@style/spinner_container"
+                            android:layout_margin="0dp"
+                            android:padding="6dp"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                           >
+
+                            <Spinner
+                                android:id="@+id/domains_spinner"
+                                style="@style/spinner"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:padding="5dp"
+
+
+                                android:entries="@array/domains_list"
+                                android:fontFamily="@font/sakkal_majalla"
+
+                                android:spinnerMode="dropdown"
+                                android:textSize="16sp" />
+
+                        </FrameLayout>
+
+                        <LinearLayout
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:gravity="center"
+                            android:orientation="horizontal">
+
+                            <androidx.recyclerview.widget.RecyclerView
+                                android:id="@+id/specialityRV"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layoutDirection="locale"
+                                android:orientation="horizontal"
+                                android:textDirection="locale"
+                                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                                tools:itemCount="2"
+                                tools:listitem="@layout/list_item_domain" />
+
+                            <com.google.android.material.textfield.MaterialAutoCompleteTextView
+                                android:id="@+id/services_ACTV"
+                                style="@style/AutoCompleteTV"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:completionHint="اختر مجال"
+                                android:completionThreshold="1"
+                                android:drawablePadding="3dp"
+                                android:hint="إضافة مجال،،،"
+                                android:inputType="textPhonetic"
+                                android:padding="10dp"
+                                android:textSize="16sp"
+                                android:visibility="gone"
+                                app:endIconMode="dropdown_menu" />
+                        </LinearLayout>
+
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="center_vertical"
+                        android:orientation="vertical">
+
+                        <TextView
+                            style="@style/material_textView"
+                            android:text=" إضافة أعمال سابقة"
+                            android:textColor="@color/black"
+                            android:textSize="18sp" />
+
+                        <androidx.recyclerview.widget.RecyclerView
+                            android:id="@+id/experienceRV"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layoutDirection="rtl"
+                            android:orientation="vertical"
+                            android:textDirection="rtl"
+                            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                            tools:itemCount="3"
+                            tools:listitem="@layout/list_item_experience_file" />
+
+                        <com.google.android.material.button.MaterialButton
+                            android:id="@+id/addExperienceBtn"
+                            style="@style/material_textButton"
+                            android:padding="10dp"
+                            android:text="إضافة ملف"
+                            android:textSize="18dp"
+                            app:icon="@drawable/baseline_add_24"
+                            app:iconSize="15dp" />
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:gravity="center_vertical"
+                            android:orientation="horizontal"
+                            android:visibility="gone">
+
+                            <EditText
+                                android:id="@+id/experience_1_desc_IET"
+                                android:layout_width="0dp"
+                                android:layout_height="match_parent"
+                                android:layout_margin="@dimen/default_margin_padding"
+                                android:layout_weight="1"
+                                android:background="@drawable/bg_10_curved_light_gray_borders_white_filled"
+                                android:drawablePadding="4dp"
+                                android:drawableTint="@color/gray_font"
+                                android:fontFamily="@font/sakkal_majalla"
+                                android:gravity="top"
+                                android:hint="@string/work_description"
+                                android:inputType="textMultiLine"
+                                android:padding="@dimen/default_margin_padding"
+                                android:textSize="16sp"
+                                tools:ignore="LabelFor" />
+
+                            <LinearLayout
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_margin="1dp"
+                                android:gravity="center"
+                                android:orientation="vertical"
+                                android:padding="1dp">
+
+                                <!--                                <TextView-->
+                                <!--                                    android:id="@+id/expCertFile1NameTV"-->
+                                <!--                                    style="@style/material_textView"-->
+                                <!--                                    android:layout_width="wrap_content"-->
+                                <!--                                    android:layout_height="wrap_content"-->
+                                <!--                                    android:layout_margin="1dp"-->
+                                <!--                                    android:fontFamily="@font/sakkal_majalla_regular"-->
+                                <!--                                    android:text="xxx.pdf"-->
+                                <!--                                    android:textColor="@color/black"-->
+                                <!--                                    android:textSize="16sp" />-->
+
+                                <com.google.android.material.textview.MaterialTextView
+                                    android:id="@+id/expCertFile1NameTV"
+                                    style="@style/material_textView"
+                                    android:layout_width="match_parent"
+                                    android:background="@drawable/tag_background"
+                                    android:drawablePadding="3dp"
+                                    android:gravity="center"
+                                    android:padding="4dp"
+                                    android:text="اسم الملف"
+                                    android:textColor="@color/black"
+                                    android:textSize="16sp"
+                                    app:drawableTint="@color/black" />
+
+                                <Button
+                                    android:id="@+id/addWorkExperienceFile1Btn"
+                                    style="@style/primary_material_btn"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:fontFamily="@font/sakkal_majalla_regular"
+                                    android:padding="10dp"
+                                    android:text="@string/add_a_file"
+                                    android:textAllCaps="false"
+                                    android:textSize="16sp" />
+
+                            </LinearLayout>
+
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:gravity="center_vertical"
+                            android:orientation="horizontal"
+                            android:visibility="gone">
+
+                            <EditText
+                                android:id="@+id/experience_2_desc_IET"
+                                android:layout_width="0dp"
+                                android:layout_height="match_parent"
+                                android:layout_margin="@dimen/default_margin_padding"
+                                android:layout_weight="1"
+                                android:background="@drawable/bg_10_curved_light_gray_borders_white_filled"
+                                android:drawablePadding="4dp"
+                                android:drawableTint="@color/gray_font"
+                                android:fontFamily="@font/sakkal_majalla"
+                                android:gravity="top"
+                                android:hint="@string/work_description"
+                                android:inputType="textMultiLine"
+                                android:padding="@dimen/default_margin_padding"
+                                android:textSize="16sp" />
+
+                            <LinearLayout
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:gravity="center"
+                                android:orientation="vertical"
+                                android:padding="1dp">
+
+                                <!--                                <TextView-->
+                                <!--                                    android:id="@+id/expCertFile2NameTV"-->
+                                <!--                                    style="@style/material_textView"-->
+                                <!--                                    android:layout_width="wrap_content"-->
+                                <!--                                    android:layout_height="wrap_content"-->
+                                <!--                                    android:layout_margin="1dp"-->
+                                <!--                                    android:fontFamily="@font/sakkal_majalla_regular"-->
+                                <!--                                    android:text="xxx.pdf"-->
+                                <!--                                    android:textColor="@color/black"-->
+                                <!--                                    android:textSize="16sp" />-->
+
+                                <com.google.android.material.textview.MaterialTextView
+                                    android:id="@+id/expCertFile2NameTV"
+                                    style="@style/material_textView"
+                                    android:layout_width="match_parent"
+                                    android:background="@drawable/tag_background"
+                                    android:drawablePadding="3dp"
+                                    android:gravity="center"
+                                    android:padding="4dp"
+                                    android:text="اسم الملف"
+                                    android:textColor="@color/black"
+                                    android:textSize="16sp"
+                                    app:drawableTint="@color/black" />
+
+                                <Button
+                                    android:id="@+id/addWorkExperienceFile2Btn"
+                                    style="@style/primary_material_btn"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:fontFamily="@font/sakkal_majalla_regular"
+                                    android:padding="10dp"
+                                    android:text="@string/add_a_file"
+                                    android:textAllCaps="false"
+                                    android:textSize="16sp" />
+                            </LinearLayout>
+
+                        </LinearLayout>
+
+                    </LinearLayout>
+
+
+                </LinearLayout>
+
+            </LinearLayout>
+        </androidx.cardview.widget.CardView>
+
+        <androidx.cardview.widget.CardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/default_margin_padding"
+            app:cardCornerRadius="30dp"
+            app:cardElevation="5dp"
+            tools:visibility="visible">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/bg_10_top_curved_light_gray_borders_transparent_filled"
+                android:orientation="vertical">
+
+                <LinearLayout
+                    android:id="@+id/educationTtlLL"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/dropdown_label_bg"
+                    android:orientation="horizontal">
+
+                    <com.google.android.material.textview.MaterialTextView
+                        android:id="@+id/educationTV"
+                        style="@style/sub_title_textView"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_margin="0dp"
+                        android:layout_weight="1"
+                        android:padding="10dp"
+                        android:text="@string/education"
+                        android:textColor="@color/accent"
+                        android:textSize="18sp"
+                        android:textStyle="bold"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/personal_information_tv" />
+
+                    <ImageView
+                        android:id="@+id/educationTtlIV"
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:padding="@dimen/default_margin_padding"
+                        app:srcCompat="@drawable/end_dropdown_icon"
+                        app:tint="#333333" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/educationLL"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:orientation="vertical"
+
+                    android:visibility="gone"
+                    tools:visibility="visible">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="center_vertical"
+                        android:orientation="vertical">
+
+                        <TextView
+                            style="@style/material_textView"
+                            android:labelFor="@id/spinnerFL"
+                            android:text="@string/certificate_type"
+                            android:textColor="@color/black"
+                            android:textSize="18sp" />
+
+                        <LinearLayout
+                            android:id="@+id/spinnerFL"
+                            style="@style/spinner_container"
+                            android:layout_margin="5dp">
+
+                            <ImageView
+                                android:id="@+id/imageView11"
+                                style="@style/IconImageView"
+                                android:layout_margin="@dimen/default_margin_padding"
+                                app:srcCompat="@drawable/icon_given_doc" />
+
+                            <Spinner
+                                android:id="@+id/certificateTypeSpnr"
+                                style="@style/spinner"
+                                android:layout_weight="1"
+                                android:drawablePadding="2dp"
+                                android:entries="@array/edu_cert_type" />
+                        </LinearLayout>
+                    </LinearLayout>
+
+
+
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="center_vertical"
+                        android:orientation="vertical">
+
+                        <TextView
+                            style="@style/material_textView"
+                            android:text="@string/institute_name"
+                            android:textColor="@color/black"
+                            android:textSize="18sp" />
+
+                        <EditText
+                            android:id="@+id/universityNameET"
+                            style="@style/appCompat_editText"
+
+                            android:drawableStart="@drawable/icon_univercity"
+                            android:hint="@string/institute_name"
+                            android:textSize="18sp" />
+                    </LinearLayout>
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="center_vertical"
+                        android:orientation="vertical">
+
+                        <TextView
+                            style="@style/material_textView"
+                            android:text="سنة الإلتحاق"
+                            android:textColor="@color/black"
+                            android:textSize="18sp" />
+
+                        <EditText
+                            android:id="@+id/enrollmentDateET"
+                            style="@style/appCompat_editText"
+                            android:drawableStart="@drawable/icon_calender"
+                            android:hint="سنة الإلتحاق"
+                            android:inputType="numberDecimal"
+                            android:textSize="18sp" />
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="center_vertical"
+                        android:orientation="vertical">
+
+                        <TextView
+                            style="@style/material_textView"
+                            android:text="سنة التخرج"
+                            android:textColor="@color/black"
+                            android:textSize="18sp" />
+
+                        <EditText
+                            android:id="@+id/graduationDateET"
+                            style="@style/appCompat_editText"
+                            android:drawableStart="@drawable/icon_calender"
+                            android:hint="سنة التخرج"
+                            android:inputType="numberDecimal"
+                            android:textSize="18sp" />
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="center_vertical"
+                        android:orientation="vertical"
+                        android:padding="@dimen/default_margin_padding">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:fontFamily="@font/sakkal_majalla_regular"
+                            android:text="إضافة شهادة"
+                            android:textColor="@color/black"
+                            android:textSize="18sp" />
+
+                        <TextView
+                            android:id="@+id/certificateTV"
+                            style="@style/material_textView"
+                            android:layout_width="match_parent"
+                            android:background="@drawable/input_bg_gray_borders_curved_5_transparent_filled"
+                            android:hint="@string/add_certificate_file"
+                            android:padding="10dp"
+                            android:textSize="18sp"
+                            app:drawableStartCompat="@drawable/icon_given_doc" />
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="center"
+                        android:orientation="horizontal">
+
+
+                        <TextView
+                            android:id="@+id/certFileTV"
+                            style="@style/material_textView"
+                            android:layout_weight="1"
+                            android:gravity="center"
+                            android:text="xxx.pdf"
+                            android:textColor="@color/black"
+                            android:textSize="18sp" />
+
+
+                        <com.google.android.material.button.MaterialButton
+                            android:id="@+id/addCertBtn"
+                            style="@style/primary_material_btn"
+                            android:padding="10dp"
+                            android:text="@string/add_a_file"
+                            android:textSize="16sp" />
+
+                        <com.google.android.material.button.MaterialButton
+                            android:id="@+id/add_certificate_btn"
+                            style="@style/secondary_material_btn_black"
+                            android:padding="10dp"
+                            android:text="@string/add_a_cert"
+                            android:textSize="16sp"
+                            app:icon="@drawable/baseline_add_24" />
+
+
+                    </LinearLayout>
+
+                </LinearLayout>
+
+            </LinearLayout>
+        </androidx.cardview.widget.CardView>
+
+
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="end"
+            >
+
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/saveBtn"
+                style="@style/primary_material_btn"
+                android:layout_width="120dp"
+
+                android:padding="10dp"
+                android:text="حفظ التعديلات"
+                android:textSize="18sp" />
+        </LinearLayout>
+    </LinearLayout>
+
+
+</androidx.core.widget.NestedScrollView>

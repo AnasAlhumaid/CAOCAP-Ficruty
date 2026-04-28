@@ -1,0 +1,711 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    style="@style/fragment_content"
+    android:paddingStart="@dimen/list_item_margin_padding"
+    android:paddingEnd="@dimen/list_item_margin_padding"
+    tools:context=".ui.fragments.technicalSupport.ContactUsFragment">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_margin="@dimen/list_item_margin_padding"
+        android:padding="@dimen/list_item_margin_padding">
+
+
+        <LinearLayout
+            android:id="@+id/constraintLayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="20dp"
+            android:background="@drawable/input_drwable_bg_gray_borders_curved_5_transparent_filled"
+            android:orientation="horizontal"
+            app:layout_constraintBottom_toTopOf="@id/card_view"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <TextView
+                android:id="@+id/questions"
+                style="@style/tab_item_sub_title"
+                android:background="@drawable/title_bg_selector_curved_accent_transparent_5"
+                android:text="@string/common_questions"
+                android:textColor="@color/text_view_color_selector_accent_font_color" />
+
+            <TextView
+                android:id="@+id/enquiries"
+                style="@style/tab_item_sub_title"
+                android:background="@drawable/title_bg_selector_curved_accent_transparent_5"
+                android:text="@string/enquiries"
+                android:textColor="@color/text_view_color_selector_accent_font_color" />
+
+        </LinearLayout>
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/card_view"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/list_item_margin_padding"
+            android:elevation="10dp"
+            android:orientation="vertical"
+            android:padding="@dimen/list_item_margin_padding"
+            app:layout_constraintBottom_toTopOf="@id/liveCatBtn"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/constraintLayout">
+
+            <LinearLayout
+                android:id="@+id/qAndA_LL"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="@dimen/list_item_margin_padding"
+                android:orientation="vertical"
+                android:padding="@dimen/list_item_margin_padding"
+                android:visibility="visible"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                tools:visibility="visible">
+
+                <androidx.cardview.widget.CardView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="@dimen/default_margin_padding"
+                    app:cardCornerRadius="30dp"
+                    app:cardElevation="5dp">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:background="@drawable/bg_10_top_curved_light_gray_borders_transparent_filled"
+                        android:orientation="vertical">
+
+                        <LinearLayout
+                            android:id="@+id/aimsTitle_TV"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:background="@drawable/dropdown_label_bg"
+                            android:gravity="center"
+                            android:orientation="horizontal">
+
+                            <com.google.android.material.textview.MaterialTextView
+
+                                style="@style/material_textView"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_margin="0dp"
+                                android:layout_weight="1"
+                                android:padding="10dp"
+                                android:text="ما هي أهداف منصة دال؟"
+                                android:textColor="@color/accent"
+                                android:textSize="16sp"
+                                android:textStyle="bold"
+                                app:layout_constraintEnd_toEndOf="parent"
+                                app:layout_constraintStart_toStartOf="parent"
+                                app:layout_constraintTop_toBottomOf="@+id/personal_information_tv" />
+
+                            <ImageView
+                                android:id="@+id/aimsTitleIV"
+                                android:layout_width="wrap_content"
+                                android:layout_height="match_parent"
+
+                                android:padding="@dimen/default_margin_padding"
+                                app:srcCompat="@drawable/end_dropdown_icon"
+                                app:tint="#333333" />
+                        </LinearLayout>
+
+                        <TextView
+                            android:id="@+id/aims_TV"
+                            style="@style/material_textView"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:background="@drawable/bg_squired_light_gray_borders_transparent_filled"
+                            android:text="ترسيخ ثقافة المجتمع في الشأن اللغوي وتعزيز حضوره  وإعادة الحيوية للغة العربية وتداولها وتلبية احتياجاتها في المجتمع إثراء المجتمع  اللغة العربية وإتاحة الفرص للعمل الحر لتمكين مقدمي الخدمة المختصين في اللغة العربية  المحتوى العربي."
+                            android:textStyle="bold"
+                            android:padding="10dp"
+                            android:visibility="gone"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toBottomOf="@+id/personal_information_tv" />
+                    </LinearLayout>
+                </androidx.cardview.widget.CardView>
+
+                <androidx.cardview.widget.CardView
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_margin="@dimen/default_margin_padding"
+                    app:cardCornerRadius="20dp"
+                    app:cardElevation="5dp">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:background="@drawable/bg_10_top_curved_light_gray_borders_transparent_filled"
+                        android:orientation="vertical">
+
+                        <LinearLayout
+                            android:id="@+id/howToContactTitle_TV"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:background="@drawable/dropdown_label_bg"
+                            android:orientation="horizontal">
+
+                            <com.google.android.material.textview.MaterialTextView
+
+                                style="@style/material_textView"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_margin="0dp"
+                                android:layout_weight="1"
+                                android:padding="10dp"
+                                android:text="كيف أراسل مقدم الخدمة؟"
+                                android:textColor="@color/accent"
+                                android:textSize="16sp"
+                                android:textStyle="bold"
+                                app:layout_constraintEnd_toEndOf="parent"
+                                app:layout_constraintStart_toStartOf="parent"
+                                app:layout_constraintTop_toBottomOf="@+id/personal_information_tv" />
+
+                            <ImageView
+                                android:id="@+id/howToContactTitleIV"
+                                android:layout_width="wrap_content"
+                                android:layout_height="match_parent"
+                                android:padding="@dimen/default_margin_padding"
+                                app:srcCompat="@drawable/end_dropdown_icon"
+                                app:tint="#333333" />
+                        </LinearLayout>
+
+                        <TextView
+                            android:id="@+id/howToContact_TV"
+                            style="@style/material_textView"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:background="@drawable/bg_squired_light_gray_borders_transparent_filled"
+                            android:text="يمكنك التواصل مع مقدم الخدمة من خلال قسم الرسائل بعد قبول الخدمة."
+                            android:textStyle="bold"
+                            android:visibility="gone"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toBottomOf="@+id/personal_information_tv" />
+                    </LinearLayout>
+                </androidx.cardview.widget.CardView>
+
+                <androidx.cardview.widget.CardView
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_margin="@dimen/default_margin_padding"
+                    app:cardCornerRadius="20dp"
+                    app:cardElevation="5dp">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:background="@drawable/bg_10_top_curved_light_gray_borders_transparent_filled"
+                        android:orientation="vertical">
+
+                        <LinearLayout
+                            android:id="@+id/canIhave1accoutTitle_TV"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:background="@drawable/dropdown_label_bg"
+                            android:orientation="horizontal">
+
+                            <com.google.android.material.textview.MaterialTextView
+
+                                style="@style/material_textView"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_margin="0dp"
+                                android:layout_weight="1"
+                                android:padding="10dp"
+                                android:text="هل يمكن أن يكون لدي حساب واحد كمقدم خدمة وطالب خدمة؟"
+                                android:textColor="@color/accent"
+                                android:textSize="16sp"
+                                android:textStyle="bold"
+                                app:layout_constraintEnd_toEndOf="parent"
+                                app:layout_constraintStart_toStartOf="parent"
+                                app:layout_constraintTop_toBottomOf="@+id/personal_information_tv" />
+
+                            <ImageView
+                                android:id="@+id/canIHave1AccoutTitleIV"
+                                android:layout_width="wrap_content"
+                                android:layout_height="match_parent"
+                                android:padding="@dimen/default_margin_padding"
+                                app:srcCompat="@drawable/end_dropdown_icon"
+                                app:tint="#333333" />
+                        </LinearLayout>
+
+                        <TextView
+                            android:id="@+id/canIhave1accout_TV"
+                            style="@style/material_textView"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:background="@drawable/bg_squired_light_gray_borders_transparent_filled"
+                            android:text="لا، يجب أن يكون لديك حسابين أحدهما كمقدم خدمة والآخر كطالب خدمة."
+                            android:textStyle="bold"
+                            android:visibility="gone"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toBottomOf="@+id/personal_information_tv"
+                            tools:visibility="visible" />
+                    </LinearLayout>
+                </androidx.cardview.widget.CardView>
+
+                <androidx.cardview.widget.CardView
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_margin="@dimen/default_margin_padding"
+                    app:cardCornerRadius="20dp"
+                    app:cardElevation="5dp">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:background="@drawable/bg_10_top_curved_light_gray_borders_transparent_filled"
+                        android:orientation="vertical">
+
+                        <LinearLayout
+                            android:id="@+id/gettingProgressTitle_TV"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:background="@drawable/dropdown_label_bg"
+                            android:orientation="horizontal">
+
+                            <com.google.android.material.textview.MaterialTextView
+
+                                style="@style/material_textView"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_margin="0dp"
+                                android:layout_weight="1"
+                                android:padding="10dp"
+                                android:text="كيف يمكن الاطلاع على التقدم في الخدمات؟"
+                                android:textColor="@color/accent"
+                                android:textSize="16sp"
+                                android:textStyle="bold"
+                                app:layout_constraintEnd_toEndOf="parent"
+                                app:layout_constraintStart_toStartOf="parent"
+                                app:layout_constraintTop_toBottomOf="@+id/personal_information_tv" />
+
+                            <ImageView
+                                android:id="@+id/gettingProgressTitleIV"
+                                android:layout_width="wrap_content"
+                                android:layout_height="match_parent"
+                                android:padding="@dimen/default_margin_padding"
+                                app:srcCompat="@drawable/end_dropdown_icon"
+                                app:tint="#333333" />
+                        </LinearLayout>
+
+                        <TextView
+                            android:id="@+id/gettingProgress_TV"
+                            style="@style/material_textView"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:background="@drawable/bg_squired_light_gray_borders_transparent_filled"
+                            android:text="عن طريق التواصل مع مقدِّم الخدمة من قسم الرسائل؛ لمعرفة التحديثات كافة."
+                            android:textStyle="bold"
+                            android:visibility="gone"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toBottomOf="@+id/personal_information_tv" />
+                    </LinearLayout>
+                </androidx.cardview.widget.CardView>
+
+                <androidx.cardview.widget.CardView
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_margin="@dimen/default_margin_padding"
+                    app:cardCornerRadius="20dp"
+                    app:cardElevation="5dp">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:background="@drawable/bg_10_top_curved_light_gray_borders_transparent_filled"
+                        android:orientation="vertical">
+
+                        <LinearLayout
+                            android:id="@+id/cancellingProjectTitle_TV"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:background="@drawable/dropdown_label_bg"
+                            android:orientation="horizontal">
+
+                            <com.google.android.material.textview.MaterialTextView
+
+                                style="@style/material_textView"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_margin="0dp"
+                                android:layout_weight="1"
+                                android:padding="10dp"
+                                android:text="هل بإمكاني إلغاء طلب الخدمة؟"
+                                android:textColor="@color/accent"
+                                android:textSize="16sp"
+                                android:textStyle="bold"
+                                app:layout_constraintEnd_toEndOf="parent"
+                                app:layout_constraintStart_toStartOf="parent"
+                                app:layout_constraintTop_toBottomOf="@+id/personal_information_tv" />
+
+                            <ImageView
+                                android:id="@+id/cancellingProjectTitleIV"
+                                android:layout_width="wrap_content"
+                                android:layout_height="match_parent"
+                                android:padding="@dimen/default_margin_padding"
+                                app:srcCompat="@drawable/end_dropdown_icon"
+                                app:tint="#333333" />
+                        </LinearLayout>
+
+                        <TextView
+                            android:id="@+id/cancellingProject_TV"
+                            style="@style/material_textView"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:background="@drawable/bg_squired_light_gray_borders_transparent_filled"
+                            android:text="نعم، ولها حالتان: \n قبل بدء الخدمة: عن طريق رفض جميع العروض المقدمة من قبل مقدمي الخدمات. \n بعد بدء الخدمة: عن طريق رفع تذكرة للدعم الفني وذكر أسباب مقنعة للإلغاء."
+                            android:textStyle="bold"
+                            android:visibility="gone"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toBottomOf="@+id/personal_information_tv" />
+                    </LinearLayout>
+                </androidx.cardview.widget.CardView>
+
+                <androidx.cardview.widget.CardView
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_margin="@dimen/default_margin_padding"
+                    app:cardCornerRadius="20dp"
+                    app:cardElevation="5dp">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:background="@drawable/bg_10_top_curved_light_gray_borders_transparent_filled"
+                        android:orientation="vertical">
+
+                        <LinearLayout
+                            android:id="@+id/addingServiceToProjectTitle_TV"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:layout_weight="1"
+                            android:background="@drawable/dropdown_label_bg"
+                            android:orientation="horizontal">
+
+                            <com.google.android.material.textview.MaterialTextView
+
+                                style="@style/material_textView"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_margin="0dp"
+                                android:layout_weight="1"
+                                android:padding="10dp"
+                                android:text=" كيف أوثق الهوية؟ "
+                                android:textColor="@color/accent"
+                                android:textSize="16sp"
+                                android:textStyle="bold"
+                                app:layout_constraintEnd_toEndOf="parent"
+                                app:layout_constraintStart_toStartOf="parent"
+                                app:layout_constraintTop_toBottomOf="@+id/personal_information_tv" />
+
+                            <ImageView
+                                android:id="@+id/addingServiceToProjectTitleIV"
+                                android:layout_width="wrap_content"
+                                android:layout_height="match_parent"
+                                android:padding="@dimen/default_margin_padding"
+                                app:srcCompat="@drawable/end_dropdown_icon"
+                                app:tint="#333333" />
+                        </LinearLayout>
+
+                        <TextView
+                            android:id="@+id/addingServiceToProject_TV"
+                            style="@style/material_textView"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:background="@drawable/bg_squired_light_gray_borders_transparent_filled"
+                            android:text="عن طريق إضافة رقم الهوية، وتاريخ الميلاد."
+                            android:textStyle="bold"
+                            android:visibility="gone"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toBottomOf="@+id/personal_information_tv" />
+                    </LinearLayout>
+                </androidx.cardview.widget.CardView>
+
+                <androidx.cardview.widget.CardView
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_margin="@dimen/default_margin_padding"
+                    app:cardCornerRadius="20dp"
+                    app:cardElevation="5dp">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:background="@drawable/bg_10_top_curved_light_gray_borders_transparent_filled"
+                        android:orientation="vertical">
+
+                        <LinearLayout
+                            android:id="@+id/idVerificationTitle_TV"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:layout_weight="1"
+                            android:background="@drawable/dropdown_label_bg"
+                            android:orientation="horizontal">
+
+                            <com.google.android.material.textview.MaterialTextView
+
+                                style="@style/material_textView"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_margin="0dp"
+                                android:layout_weight="1"
+                                android:padding="10dp"
+                                android:text="كيف يمكنني الاطلاع على التقدم في الخدمة؟"
+                                android:textColor="@color/accent"
+                                android:textSize="16sp"
+                                android:textStyle="bold"
+                                app:layout_constraintEnd_toEndOf="parent"
+                                app:layout_constraintStart_toStartOf="parent"
+                                app:layout_constraintTop_toBottomOf="@+id/personal_information_tv" />
+
+                            <ImageView
+                                android:id="@+id/idVerificationTitleIV"
+                                android:layout_width="wrap_content"
+                                android:layout_height="match_parent"
+                                android:padding="@dimen/default_margin_padding"
+                                app:srcCompat="@drawable/end_dropdown_icon"
+                                app:tint="#333333" />
+                        </LinearLayout>
+
+                        <TextView
+                            android:id="@+id/idVerification_TV"
+                            style="@style/material_textView"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:background="@drawable/bg_squired_light_gray_borders_transparent_filled"
+                            android:text="عن طريق التواصل مع مقدِّم الخدمة من قسم الرسائل؛ لمعرفة التحديثات كافة فيما يخص الخدمات."
+                            android:textStyle="bold"
+                            android:visibility="gone"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toBottomOf="@+id/personal_information_tv" />
+                    </LinearLayout>
+                </androidx.cardview.widget.CardView>
+
+                <androidx.cardview.widget.CardView
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_margin="@dimen/default_margin_padding"
+                    app:cardCornerRadius="20dp"
+                    app:cardElevation="5dp">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:background="@drawable/bg_10_top_curved_light_gray_borders_transparent_filled"
+                        android:orientation="vertical">
+
+                        <LinearLayout
+                            android:id="@+id/cancellingServiceRequestTitle_TV"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:layout_weight="1"
+                            android:background="@drawable/dropdown_label_bg"
+                            android:orientation="horizontal">
+
+                            <com.google.android.material.textview.MaterialTextView
+
+                                style="@style/material_textView"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_margin="0dp"
+                                android:layout_weight="1"
+                                android:padding="10dp"
+                                android:text="كيف ألغي طلب الخدمة؟"
+                                android:textColor="@color/accent"
+                                android:textSize="16sp"
+                                android:textStyle="bold"
+                                app:layout_constraintEnd_toEndOf="parent"
+                                app:layout_constraintStart_toStartOf="parent"
+                                app:layout_constraintTop_toBottomOf="@+id/personal_information_tv" />
+
+                            <ImageView
+                                android:id="@+id/cancellingServiceRequestTitleIV"
+                                android:layout_width="wrap_content"
+                                android:layout_height="match_parent"
+                                android:padding="@dimen/default_margin_padding"
+                                app:srcCompat="@drawable/end_dropdown_icon"
+                                app:tint="#333333" />
+                        </LinearLayout>
+
+                        <TextView
+                            android:id="@+id/cancellingServiceRequest_TV"
+                            style="@style/material_textView"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:background="@drawable/bg_squired_light_gray_borders_transparent_filled"
+                            android:text="عن طريق رفع تذكرة للدعم الفني وذكر الأسباب."
+                            android:textStyle="bold"
+                            android:visibility="gone"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toBottomOf="@+id/personal_information_tv" />
+                    </LinearLayout>
+                </androidx.cardview.widget.CardView>
+
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/enquiries_LL"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="@dimen/default_margin_padding"
+                android:orientation="vertical"
+                android:padding="@dimen/default_margin_padding"
+                android:visibility="gone"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                tools:visibility="visible">
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/name_TIL"
+                    style="@style/TextInputLayout"
+                    android:layout_margin="8dp"
+                    app:endIconTintMode="multiply"
+                    app:startIconDrawable="@drawable/icon_user_data"
+                    app:startIconTintMode="src_atop">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        style="@style/TextInputEditText"
+                        android:hint="@string/name"
+                        android:maxLines="1"
+                        android:textSize="18sp" />
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/emailTIL"
+                    style="@style/TextInputLayout"
+                    android:layout_margin="8dp"
+                    app:endIconTintMode="multiply"
+                    app:startIconDrawable="@drawable/icon_email"
+                    app:startIconTintMode="src_atop">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/email_IET"
+                        style="@style/TextInputEditText"
+                        android:hint="@string/email"
+                        android:textSize="18sp" />
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <FrameLayout
+                    android:layout_width="match_parent"
+                    android:layout_margin="8dp"
+
+                    android:id="@+id/spinner_container"
+                    style="@style/spinner_container">
+
+                    <Spinner
+                        android:id="@+id/categorySpnr"
+                        style="@style/spinner"
+                        android:layout_width="match_parent"
+                        android:layout_height="40dp"
+                        android:layoutDirection="rtl"
+                        android:textDirection="rtl"
+                        android:entries="@array/enquiries_spinner" />
+                </FrameLayout>
+
+
+                <EditText
+                    android:id="@+id/enquiry_ET"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="8dp"
+                    android:background="@drawable/input_bg_gray_borders_curved_5_transparent_filled"
+                    android:drawableTint="@color/gray_font"
+                    android:fontFamily="@font/sakkal_majalla"
+                    android:gravity="start|top"
+                    android:hint="@string/enquiry"
+                    android:inputType="textMultiLine"
+                    android:lines="4"
+                    android:padding="8dp"
+                    android:textSize="18sp" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        style="@style/small_text_view"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_margin="1dp"
+                        android:textColor="@color/black"
+                        android:text="عدد الحروف المتاحة" />
+
+                    <TextView
+                        android:id="@+id/aboutUser_char_TV"
+                        style="@style/small_text_view"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_margin="1dp"
+                        android:textColor="@color/black"
+                        android:text="0" />
+
+                    <TextView
+                        style="@style/small_text_view"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_margin="1dp"
+                        android:textColor="@color/black"
+                        android:text="/" />
+
+                    <TextView
+                        android:id="@+id/aboutUserMax"
+                        style="@style/small_text_view"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_margin="1dp"
+                        android:textColor="@color/black"
+                        android:text="250" />
+                </LinearLayout>
+
+
+                <Button
+                    android:id="@+id/submit_btn"
+                    style="@style/primary_material_btn"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:gravity="center"
+                    android:text="@string/send"
+                    android:textSize="18sp" />
+
+
+            </LinearLayout>
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/liveCatBtn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="10dp"
+            android:clickable="true"
+            android:focusable="true"
+            android:visibility="gone"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/card_view"
+            app:srcCompat="@drawable/tech_support"
+            app:tint="@color/white" />
+
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</androidx.core.widget.NestedScrollView>

@@ -1,0 +1,593 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/standard_bottom_sheet"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layoutDirection="rtl"
+    tools:context=".ui.fragments.freelancers.FreelancersFilterBottomSheetModal"
+    app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior">
+    >
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="1dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:orientation="horizontal"
+            android:padding="1dp"
+            android:visibility="visible">
+
+            <TextView
+                android:id="@+id/textView8"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_margin="1dp"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:padding="1dp"
+                android:text="@string/classification_of_freelancers_by"
+                android:textColor="@color/gray_font"
+                android:textSize="18sp"
+                android:textStyle="bold" />
+
+            <Button
+                android:id="@+id/clearBtn"
+                style="@style/material_textButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="1dp"
+                android:fontFamily="@font/sakkal_majalla"
+                android:padding="4dp"
+                android:text="@string/clear_results"
+                android:textColor="@color/accent"
+                android:textSize="16sp"
+                android:textStyle="bold" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/serviceTitleLL"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:clickable="true"
+            android:orientation="horizontal"
+            android:focusable="true">
+
+            <TextView
+                android:id="@+id/serviceTV"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="start|center_vertical"
+                android:layout_weight="1"
+                android:padding="4dp"
+                android:text="@string/domain"
+                android:textColor="@color/accent"
+                android:textSize="17sp"
+                android:textStyle="bold" />
+
+            <ImageView
+                android:id="@+id/serviceTitleIV"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:padding="@dimen/default_margin_padding"
+                app:srcCompat="@drawable/end_dropdown_icon"
+                app:tint="#333333" />
+        </LinearLayout>
+
+
+
+        <LinearLayout
+            android:id="@+id/servicesLL"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layoutDirection="rtl"
+            android:visibility="gone"
+            tools:visibility="visible">
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/recyclerView"
+                style="@style/recycler_view"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layoutDirection="rtl"
+                app:chainUseRtl="false"
+                app:guidelineUseRtl="false"
+
+
+                app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
+
+                tools:itemCount="2"
+                tools:listitem="@layout/list_item_grid_filters" />
+        </LinearLayout>
+
+<!--            <LinearLayout-->
+<!--                android:layout_width="match_parent"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:gravity="center"-->
+<!--                android:orientation="horizontal"-->
+<!--                android:padding="4dp">-->
+
+<!--                <com.google.android.material.switchmaterial.SwitchMaterial-->
+<!--                    android:id="@+id/lingTranslationS"-->
+<!--                    android:layout_width="0dp"-->
+<!--                    android:layout_height="wrap_content"-->
+<!--                    android:layout_weight="1"-->
+<!--                    android:layoutDirection="rtl"-->
+<!--                    android:textDirection="rtl"-->
+<!--                    android:checked="false"-->
+<!--                    android:padding="4dp"-->
+<!--                    android:text="الترجمة اللغوية" />-->
+
+<!--                <com.google.android.material.switchmaterial.SwitchMaterial-->
+<!--                    android:id="@+id/specialTranslationS"-->
+<!--                    android:layout_width="0dp"-->
+<!--                    android:layout_height="wrap_content"-->
+<!--                    android:layout_weight="1"-->
+<!--                    android:checked="false"-->
+<!--                    android:layoutDirection="rtl"-->
+<!--                    android:textDirection="rtl"-->
+<!--                    android:padding="4dp"-->
+<!--                    android:text="الترجمة التخصصية" />-->
+
+<!--            </LinearLayout>-->
+
+<!--            <LinearLayout-->
+<!--                android:layout_width="match_parent"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:gravity="center"-->
+<!--                android:orientation="horizontal"-->
+<!--                android:padding="4dp">-->
+
+<!--                <com.google.android.material.switchmaterial.SwitchMaterial-->
+<!--                    android:id="@+id/voiceoverS"-->
+<!--                    android:layout_width="0dp"-->
+<!--                    android:layout_height="wrap_content"-->
+<!--                    android:layout_weight="1"-->
+<!--                    android:layoutDirection="rtl"-->
+<!--                    android:padding="4dp"-->
+<!--                    android:text="التعليق الصوتي"-->
+<!--                    android:textDirection="rtl" />-->
+
+<!--                <com.google.android.material.switchmaterial.SwitchMaterial-->
+<!--                    android:id="@+id/audioTranscriptionS"-->
+<!--                    android:layout_width="0dp"-->
+<!--                    android:layout_height="wrap_content"-->
+<!--                    android:layout_weight="1"-->
+<!--                    android:layoutDirection="rtl"-->
+<!--                    android:textDirection="rtl"-->
+<!--                    android:padding="4dp"-->
+<!--                    android:text="التفريغ الصوتي"-->
+<!--                     />-->
+
+<!--            </LinearLayout>-->
+
+<!--            <LinearLayout-->
+<!--                android:layout_width="match_parent"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:gravity="center"-->
+<!--                android:orientation="horizontal"-->
+<!--                android:padding="4dp">-->
+
+<!--                <com.google.android.material.switchmaterial.SwitchMaterial-->
+<!--                    android:id="@+id/qafiahS"-->
+<!--                    android:layout_width="0dp"-->
+<!--                    android:layout_height="wrap_content"-->
+<!--                    android:layout_weight="1"-->
+<!--                    android:layoutDirection="rtl"-->
+<!--                    android:textDirection="rtl"-->
+<!--                    android:padding="4dp"-->
+<!--                    android:text="العروض والقافية"-->
+<!--                    />-->
+
+<!--                <com.google.android.material.switchmaterial.SwitchMaterial-->
+<!--                    android:id="@+id/contentWritingS"-->
+<!--                    android:layout_width="0dp"-->
+<!--                    android:layout_height="wrap_content"-->
+<!--                    android:layout_weight="1"-->
+<!--                    android:layoutDirection="rtl"-->
+<!--                    android:textDirection="rtl"-->
+<!--                    android:padding="4dp"-->
+<!--                    android:text="صياغة المحتوى"-->
+<!--                     />-->
+
+<!--            </LinearLayout>-->
+
+<!--            <LinearLayout-->
+<!--                android:layout_width="match_parent"-->
+
+<!--                android:layout_height="wrap_content"-->
+<!--                android:gravity="center"-->
+<!--                android:orientation="horizontal"-->
+<!--                android:padding="4dp">-->
+<!--                <com.google.android.material.switchmaterial.SwitchMaterial-->
+<!--                    android:id="@+id/naqrahaS"-->
+<!--                    android:layout_width="0dp"-->
+<!--                    android:layout_height="wrap_content"-->
+<!--                    android:layout_weight="1"-->
+<!--                    android:layoutDirection="rtl"-->
+<!--                    android:padding="4dp"-->
+<!--                    android:text="النقرحة"-->
+<!--                    android:textDirection="rtl" />-->
+
+
+
+
+<!--                <com.google.android.material.switchmaterial.SwitchMaterial-->
+<!--                    android:id="@+id/tadqeeqS"-->
+<!--                    android:layout_width="0dp"-->
+<!--                    android:layout_height="wrap_content"-->
+<!--                    android:layout_weight="1"-->
+<!--                    android:checked="false"-->
+<!--                    android:layoutDirection="rtl"-->
+<!--                    android:textDirection="rtl"-->
+<!--                    android:padding="4dp"-->
+<!--                    android:text="التدقيق اللغوي والتشكيل"-->
+<!--                     />-->
+
+<!--            </LinearLayout>-->
+
+<!--            <LinearLayout-->
+<!--                android:layout_width="match_parent"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:gravity="center"-->
+<!--                android:orientation="horizontal"-->
+<!--                android:padding="4dp">-->
+
+
+<!--                <View-->
+<!--                    android:id="@+id/view15"-->
+<!--                    android:layout_width="0dp"-->
+<!--                    android:layout_height="match_parent"-->
+<!--                    android:layout_weight="1" />-->
+
+<!--            </LinearLayout>-->
+<!--        </LinearLayout>-->
+
+        <LinearLayout
+            android:id="@+id/levelTitleLL"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:clickable="true"
+            android:orientation="horizontal"
+            android:focusable="true">
+
+            <TextView
+                android:id="@+id/levelTV"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="start|center_vertical"
+                android:layout_weight="1"
+                android:padding="4dp"
+                android:text="@string/freelancer_level"
+                android:textColor="@color/accent"
+                android:textSize="17sp"
+                android:textStyle="bold" />
+
+            <ImageView
+                android:id="@+id/levelTitleIV"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:padding="@dimen/default_margin_padding"
+                app:srcCompat="@drawable/end_dropdown_icon"
+                app:tint="#333333" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/freelancerLevel_LL"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/bg_squired_gray_borders_transparent_filled"
+            android:orientation="vertical"
+            android:padding="4dp"
+            android:visibility="gone"
+            tools:visibility="visible">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/bg_squired_gray_borders_transparent_filled"
+                android:gravity="center"
+                android:orientation="horizontal"
+                android:padding="4dp">
+
+                <com.google.android.material.switchmaterial.SwitchMaterial
+                    android:id="@+id/activeSW"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:checked="false"
+                    android:layoutDirection="rtl"
+                    android:textDirection="rtl"
+                    android:padding="4dp"
+                    android:text="@string/active"/>
+
+                <com.google.android.material.switchmaterial.SwitchMaterial
+                    android:id="@+id/distinguishedtSW"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:checked="false"
+                    android:layoutDirection="rtl"
+                    android:textDirection="rtl"
+                    android:padding="4dp"
+                    android:text="@string/distinguished"
+                     />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/bg_squired_gray_borders_transparent_filled"
+                android:gravity="center"
+                android:orientation="horizontal"
+                android:padding="4dp">
+
+                <com.google.android.material.switchmaterial.SwitchMaterial
+                    android:id="@+id/experiencedSW"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layoutDirection="rtl"
+                    android:textDirection="rtl"
+                    android:padding="4dp"
+                    android:text="@string/experienced"
+                    />
+
+                <com.google.android.material.switchmaterial.SwitchMaterial
+                    android:id="@+id/professionalSW"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layoutDirection="rtl"
+                    android:textDirection="rtl"
+                    android:padding="4dp"
+                    android:text="@string/professional"
+                    />
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/bg_squired_gray_borders_transparent_filled"
+            android:gravity="center"
+            android:orientation="vertical"
+            android:padding="4dp">
+
+            <LinearLayout
+                android:id="@+id/ratingTitleFilterLL"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:clickable="true"
+                android:orientation="horizontal"
+                android:focusable="true"
+                >
+                <TextView
+                    android:id="@+id/eval"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="start|center_vertical"
+                    android:layout_weight="1"
+                    android:padding="4dp"
+                    android:text="التقييم"
+                    android:textColor="@color/accent"
+                    android:textSize="17sp"
+                    android:textStyle="bold"
+
+                     />
+                <ImageView
+                    android:id="@+id/ratingfreelancerIV"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:padding="@dimen/default_margin_padding"
+                    app:srcCompat="@drawable/end_dropdown_icon"
+                    app:tint="#333333" />
+            </LinearLayout>
+
+
+
+            <LinearLayout
+                android:id="@+id/freelancerRatinglinear"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/bg_squired_gray_borders_transparent_filled"
+                android:orientation="vertical"
+                android:padding="4dp"
+                android:visibility="gone"
+                tools:visibility="visible">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:orientation="horizontal"
+                    android:padding="4dp">
+
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:orientation="horizontal"
+
+                        android:layout_height="wrap_content">
+                        <com.google.android.material.switchmaterial.SwitchMaterial
+                            android:id="@+id/freelancerRating_2"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:checked="false"
+                            android:layoutDirection="rtl"
+                            android:padding="4dp"
+
+                            android:textDirection="rtl" />
+
+                        <RatingBar
+
+                            style="@style/material_small_rating_bar"
+
+                            android:layout_gravity="center"
+
+                            android:layout_margin="@dimen/list_item_margin_padding"
+                            android:foregroundTint="@color/white"
+                            android:rating="1" />
+
+                    </LinearLayout>
+
+
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:orientation="horizontal"
+
+                        android:layout_height="wrap_content">
+                    <com.google.android.material.switchmaterial.SwitchMaterial
+                        android:id="@+id/freelancerRating_3"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:checked="false"
+                        android:layoutDirection="rtl"
+                        android:padding="4dp"
+
+                        android:textDirection="rtl" />
+                        <RatingBar
+
+                            style="@style/material_small_rating_bar"
+
+                            android:layout_gravity="center"
+
+                            android:layout_margin="@dimen/list_item_margin_padding"
+                            android:foregroundTint="@color/white"
+                            android:rating="2" />
+
+                    </LinearLayout>
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/bg_squired_gray_borders_transparent_filled"
+                    android:gravity="center"
+                    android:orientation="horizontal"
+                    android:padding="4dp">
+                   <LinearLayout
+                       android:layout_width="wrap_content"
+                       android:orientation="horizontal"
+                       android:layout_height="wrap_content">
+
+
+                       <com.google.android.material.switchmaterial.SwitchMaterial
+                           android:id="@+id/freelancerRating_4"
+                           android:layout_width="wrap_content"
+                           android:layout_height="wrap_content"
+                           android:layout_weight="1"
+                           android:layoutDirection="rtl"
+                           android:padding="4dp"
+
+                           android:textDirection="rtl" />
+
+                       <RatingBar
+
+                           style="@style/material_small_rating_bar"
+
+                           android:layout_gravity="center"
+
+                           android:layout_margin="@dimen/list_item_margin_padding"
+                           android:foregroundTint="@color/white"
+                           android:rating="3" />
+                   </LinearLayout>
+
+
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal">
+                        <com.google.android.material.switchmaterial.SwitchMaterial
+                            android:id="@+id/freelancerRating_5"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:layoutDirection="rtl"
+                            android:padding="4dp"
+
+                            android:textDirection="rtl" />
+                        <RatingBar
+
+                            style="@style/material_small_rating_bar"
+
+                            android:layout_gravity="center"
+
+                            android:layout_margin="@dimen/list_item_margin_padding"
+                            android:foregroundTint="@color/white"
+                            android:rating="4" />
+
+                    </LinearLayout>
+
+
+
+
+
+
+
+                </LinearLayout>
+
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:orientation="horizontal"
+                    android:padding="4dp">
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:orientation="horizontal"
+
+                        android:layout_height="wrap_content">
+                        <com.google.android.material.switchmaterial.SwitchMaterial
+                            android:id="@+id/freelancerRating_6"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:layoutDirection="rtl"
+                            android:padding="4dp"
+
+                            android:textDirection="rtl" />
+                        <RatingBar
+
+                            style="@style/material_small_rating_bar"
+
+                            android:layout_gravity="center"
+
+                            android:layout_margin="@dimen/list_item_margin_padding"
+                            android:foregroundTint="@color/white"
+                            android:rating="5" />
+                    </LinearLayout>
+
+
+                </LinearLayout>
+
+
+
+            </LinearLayout>
+
+
+        </LinearLayout>
+
+
+        <Button
+            android:id="@+id/searchBtn"
+            style="@style/primary_material_btn"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/search"
+            android:textSize="18sp" />
+
+    </LinearLayout>
+</ScrollView>

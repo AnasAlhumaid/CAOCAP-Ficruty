@@ -1,0 +1,562 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    style="@style/fragment_content"
+    android:paddingStart="10dp"
+    android:paddingEnd="10dp"
+    android:paddingBottom="@dimen/system_nav_bar"
+    tools:context=".ui.fragments.auth.signUp.freelancer.FreelancerRegistration2Experience">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="4dp"
+        android:orientation="vertical"
+        android:padding="4dp">
+
+
+        <TextView
+            android:id="@+id/textView2"
+            style="@style/material_textView"
+            android:text="@string/domains_and_experience"
+            android:textColor="@color/accent"
+            android:textSize="20sp"
+            android:textStyle="bold" />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginBottom="10dp"
+            android:background="@color/divider_gray" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center_vertical"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/user_name_tv"
+                style="@style/material_textView"
+                android:text="نبذة عن المستخدم"
+                android:textColor="@color/black"
+                android:textSize="18dp" />
+
+
+
+            <EditText
+                android:id="@+id/about_TIL"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="8dp"
+                android:background="@drawable/input_bg_gray_borders_curved_5_transparent_filled"
+                android:drawableTint="@color/gray_font"
+                android:fontFamily="@font/sakkal_majalla"
+                android:gravity="start|top"
+                android:hint="يرجى كتابة نبذة قصيرة تصف نفسك وتوضح ما تبحث عنه أو ما تقدمه على منصة دال. يمكنك ذكر اهتماماتك، مهاراتك، احتياجاتك أو أي تفاصيل أخرى تعتقد أنها مهمة لفهمك بشكل أفضل لتسهيل التواصل مع الآخرين."
+                android:inputType="textMultiLine"
+                android:maxLength="250"
+                android:lines="4"
+                android:padding="8dp"
+                android:textSize="18sp" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="horizontal">
+
+                <TextView
+                    style="@style/small_text_view"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="1dp"
+                    android:text="عدد الحروف المتاحة" />
+
+                <TextView
+                    android:id="@+id/aboutUser_char_TV"
+                    style="@style/small_text_view"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="1dp"
+                    android:text="0" />
+
+                <TextView
+                    style="@style/small_text_view"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="1dp"
+                    android:text="/" />
+
+                <TextView
+                    android:id="@+id/aboutUserMax"
+                    style="@style/small_text_view"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="1dp"
+                    android:text="250" />
+            </LinearLayout>
+
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:orientation="vertical">
+
+<LinearLayout
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal">
+
+    <TextView
+        style="@style/material_textView"
+        android:text="@string/add_experience"
+        android:textColor="@color/black"
+        android:textSize="18dp" />
+    <TextView
+        style="@style/material_textView"
+        android:text="*"
+        android:textColor="@color/red"
+        android:textSize="18dp" />
+</LinearLayout>
+
+
+
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/experiences_TIL"
+                style="@style/TextInputLayout"
+                app:endIconTintMode="multiply"
+                app:startIconScaleType="fitStart">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    style="@style/TextInputEditText"
+                    android:layout_margin="@dimen/default_margin_padding"
+                    android:gravity="top"
+                    android:hint="@string/add_experience"
+                    android:inputType="textMultiLine"
+
+                    android:lines="3"
+                    android:textSize="18sp" />
+            </com.google.android.material.textfield.TextInputLayout>
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:orientation="vertical">
+<LinearLayout
+    android:layout_width="wrap_content"
+    android:orientation="horizontal"
+    android:layout_height="wrap_content">
+    <TextView
+        style="@style/material_textView"
+        android:text="عدد سنوات الخبرة"
+        android:textColor="@color/black"
+        android:textSize="18dp" />
+    <TextView
+        style="@style/material_textView"
+        android:text="*"
+        android:textColor="@color/red"
+        android:textSize="18dp" />
+</LinearLayout>
+
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/exp_years_TIL"
+                style="@style/TextInputLayout"
+                app:endIconTintMode="multiply"
+                app:startIconScaleType="fitStart">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    style="@style/TextInputEditText"
+                    android:layout_margin="@dimen/default_margin_padding"
+                    android:gravity="top"
+                    android:hint="@string/add_experience"
+                    android:inputType="number|numberDecimal"
+                    android:maxLength="2"
+
+                    android:padding="10dp"
+                    android:textSize="18sp" />
+            </com.google.android.material.textfield.TextInputLayout>
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center_vertical"
+            android:orientation="vertical">
+<LinearLayout
+    android:layout_width="wrap_content"
+    android:orientation="horizontal"
+    android:layout_height="wrap_content">
+    <TextView
+        android:id="@+id/domans_tv"
+        style="@style/material_textView"
+        android:text="@string/domains"
+        android:textColor="@color/black"
+        android:textSize="18dp" />
+    <TextView
+        style="@style/material_textView"
+        android:text="*"
+        android:textColor="@color/red"
+        android:textSize="18dp" />
+</LinearLayout>
+
+
+            <FrameLayout
+                style="@style/spinner_container"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_margin="@dimen/default_margin_padding">
+
+                <Spinner
+                    android:id="@+id/domains_spinner"
+                    style="@style/spinner"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="8dp"
+                    android:entries="@array/domains_list"
+                    android:fontFamily="@font/sakkal_majalla"
+                    android:padding="8dp"
+                    android:spinnerMode="dropdown"
+                    android:textSize="16sp" />
+
+            </FrameLayout>
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:orientation="horizontal">
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/specialityRV"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layoutDirection="locale"
+                    android:orientation="horizontal"
+                    android:textDirection="locale"
+                    app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                    tools:itemCount="2"
+                    tools:listitem="@layout/list_item_domain" />
+
+                <com.google.android.material.textfield.MaterialAutoCompleteTextView
+                    android:id="@+id/services_ACTV"
+                    style="@style/AutoCompleteTV"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:completionHint="اختر مجال"
+                    android:completionThreshold="1"
+                    android:drawablePadding="3dp"
+                    android:hint="إضافة مجال،،،"
+                    android:inputType="textPhonetic"
+                    android:padding="10dp"
+                    android:textSize="16sp"
+                    android:visibility="gone"
+                    app:endIconMode="dropdown_menu" />
+            </LinearLayout>
+
+        </LinearLayout>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_margin="5dp"
+            >
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_margin="5dp"
+            android:gravity="center_vertical"
+            android:orientation="vertical"
+            android:padding="5dp">
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content">
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/sakkal_majalla_regular"
+                    android:text="إضافة شهادةعمل حر"
+                    android:textColor="@color/black"
+                    android:textSize="18sp" />
+                <TextView
+                    style="@style/material_textView"
+                    android:text="*"
+                    android:textColor="@color/red"
+                    android:textSize="18dp" />
+            </LinearLayout>
+
+
+
+        </LinearLayout>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:orientation="horizontal">
+
+
+            <TextView
+                android:id="@+id/f11Name"
+                style="@style/material_textView"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:gravity="right"
+                android:text="xxx.pdf"
+                android:textColor="@color/black"
+                android:textSize="18dp" />
+
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/add_file_btn1"
+                style="@style/primary_material_btn"
+                android:text="@string/add_a_file"
+                android:textSize="18sp" />
+
+
+
+
+        </LinearLayout>
+    </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginTop="@dimen/default_margin_padding"
+            android:gravity="center_vertical"
+            android:orientation="vertical">
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content">
+                <TextView
+                    style="@style/material_textView"
+                    android:text="@string/add_previous_works"
+                    android:textColor="@color/black"
+                    android:textSize="18dp" />
+                <TextView
+                    style="@style/material_textView"
+                    android:text="*"
+                    android:textColor="@color/red"
+                    android:textSize="18dp" />
+            </LinearLayout>
+
+
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/experienceRV"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layoutDirection="rtl"
+                android:orientation="vertical"
+                android:textDirection="rtl"
+                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                tools:itemCount="3"
+                tools:listitem="@layout/list_item_experience_file" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/addExperienceBtn"
+                style="@style/material_textButton"
+                android:padding="10dp"
+                android:text="إضافة ملف"
+                android:textSize="18dp"
+                app:icon="@drawable/baseline_add_24"
+                app:iconSize="15dp" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:visibility="gone">
+
+                <EditText
+                    android:id="@+id/experience_1_desc_IET"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_margin="@dimen/default_margin_padding"
+                    android:layout_weight="1"
+                    android:background="@drawable/bg_10_curved_light_gray_borders_white_filled"
+                    android:drawablePadding="4dp"
+                    android:drawableTint="@color/gray_font"
+                    android:fontFamily="@font/sakkal_majalla"
+                    android:gravity="top"
+                    android:hint="@string/work_description"
+                    android:inputType="textMultiLine"
+                    android:padding="@dimen/default_margin_padding"
+                    android:textSize="16sp"
+                    tools:ignore="LabelFor" />
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="1dp"
+                    android:gravity="center"
+                    android:orientation="vertical"
+                    android:padding="1dp">
+
+                    <!--                    <TextView-->
+                    <!--                        android:id="@+id/f0Name"-->
+                    <!--                        style="@style/material_textView"-->
+                    <!--                        android:layout_width="wrap_content"-->
+                    <!--                        android:layout_height="wrap_content"-->
+                    <!--                        android:layout_margin="1dp"-->
+                    <!--                        android:fontFamily="@font/sakkal_majalla_regular"-->
+                    <!--                        android:text="xxx.pdf"-->
+                    <!--                        android:textColor="@color/black"-->
+                    <!--                        android:textSize="16sp" />-->
+
+                    <com.google.android.material.textview.MaterialTextView
+                        android:id="@+id/f0Name"
+                        style="@style/material_textView"
+                        android:layout_width="match_parent"
+                        android:background="@drawable/tag_background"
+                        android:drawablePadding="3dp"
+                        android:gravity="center"
+                        android:padding="4dp"
+                        android:text="اسم الملف"
+                        android:textColor="@color/black"
+                        android:textSize="16sp"
+                        app:drawableEndCompat="@drawable/icon_close"
+                        app:drawableTint="@color/black" />
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/addWorkExperienceFile1Btn"
+                        style="@style/primary_material_btn"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="@font/sakkal_majalla_regular"
+                        android:text="@string/add_a_file"
+                        android:textAllCaps="false"
+                        android:textSize="16sp" />
+
+                </LinearLayout>
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:visibility="gone">
+
+                <EditText
+                    android:id="@+id/experience_2_desc_IET"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_margin="@dimen/default_margin_padding"
+                    android:layout_weight="1"
+                    android:background="@drawable/bg_10_curved_light_gray_borders_white_filled"
+                    android:drawablePadding="4dp"
+                    android:drawableTint="@color/gray_font"
+                    android:fontFamily="@font/sakkal_majalla"
+                    android:gravity="top"
+                    android:hint="@string/work_description"
+                    android:inputType="textMultiLine"
+                    android:padding="@dimen/default_margin_padding"
+                    android:textSize="16sp" />
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:orientation="vertical"
+                    android:padding="1dp">
+
+                    <!--                    <TextView-->
+                    <!--                        android:id="@+id/f1Name"-->
+                    <!--                        style="@style/material_textView"-->
+                    <!--                        android:layout_width="wrap_content"-->
+                    <!--                        android:layout_height="wrap_content"-->
+                    <!--                        android:layout_margin="1dp"-->
+                    <!--                        android:fontFamily="@font/sakkal_majalla_regular"-->
+                    <!--                        android:text="xxx.pdf"-->
+                    <!--                        android:textColor="@color/black"-->
+                    <!--                        android:textSize="16sp" />-->
+
+                    <com.google.android.material.textview.MaterialTextView
+                        android:id="@+id/f1Name"
+                        style="@style/material_textView"
+                        android:layout_width="match_parent"
+                        android:background="@drawable/tag_background"
+                        android:drawablePadding="3dp"
+                        android:gravity="center"
+                        android:padding="4dp"
+                        android:text="اسم الملف"
+                        android:textColor="@color/black"
+                        android:textSize="16sp"
+                        app:drawableEndCompat="@drawable/icon_close"
+                        app:drawableTint="@color/black" />
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/addWorkExperienceFile2Btn"
+                        style="@style/primary_material_btn"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="@font/sakkal_majalla_regular"
+                        android:text="@string/add_a_file"
+                        android:textAllCaps="false"
+                        android:textSize="16sp" />
+                </LinearLayout>
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+        <TextView
+            style="@style/material_textView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="* يجب أن لا يتجاوز حجم الملف \u0662 م.ب." />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginBottom="10dp"
+            android:background="@color/divider_gray" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_margin="8dp"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:padding="4dp">
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/prevBtn"
+                style="@style/secondary_material_btn"
+                android:padding="10dp"
+                android:text="السابق"
+                android:textSize="18dp" />
+
+            <View
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1" />
+
+            <Button
+                android:id="@+id/next_btn"
+                style="@style/primary_material_btn"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:padding="10dp"
+                android:text="@string/next"
+                android:textSize="18dp" />
+        </LinearLayout>
+
+
+    </LinearLayout>
+</androidx.core.widget.NestedScrollView>

@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    style="@style/fragment_content"
+    tools:context=".ui.fragments.technicalSupport.TechnicalSupportRepliesFragment">
+
+    <LinearLayout
+        android:id="@+id/sahab_details_LL"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        tools:layout_editor_absoluteY="145dp">
+
+        <TextView
+            android:id="@+id/textView93"
+            style="@style/material_textView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="4dp"
+            android:layout_weight="1"
+            android:padding="8dp"
+            android:text="سجل الردود"
+            android:textColor="@color/accent"
+            android:textStyle="bold" />
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="4dp"
+            tools:itemCount="3"
+            tools:listitem="@layout/list_item_technical_support" />
+
+    </LinearLayout>
+</androidx.core.widget.NestedScrollView>

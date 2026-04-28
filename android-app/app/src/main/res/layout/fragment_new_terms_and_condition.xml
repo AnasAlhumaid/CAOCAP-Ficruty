@@ -1,0 +1,345 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    style="@style/fragment_content"
+    android:orientation="vertical"
+    android:paddingBottom="@dimen/system_nav_bar"
+    tools:context=".ui.fragments.auth.signUp.NewTermsAndConditionFragment">
+
+    <androidx.core.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_margin="4dp"
+        android:layout_weight="1"
+        android:padding="4dp"
+        android:scrollbarStyle="insideOverlay">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="4dp"
+            android:fadeScrollbars="false"
+            android:orientation="vertical"
+            android:padding="4dp"
+            android:scrollbarStyle="outsideOverlay"
+            android:scrollbars="vertical">
+
+            <TextView
+                android:id="@+id/termsNconditionsTV7"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="4dp"
+                android:text="إقرار"
+                android:textColor="@color/black"
+                android:textSize="16sp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@+id/reset_password_TV"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:id="@+id/termsNconditionsTV6"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="4dp"
+                android:text="هذه المنصة التي يشار إليها هنا بعبارة &quot;منصة تقديم خدمات اللغة العربية&quot; أو &quot;المنصة&quot; متاحة لاستخدامك لغرض الاستفادة من خدماتها المقدمة، ويخضع دخولك واستخدامك لهذه المنصة لبنود سياسة الاستخدام هذه، ولأنظمة المملكة العربية السعودية، وكذلك يعد وصولك ودخولك إلى المنصة موافقة دون قيد أو شرط على بنود سياسة الاستخدام، سواء أكنت مستخدمًا مسجلًا أم لم تكن، وتسري هذه الموافقة ابتداءً من تاريخ أول استخدام لك لهذه المنصة. "
+                android:textColor="@color/gray_font"
+                android:textSize="16sp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@+id/reset_password_TV"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:id="@+id/termsNconditionsTV5"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="4dp"
+                android:text="يصبح أي تعديل لهذه البنود والشروط نافذًا فور إعلانه، ما لم يُبين خلاف ذلك، ويعني استمرارك في استخدام هذه المنصة عقب أي تعديل قبولك التام لذلك التعديل. "
+                android:textColor="@color/gray_font"
+                android:textSize="16sp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@+id/reset_password_TV"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:id="@+id/termsNconditionsTV4"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="4dp"
+                android:text="وعليه؛ يقر المستخدم (مقدم الخدمة/ طالب الخدمة) بعدم تحمل مسؤولية مجمع الملك سلمان العالمي للغة العربية عن طبيعة الاستخدام التي تحدده (منصة خدمات اللغة العربية) وأن مجمع الملك سلمان العالمي للغة العربية هو وسيط رقمي تفاعلي بين مقدم الخدمة وطالب الخدمة. "
+                android:textColor="@color/gray_font"
+                android:textSize="16sp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@+id/reset_password_TV"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:id="@+id/termsNconditionsTV3"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="4dp"
+                android:text="وأن المستخدم هو المسؤول الوحيد عن طبيعة الاستخدام، ويخلي المجمع كامل مسؤوليته القانونية عن أية خسائر، أو أضرار، أو نفقات، أو مصاريف يتكبدها المستخدم أو يتعرض لها هو أو أي طرف آخر من جراء استخدام (منصة خدمات اللغة العربية) أو العجز عن الاستخدام الكلي أو الجزئي للمنصة. "
+                android:textColor="@color/gray_font"
+                android:textSize="16sp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@+id/reset_password_TV"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:id="@+id/termsNconditionsTV8"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="4dp"
+                android:text="بنود سياسة الاستخدام"
+                android:textColor="@color/black"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@+id/reset_password_TV"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:id="@+id/termsNconditionsTV9"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="4dp"
+                android:text="يجب على مستخدمي المنصة وطالبي الخدمة الاطلاع المستمر على سياسة الخصوصية وسرية المعلومات وسياسة الاستخدام لمعرفة أية تحديثات تطرأ عليها، ويعدّ استخدامك للمنصة دليلًا على اطلاعك وموافقتك على تلك السياسات."
+                android:textColor="@color/gray_font"
+                android:textSize="16sp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@+id/reset_password_TV"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:id="@+id/termsNconditionsTV10"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="4dp"
+                android:text="إذا استخدمت نماذج المنصة أو أحد قنوات التواصل المقدمة من المنصة التي تزودنا فيها ببياناتك الشخصية، فإن المنصة قد تتقاسم البيانات الضرورية مع جهات أو إدارات أخرى؛ وذلك لخدمتك بصورة أكثر فعالية، وبتقديمك لبياناتك ومعلوماتك من خلال المنصة، فإنك توافق على تخزين البيانات ومعالجتها. وقد تستخدم تلك البيانات من قبل الجهات المختصة، ونحن نحتفظ بالحق في كل الأوقات في كشف أي معلومات للجهات المختصة، وخاصة عندما يكون ذلك ضروريًّا للالتزام بأي قانون، أو نظام، أو طلب حكومي، أو قضائي.  "
+                android:textColor="@color/gray_font"
+                android:textSize="16sp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@+id/reset_password_TV"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:id="@+id/termsNconditionsTV11"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="4dp"
+                android:text="للحفاظ على بياناتك الشخصية، يتم تأمين التخزين الرقمي والبيانات الشخصية المرسلة باستخدام التقنيات الأمنية المتوافقة مع تشريعات الهيئة الوطنية للأمن السيبراني وسياساتها."
+                android:textColor="@color/gray_font"
+                android:textSize="16sp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@+id/reset_password_TV"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:id="@+id/termsNconditionsTV12"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="4dp"
+                android:text="هذه المنصة قد تحتوي على روابط إلكترونية لمواقع ويب أو منصات أخرى قد تستخدم طرقًا لحماية المعلومات وخصوصياتها تختلف عن الطرق المستخدمة لدى المنصة، ونحن غير مسؤولين عن محتويات وطرق خصوصيات المواقع الأخرى، وننصحك بالرجوع إلى سياسة الخصوصية الخاصة بتلك المواقع."
+                android:textColor="@color/gray_font"
+                android:textSize="16sp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@+id/reset_password_TV"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:id="@+id/termsNconditionsTV13"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="4dp"
+                android:text="هذه المنصة قد تحتوي على روابط إلكترونية لمواقع ويب أو منصات أخرى قد تستخدم طرقًا لحماية المعلومات وخصوصياتها تختلف عن الطرق المستخدمة لدى المنصة، ونحن غير مسؤولين عن محتويات وطرق خصوصيات المواقع الأخرى، وننصحك بالرجوع إلى سياسة الخصوصية الخاصة بتلك المواقع."
+                android:textColor="@color/gray_font"
+                android:textSize="16sp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@+id/reset_password_TV"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:id="@+id/termsNconditionsTV14"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="4dp"
+                android:text="الوصلات الخارجية الموجودة في المنصة هي لأغراض مرجعية، والمنصة ليست مسؤولة عن محتويات المواقع الخارجية."
+                android:textColor="@color/gray_font"
+                android:textSize="16sp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@+id/reset_password_TV"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:id="@+id/termsNconditionsTV15"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="4dp"
+                android:text="القيود على الاستخدام"
+                android:textColor="@color/black"
+                android:textSize="16sp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@+id/reset_password_TV"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:id="@+id/termsNconditionsTV16"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="4dp"
+                android:text="باستخدامك لمنصة تقديم خدمات اللغة العربية، تقر بالامتناع عما يلي:"
+                android:textColor="@color/gray_font"
+                android:textSize="16sp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@+id/reset_password_TV"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:id="@+id/termsNconditionsTV17"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="4dp"
+                android:text="-رفع ملفات تحتوي على برمجيات، أو مواد مشبوهة، أو بيانات، أو معلومات أخرى ليست مملوكة لك أو لا تملك ترخيصًا بشأنها."
+                android:textColor="@color/gray_font"
+                android:textSize="16sp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@+id/reset_password_TV"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:id="@+id/termsNconditionsTV18"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="4dp"
+                android:text="- استخدام اسم هذه المنصة بأي طريقة غير مرغوب فيها، أو أيُّ إساءة استخدام من هذا النوع للمنصة."
+                android:textColor="@color/gray_font"
+                android:textSize="16sp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@+id/reset_password_TV"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:id="@+id/termsNconditionsTV19"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="4dp"
+                android:text="- رفع ملفات على هذه المنصة تحتوي على فيروسات أو بيانات تالفة.  "
+                android:textColor="@color/gray_font"
+                android:textSize="16sp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@+id/reset_password_TV"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:id="@+id/termsNconditionsTV20"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="4dp"
+                android:text="- النشر أو الإعلان أو التوزيع أو التعميم لأي مواد أو معلومات مشبوهة أو تحتوي تشويهًا للسمعة، أو انتهاكًا للقوانين، أو بذيئة، أو مخالفة للآداب العامة، أو أي مواد أو معلومات غير قانونية من خلال منصة تقديم خدمات اللغة العربية.  "
+                android:textColor="@color/gray_font"
+                android:textSize="16sp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@+id/reset_password_TV"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:id="@+id/termsNconditionsTV21"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="4dp"
+                android:text="- استخدام المنصة للمساهمة في أنشطة غير مشروعة أو غير قانونية في المملكة العربية السعودية أو خارجها."
+                android:textColor="@color/gray_font"
+                android:textSize="16sp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@+id/reset_password_TV"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:id="@+id/termsNconditionsTV22"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="4dp"
+                android:text="الإعلان -على منصة تقديم خدمات اللغة العربية- عن أي منتج أو خدمة تضع المنصة في وضع انتهاك لأي قانون أو نظام مطبق في أي مجال أو أي موقع."
+                android:textColor="@color/gray_font"
+                android:textSize="16sp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@+id/reset_password_TV"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:id="@+id/termsNconditionsTV23"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="4dp"
+                android:text="- استخدام أي وسيلة أو برنامج أو إجراء لاعتراض التشغيل الصحيح للمنصة، أو محاولة اعتراضه.  "
+                android:textColor="@color/gray_font"
+                android:textSize="16sp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@+id/reset_password_TV"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:id="@+id/termsNconditionsTV24"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="4dp"
+                android:text="القيام بأي إجراء يفرض حملًا غير معقول، أو رفع ملفات كبيرة بصورة غير مناسبة على البنية التحتية للمنصة، أو ما من شأنه التأثير السلبي على تلك البنية أو محتواها."
+                android:textColor="@color/gray_font"
+                android:textSize="16sp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@+id/reset_password_TV"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:id="@+id/termsNconditionsTV25"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="4dp"
+                android:text="إنهاء الاستخدام"
+                android:textColor="@color/black"
+                android:textSize="16sp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@+id/reset_password_TV"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <com.google.android.material.checkbox.MaterialCheckBox
+                android:id="@+id/termsAndConditionsCB"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="4dp"
+                android:padding="4dp"
+                android:text="أوافق على الشروط والأحكام الخاصة بمنصة دال لخدمات اللغة العربية" />
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_margin="4dp"
+                android:background="@color/gray_font" />
+        </LinearLayout>
+    </androidx.core.widget.NestedScrollView>
+
+</LinearLayout>

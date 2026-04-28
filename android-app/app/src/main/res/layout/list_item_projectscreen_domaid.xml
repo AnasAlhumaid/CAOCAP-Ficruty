@@ -1,0 +1,15 @@
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/domaidcompelete"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:padding="@dimen/list_item_margin_padding">
+    <TextView
+        android:id="@+id/serviceTypeTV2"
+        style="@style/small_text_view"
+        android:layout_margin="@dimen/list_item_margin_padding"
+        android:background="@drawable/bg_5_curved_light_gray_borders_transparent_filled"
+        android:padding="@dimen/default_margin_padding"
+        android:text="@string/content_writing"
+        android:textStyle="bold" />
+</FrameLayout>
