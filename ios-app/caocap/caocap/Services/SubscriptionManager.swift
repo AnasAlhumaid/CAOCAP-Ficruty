@@ -1,6 +1,7 @@
 import Foundation
 import StoreKit
 import Observation
+import OSLog
 
 /// Owns StoreKit product loading, purchase state, restoration, and transaction
 /// updates for CAOCAP Pro.
@@ -8,6 +9,7 @@ import Observation
 @Observable
 public class SubscriptionManager {
     public static let shared = SubscriptionManager()
+    private let logger = Logger(subsystem: "Ficruty", category: "SubscriptionManager")
     
     public private(set) var products: [Product] = []
     public private(set) var purchasedProductIDs = Set<String>()
@@ -51,7 +53,7 @@ public class SubscriptionManager {
         do {
             products = try await Product.products(for: productIDs)
         } catch {
-            print("Failed to fetch products: \(error)")
+            logger.error("Failed to fetch products: \(error)")
         }
     }
     

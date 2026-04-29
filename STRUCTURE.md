@@ -146,6 +146,7 @@ The spatial runtime — the heart of Ficruty.
 |---|---|
 | `HomeProvider.swift` | Generates the default node graph for the Home workspace. |
 | `OnboardingProvider.swift` | Generates the guided node sequence for first-run onboarding. |
+| `ProjectTemplateProvider.swift` | Generates the default interconnected node graph for new projects. |
 
 ---
 

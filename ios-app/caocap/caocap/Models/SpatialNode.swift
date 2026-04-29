@@ -8,6 +8,7 @@ public enum NodeAction: String, Codable, Equatable {
     case openSettings
     case openProfile
     case openProjectExplorer
+    case resumeLastProject
 }
 
 public enum NodeType: String, Codable, Equatable {

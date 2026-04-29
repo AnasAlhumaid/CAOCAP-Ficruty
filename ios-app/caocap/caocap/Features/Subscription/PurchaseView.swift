@@ -1,10 +1,12 @@
 import SwiftUI
 import StoreKit
+import OSLog
 
 /// StoreKit paywall for CAOCAP Pro. The view owns presentation state while
 /// `SubscriptionManager` owns products, entitlements, and transactions.
 struct PurchaseView: View {
     @Environment(\.dismiss) var dismiss
+    private let logger = Logger(subsystem: "Ficruty", category: "PurchaseView")
     @State private var manager = SubscriptionManager.shared
     @State private var selectedProductID: String = "CAOCAP_Pro_Yearly"
     @State private var isPurchasing = false
@@ -307,11 +309,11 @@ struct PurchaseView: View {
                 // Ignore cancellation errors from throwing
                 let errorString = error.localizedDescription.lowercased()
                 if errorString.contains("cancel") || errorString.contains("usercancelled") {
-                    print("Purchase cancelled by user.")
+                    logger.info("Purchase cancelled by user.")
                     return
                 }
                 
-                print("Purchase failed: \(error)")
+                logger.error("Purchase failed: \(error)")
                 purchaseError = error.localizedDescription
             }
         }

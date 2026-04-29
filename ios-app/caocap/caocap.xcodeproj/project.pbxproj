@@ -55,9 +55,9 @@
 			membershipExceptions = (
 				App/Info.plist,
 				Features/Auth/README.md,
-				Features/Omnibox/README.md,
-				Features/CoCaptain/README.md,
 				Features/Canvas/README.md,
+				Features/CoCaptain/README.md,
+				Features/Omnibox/README.md,
 				Features/Subscription/README.md,
 			);
 			target = EC997C762F96178E00C19E5E /* caocap */;

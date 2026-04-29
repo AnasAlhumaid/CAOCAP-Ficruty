@@ -1,10 +1,13 @@
 import SwiftUI
 import Observation
+import OSLog
 
 /// UI state for the command palette. It deliberately emits only `AppActionID`
 /// values so action execution remains centralized in `AppActionDispatcher`.
 @Observable
 public class CommandPaletteViewModel {
+    private let logger = Logger(subsystem: "Ficruty", category: "CommandPalette")
+    
     public var query: String = "" {
         didSet {
             // Search results are rebuilt from the query, so keep keyboard
@@ -63,7 +66,7 @@ public class CommandPaletteViewModel {
     /// Emits the chosen action ID and dismisses. The view model does not perform
     /// side effects directly because the same action system is shared with agents.
     public func executeAction(_ action: AppActionDefinition) {
-        print("Executing action: \(action.title)")
+        logger.info("Executing action: \(action.title)")
         onExecute?(action.id)
         setPresented(false)
     }

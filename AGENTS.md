@@ -102,9 +102,7 @@ Prefer running the narrowest useful verification for the change. If verification
 
 ## Good First Debt Payments
 
-- Add a `ProjectTemplateProvider` for new-project graphs instead of keeping template construction inside `AppRouter`.
 - Move onboarding toward a manifest-backed flow when implementing roadmap onboarding work.
-- Replace remaining production `print(...)` calls with `Logger` and user-facing error states where needed.
 - Add fixtures for project JSON save/load, corrupted project recovery, onboarding, and multi-node linked graphs.
 - Expand tests around live preview compilation, project persistence, routing, node role matching, and patch conflicts.
 

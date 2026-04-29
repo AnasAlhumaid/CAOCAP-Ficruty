@@ -165,6 +165,8 @@ struct ContentView: View {
             _ = actionDispatcher.perform(.openProfile, source: .user)
         case .openProjectExplorer:
             _ = actionDispatcher.perform(.openProjectExplorer, source: .user)
+        case .resumeLastProject:
+            router.resumeLastProject()
         }
     }
 

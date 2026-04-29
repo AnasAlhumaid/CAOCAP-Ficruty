@@ -133,6 +133,10 @@ open CAOCAP-Ficruty/ios-app/caocap/caocap.xcodeproj
 
 ## Devlog
 
+### 2026-04-29: Technical Debt & Refactoring
+- **Project Template Extraction**: Extracted the default node graph logic out of `AppRouter` and into a dedicated `ProjectTemplateProvider`, enforcing stricter separation of concerns for the navigation layer.
+- **Production Diagnostics**: Migrated legacy primitive `print(...)` logging across StoreKit, Auth, and the Command Palette systems to Apple's unified `OSLog` (`Logger`) framework for reliable production diagnostics.
+
 ### 2026-04-24: Agentic Control & Gemini 3 Flash
 - **Gemini 3 Flash**: Updated the core LLM to the latest `gemini-3-flash-preview` via Firebase AI Logic, bringing improved reasoning and faster response times.
 - **Agentic Control v1**: Scaffolded the `CoCaptainAgentCoordinator` architecture to support autonomous actions and structured node patching.
