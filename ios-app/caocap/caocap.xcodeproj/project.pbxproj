@@ -54,6 +54,11 @@
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
 				App/Info.plist,
+				Features/Auth/README.md,
+				Features/Omnibox/README.md,
+				Features/CoCaptain/README.md,
+				Features/Canvas/README.md,
+				Features/Subscription/README.md,
 			);
 			target = EC997C762F96178E00C19E5E /* caocap */;
 		};
@@ -351,7 +356,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = caocap/App/caocap.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 11;
+				CURRENT_PROJECT_VERSION = 12;
 				DEVELOPMENT_ASSET_PATHS = "\"caocap/Preview Content\"";
 				DEVELOPMENT_TEAM = 6QYT6GJB4Z;
 				ENABLE_PREVIEWS = YES;
@@ -383,7 +388,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = caocap/App/caocap.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 11;
+				CURRENT_PROJECT_VERSION = 12;
 				DEVELOPMENT_ASSET_PATHS = "\"caocap/Preview Content\"";
 				DEVELOPMENT_TEAM = 6QYT6GJB4Z;
 				ENABLE_PREVIEWS = YES;

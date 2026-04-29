@@ -139,17 +139,6 @@
         }
       }
     },
-    "I can do that. Review the action below, then tap Apply." : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "ar" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "أقدر أسوي ذلك. راجع الإجراء أدناه، ثم اضغط تطبيق."
-          }
-        }
-      }
-    },
     "Action unavailable." : {
       "extractionState" : "manual",
       "localizations" : {
@@ -392,6 +381,9 @@
           }
         }
       }
+    },
+    "CAOCAP" : {
+
     },
     "CAOCAP Pro" : {
       "extractionState" : "manual",
@@ -879,6 +871,17 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "الرئيسية"
+          }
+        }
+      }
+    },
+    "I can do that. Review the action below, then tap Apply." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "أقدر أسوي ذلك. راجع الإجراء أدناه، ثم اضغط تطبيق."
           }
         }
       }
@@ -1933,6 +1936,9 @@
           }
         }
       }
+    },
+    "THE FUTURE OF PROGRAMMING" : {
+
     },
     "The Infinite Canvas" : {
       "extractionState" : "manual",

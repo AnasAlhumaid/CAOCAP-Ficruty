@@ -14,6 +14,7 @@ struct ContentView: View {
     @Environment(\.undoManager) var undoManager
     @Environment(\.colorScheme) var colorScheme
     @AppStorage("app_theme") private var selectedTheme = "System"
+    @State private var isLaunching = true
 
     var body: some View {
         ZStack {
@@ -64,6 +65,13 @@ struct ContentView: View {
             CommandPaletteView(viewModel: commandPalette)
         }
         .background(Color.black.ignoresSafeArea())
+        .overlay {
+            if isLaunching {
+                LaunchScreenView()
+                    .transition(.opacity)
+                    .zIndex(100)
+            }
+        }
         .preferredColorScheme(currentColorScheme)
         .sheet(isPresented: $coCaptain.isPresented) {
             CoCaptainView(viewModel: coCaptain)
@@ -119,6 +127,13 @@ struct ContentView: View {
 
             coCaptain.store = router.activeStore
             coCaptain.actionDispatcher = actionDispatcher
+
+            // Dismiss launch screen after animation
+            DispatchQueue.main.asyncAfter(deadline: .now() + 2.5) {
+                withAnimation(.easeInOut(duration: 0.5)) {
+                    isLaunching = false
+                }
+            }
         }
         .onChange(of: router.currentWorkspace) {
             router.activeStore.undoManager = undoManager
