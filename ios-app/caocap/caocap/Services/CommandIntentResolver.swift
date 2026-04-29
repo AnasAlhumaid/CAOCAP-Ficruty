@@ -1,8 +1,13 @@
 import Foundation
 
+/// Maps short natural-language commands to registered app actions without
+/// contacting the LLM. Used by CoCaptain and command surfaces for fast local
+/// intent handling.
 public struct CommandIntentResolver {
     public init() {}
 
+    /// Returns an action only when the normalized input positively matches an
+    /// alias for an action that is currently available.
     public func resolve(_ input: String, availableActions: [AppActionDefinition]) -> AppActionID? {
         let normalizedInput = Self.normalized(input)
         guard !normalizedInput.isEmpty else { return nil }
@@ -16,6 +21,8 @@ public struct CommandIntentResolver {
         }
     }
 
+    /// Alias lists intentionally include English and Arabic phrases. Keep them
+    /// conservative so casual chat is not accidentally interpreted as a command.
     private func aliases(for id: AppActionID) -> [String] {
         switch id {
         case .goHome:
@@ -169,6 +176,8 @@ public struct CommandIntentResolver {
         }
     }
 
+    /// Normalization removes punctuation and diacritics so aliases can match
+    /// common voice/input variations across English and Arabic.
     private static func normalized(_ value: String) -> String {
         value
             .folding(options: [.caseInsensitive, .diacriticInsensitive], locale: .current)
@@ -177,6 +186,8 @@ public struct CommandIntentResolver {
             .trimmingCharacters(in: .whitespacesAndNewlines)
     }
 
+    /// Single-word aliases require exact matches; multi-word aliases may appear
+    /// inside a longer request such as "please create a project".
     private static func matches(_ normalizedInput: String, alias: String) -> Bool {
         let normalizedAlias = normalized(alias)
         guard !normalizedAlias.isEmpty else { return false }
@@ -185,6 +196,8 @@ public struct CommandIntentResolver {
         return " \(normalizedInput) ".contains(" \(normalizedAlias) ")
     }
 
+    /// Refuses commands with explicit negation so phrases like "do not create a
+    /// project" cannot trigger a mutating action.
     private static func hasNegation(in normalizedInput: String) -> Bool {
         let negations = [
             "dont",

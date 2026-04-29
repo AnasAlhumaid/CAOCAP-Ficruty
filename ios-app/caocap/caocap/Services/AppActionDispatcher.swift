@@ -30,7 +30,11 @@ public struct AppActionDefinition: Identifiable, Hashable {
     public let title: String
     public let icon: String
     public let category: AppActionCategory
+    /// Mutating actions change user data or project structure and should be
+    /// reviewed before an agent performs them.
     public let isMutating: Bool
+    /// Indicates whether trusted non-user callers, such as CoCaptain, may run
+    /// this action without an explicit review item.
     public let allowsAutonomousExecution: Bool
 
     public init(
@@ -82,6 +86,9 @@ public protocol AppActionPerforming: AnyObject {
     func perform(_ id: AppActionID, source: AppActionSource) -> AppActionResult
 }
 
+/// Central registry and execution boundary for commands. UI surfaces and agents
+/// request actions by ID; this dispatcher owns whether they are configured and
+/// safe to execute from the given source.
 @MainActor
 public final class AppActionDispatcher: AppActionPerforming {
     public private(set) var availableActions: [AppActionDefinition] = [
@@ -216,6 +223,8 @@ public final class AppActionDispatcher: AppActionPerforming {
 
     public init() {}
 
+    /// Injects handlers from the app shell. Definitions stay stable while the
+    /// concrete closures can depend on the currently mounted views/services.
     public func configure(
         goHome: @escaping () -> Void,
         goBack: @escaping () -> Void,
@@ -252,6 +261,8 @@ public final class AppActionDispatcher: AppActionPerforming {
         availableActions.first(where: { $0.id == id })
     }
 
+    /// Executes an action if configured. Automatic agent calls are blocked from
+    /// mutating or non-autonomous actions; reviewed/user calls may continue.
     @discardableResult
     public func perform(_ id: AppActionID, source: AppActionSource) -> AppActionResult {
         guard let definition = definition(for: id) else {

@@ -1,5 +1,7 @@
 import SwiftUI
 
+/// Spotlight-style command surface. Rendering stays here while filtering,
+/// selection, and execution callbacks live in `CommandPaletteViewModel`.
 struct CommandPaletteView: View {
     @Bindable var viewModel: CommandPaletteViewModel
     @FocusState private var isFocused: Bool
@@ -36,7 +38,8 @@ struct CommandPaletteView: View {
                     Divider()
                         .background(Color.white.opacity(0.1))
                     
-                    // Results List
+                    // The view model owns the selected index so keyboard,
+                    // submit, and pointer/touch selection all share one state.
                     ScrollViewReader { proxy in
                         ScrollView {
                             LazyVStack(spacing: 0) {

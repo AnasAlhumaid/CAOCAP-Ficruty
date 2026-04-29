@@ -1,11 +1,14 @@
 import SwiftUI
 import Observation
 
+/// UI state for the command palette. It deliberately emits only `AppActionID`
+/// values so action execution remains centralized in `AppActionDispatcher`.
 @Observable
 public class CommandPaletteViewModel {
     public var query: String = "" {
         didSet {
-            // Reset selection when search changes
+            // Search results are rebuilt from the query, so keep keyboard
+            // selection pinned to the first visible command.
             selectedIndex = 0
         }
     }
@@ -13,6 +16,8 @@ public class CommandPaletteViewModel {
     public var selectedIndex: Int = 0
     public var actions: [AppActionDefinition] = []
     
+    /// Filters against localized and canonical titles so command search works
+    /// in the UI language while still matching stable English action names.
     public var filteredActions: [AppActionDefinition] {
         if query.isEmpty { return actions }
         return actions.filter {
@@ -25,6 +30,8 @@ public class CommandPaletteViewModel {
     
     public init() {}
     
+    /// Closes back to a clean state so each palette open starts from the full
+    /// command list.
     public func setPresented(_ presented: Bool) {
         isPresented = presented
         if !presented {
@@ -53,6 +60,8 @@ public class CommandPaletteViewModel {
         }
     }
     
+    /// Emits the chosen action ID and dismisses. The view model does not perform
+    /// side effects directly because the same action system is shared with agents.
     public func executeAction(_ action: AppActionDefinition) {
         print("Executing action: \(action.title)")
         onExecute?(action.id)
