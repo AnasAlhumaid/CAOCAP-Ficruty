@@ -57,20 +57,18 @@ struct InfiniteCanvasView: View {
                 
                 // Layer 3: The Spatial Core (Scaled & Offset)
                 ZStack {
-                    // Layer 2.5: Spatial Centerpiece (Home only)
-                    if store.projectName == "Home" {
-                        Color.clear
-                            .frame(width: 0, height: 0)
-                            .overlay(
-                                Image("SpaceSketchBG")
-                                    .resizable()
-                                    .scaledToFill()
-                                    .frame(width: 2000, height: 2000)
-                                    .opacity(colorScheme == .dark ? 0.25 : 0.12)
-                                    .blendMode(colorScheme == .dark ? .screen : .multiply)
-                                    .allowsHitTesting(false)
-                            )
-                    }
+                    // Layer 2.5: Spatial Centerpiece (Universal)
+                    Color.clear
+                        .frame(width: 0, height: 0)
+                        .overlay(
+                            Image("SpaceSketchBG")
+                                .resizable()
+                                .scaledToFill()
+                                .frame(width: 2000, height: 2000)
+                                .opacity(colorScheme == .dark ? 0.40 : 0.25)
+                                .blendMode(colorScheme == .dark ? .screen : .multiply)
+                                .allowsHitTesting(false)
+                        )
                     
                     ForEach(store.nodes) { node in
                         let currentOffset = nodeDragOffsets[node.id] ?? .zero
