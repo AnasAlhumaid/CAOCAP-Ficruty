@@ -1,4 +1,5 @@
 import SwiftUI
+import UIKit
 
 /// Renders one spatial workspace and owns the transient gesture state needed to
 /// pan, zoom, select, and drag nodes without changing the durable project model
@@ -122,6 +123,19 @@ struct InfiniteCanvasView: View {
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity)
             .contentShape(Rectangle()) // Ensure the entire area is gesture-sensitive.
+            .gesture(
+                TrackpadPanGesture(
+                    onChanged: { translation in
+                        guard !isDraggingNode else { return }
+                        viewport.handleDragTranslation(translation)
+                    },
+                    onEnded: {
+                        guard !isDraggingNode else { return }
+                        viewport.handleDragEnded()
+                        persistViewportIfNeeded()
+                    }
+                )
+            )
             .simultaneousGesture(
                 DragGesture()
                     .onChanged { value in
@@ -133,13 +147,7 @@ struct InfiniteCanvasView: View {
                     .onEnded { _ in 
                         if !isDraggingNode {
                             viewport.handleDragEnded()
-                            // Persist viewport only for real projects. Onboarding
-                            // should remain a stable authored path on every run.
-                            store.updateViewport(
-                                offset: viewport.offset,
-                                scale: viewport.scale,
-                                persist: onNodeAction == nil
-                            )
+                            persistViewportIfNeeded()
                         }
                     }
             )
@@ -156,13 +164,7 @@ struct InfiniteCanvasView: View {
                     .onEnded { _ in 
                         viewport.handleMagnificationEnded()
                         currentScale = viewport.scale
-                        // Persist viewport only for real projects. Onboarding
-                        // should remain a stable authored path on every run.
-                        store.updateViewport(
-                            offset: viewport.offset,
-                            scale: viewport.scale,
-                            persist: onNodeAction == nil
-                        )
+                        persistViewportIfNeeded()
                     }
             )
             .environment(\.layoutDirection, .leftToRight)
@@ -179,6 +181,56 @@ struct InfiniteCanvasView: View {
     
     private var backgroundColor: Color {
         colorScheme == .dark ? Color(white: 0.05) : Color(white: 0.95)
+    }
+
+    private func persistViewportIfNeeded() {
+        // Persist viewport only for real projects. Onboarding should remain a
+        // stable authored path on every run.
+        store.updateViewport(
+            offset: viewport.offset,
+            scale: viewport.scale,
+            persist: onNodeAction == nil
+        )
+    }
+}
+
+private struct TrackpadPanGesture: UIGestureRecognizerRepresentable {
+    var onChanged: (CGSize) -> Void
+    var onEnded: () -> Void
+
+    func makeUIGestureRecognizer(context: Context) -> UIPanGestureRecognizer {
+        let recognizer = UIPanGestureRecognizer()
+        recognizer.allowedScrollTypesMask = .continuous
+        recognizer.delegate = context.coordinator
+        recognizer.cancelsTouchesInView = false
+        return recognizer
+    }
+
+    func handleUIGestureRecognizerAction(_ recognizer: UIPanGestureRecognizer, context: Context) {
+        let translation = recognizer.translation(in: recognizer.view)
+        let canvasTranslation = CGSize(width: translation.x, height: translation.y)
+
+        switch recognizer.state {
+        case .began, .changed:
+            onChanged(canvasTranslation)
+        case .ended, .cancelled, .failed:
+            onEnded()
+        default:
+            break
+        }
+    }
+
+    func makeCoordinator(converter: CoordinateSpaceConverter) -> Coordinator {
+        Coordinator()
+    }
+
+    final class Coordinator: NSObject, UIGestureRecognizerDelegate {
+        func gestureRecognizer(
+            _ gestureRecognizer: UIGestureRecognizer,
+            shouldRecognizeSimultaneouslyWith otherGestureRecognizer: UIGestureRecognizer
+        ) -> Bool {
+            true
+        }
     }
 }
 
