@@ -3,12 +3,12 @@
    <img width="200" alt="CAOCAP-Ficruty" src="https://github.com/user-attachments/assets/379cf647-5d89-48c5-85c8-5d83e851e298" />
 </div>
 
-# CAOCAP Ficruty — MY-IDEA
+# CAOCAP Ficruty — MY-IDEA-OS
 
 > *"The most dangerous thought you can have as a creative person is to think you know what you're doing."*
 > — Bret Victor, [The Future of Programming](https://youtu.be/8pTEmbeENF4)
 
-**CAOCAP is my integrated development environment agent for turning ideas into software.**
+**CAOCAP is my integrated development environment agentic operating system for turning ideas into software.**
 
 Ficruty is built natively for iOS/iPadOS as the workspace where that agent comes to life: your software requirements, HTML, CSS, JavaScript, and live preview can exist on an infinite canvas as interconnected nodes — all compiling and running in real-time.
 
