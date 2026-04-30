@@ -84,7 +84,7 @@ Built with a strict focus on **native performance** and **zero third-party depen
 
 ## Current Status
 
-**Phase 0: MVP** — Completing the final pre-launch checklist.
+**Phase 0: MVP** — Released on the App Store.
 
 The core spatial development environment is fully functional:
 - ✅ Infinite canvas with node linking
@@ -94,8 +94,10 @@ The core spatial development environment is fully functional:
 - ✅ CoCaptain Agentic Assistant (Multi-turn chat, context harvesting)
 - ✅ Firebase Authentication (Apple, Google, GitHub)
 - ✅ StoreKit 2 Pro monetization
-- ⏳ Onboarding polish
-- ⏳ App Store compliance & TestFlight
+- ✅ App Store release
+- ⏳ Post-launch onboarding polish
+
+The current product priority is post-launch hardening: preserving trust with real users, improving first-run retention, and expanding the CoCaptain agent flow into the next meaningful "wow" loop.
 
 See [ROADMAP.md](ROADMAP.md) for the full breakdown.
 
@@ -134,6 +136,10 @@ open CAOCAP-Ficruty/ios-app/caocap/caocap.xcodeproj
 ---
 
 ## Devlog
+
+### 2026-04-30: App Store Release
+- **App Store Launch**: Ficruty is now released on the App Store, moving the project from pre-launch MVP work into post-launch iteration.
+- **Post-Launch Focus**: The next product cycle prioritizes first-user feedback, onboarding refinement, reliability, and deeper CoCaptain workflows.
 
 ### 2026-04-29: Technical Debt & Refactoring
 - **Project Template Extraction**: Extracted the default node graph logic out of `AppRouter` and into a dedicated `ProjectTemplateProvider`, enforcing stricter separation of concerns for the navigation layer.

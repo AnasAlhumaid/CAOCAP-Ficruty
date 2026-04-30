@@ -4,7 +4,7 @@ This document outlines the strategic milestones for Ficruty (caocap). Our goal i
 
 ---
 
-## 🏁 Phase 0: MVP — First User *(Target: App Store)*
+## 🏁 Phase 0: MVP — First User *(Released on the App Store)*
 *Focus: The minimum viable experience that is stable, polished, and shippable.*
 
 - [x] **Spatial Canvas**: Infinite grid with gesture-driven pan, zoom, and 30% default entry zoom.
@@ -16,12 +16,17 @@ This document outlines the strategic milestones for Ficruty (caocap). Our goal i
 - [x] **Live Compilation Engine**: Real-time HTML+CSS+JS merging into WebView, debounced at 500ms.
 - [x] **Monetization (Pro)**: StoreKit 2 subscription integration.
 - [x] **Firebase Integration**: Authentication (Apple, Google, GitHub) and AI Logic infrastructure.
-- [/] **Onboarding Polish**: A guided first-run experience.
+- [x] **App Store Compliance**: Privacy Policy, Terms of Service, data usage declarations.
+- [x] **App Store Release**: Ficruty is available to users through the App Store.
+
+### Post-Launch Polish
+
+- [/] **Onboarding Polish**: Continue refining the guided first-run experience after launch.
     - [ ] **Tutorial Manifest**: Create a `tutorial.json` with pre-placed learning nodes.
     - [ ] **Spatial Markers**: Implement animated "Focus Rings" to highlight UI elements during steps.
     - [ ] **Gesture Gates**: Add logic that unlocks the next step only after a specific pan/zoom/long-press action.
-- [ ] **App Store Compliance**: Privacy Policy, Terms of Service, data usage declarations.
-- [ ] **TestFlight Beta**: Internal and external beta distribution.
+- [ ] **Post-Launch Feedback Loop**: Make user support, issue triage, and release follow-up part of the product rhythm.
+- [ ] **Release Hardening**: Re-check account deletion, privacy links, subscriptions, restore purchases, onboarding reset, and first project creation after each App Store update.
 
 ---
 
