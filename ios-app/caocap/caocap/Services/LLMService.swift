@@ -53,20 +53,36 @@ public final class LLMService {
     /// - Parameter prompt: The raw user message.
     /// - Returns: An `AsyncThrowingStream` of partial response strings.
     public func streamResponse(for prompt: String) -> AsyncThrowingStream<String, Error> {
-        streamResponse(
+        let events = streamAgentEvents(
             for: prompt,
             context: nil,
             expectsStructuredResponse: false,
             availableActions: []
         )
+
+        return AsyncThrowingStream { continuation in
+            let task = Task {
+                do {
+                    for try await event in events {
+                        if case .text(let text) = event {
+                            continuation.yield(text)
+                        }
+                    }
+                    continuation.finish()
+                } catch {
+                    continuation.finish(throwing: error)
+                }
+            }
+            continuation.onTermination = { _ in task.cancel() }
+        }
     }
 
-    public func streamResponse(
+    public func streamAgentEvents(
         for userMessage: String,
         context: String?,
         expectsStructuredResponse: Bool,
         availableActions: [AppActionDefinition]
-    ) -> AsyncThrowingStream<String, Error> {
+    ) -> AsyncThrowingStream<CoCaptainLLMStreamEvent, Error> {
         // Initialize chat session if it doesn't exist
         if chat == nil {
             // Ensure model is initialised with the latest preferred name at first use.
@@ -92,7 +108,12 @@ public final class LLMService {
                     
                     for try await chunk in stream {
                         if let text = chunk.text {
-                            continuation.yield(text)
+                            continuation.yield(.text(text))
+                        }
+
+                        let functionCalls = chunk.functionCalls.map(CoCaptainAgentFunctionCall.init)
+                        if !functionCalls.isEmpty {
+                            continuation.yield(.functionCalls(functionCalls))
                         }
                     }
                     continuation.finish()
@@ -115,11 +136,15 @@ public final class LLMService {
     private func makeModel(modelName: String) -> GenerativeModel {
         FirebaseAI.firebaseAI(backend: .googleAI()).generativeModel(
             modelName: modelName,
+            tools: [.functionDeclarations([Self.requestAppActionDeclaration])],
+            toolConfig: ToolConfig(
+                functionCallingConfig: .auto()
+            ),
             systemInstruction: ModelContent(
                 role: "system",
                 parts: """
                 You are Co-Captain, a spatial programming assistant for the Ficruty platform.
-                You can request project mutations by providing a `cocaptain-actions` JSON block. The app validates every requested action before execution.
+                You can request app actions with the `request_app_action` function and request node edits with a `cocaptain-actions` JSON block. The app validates every requested action before execution.
                 
                 Personality:
                 - You are a high-performance agentic engine. Be concise, authoritative, and proactive.
@@ -132,12 +157,27 @@ public final class LLMService {
                 - Never provide full code in Markdown chat. Code belongs EXCLUSIVELY in `nodeEdits`. 
                 - DO NOT use triple backticks (```) for anything other than the `cocaptain-actions` block. 
                 - If you suggest a change, you MUST provide the JSON to implement it.
-                - Append the `cocaptain-actions` block at the end of every response that involves project changes.
-                - Safe actions are only for non-mutating autonomous app actions. Mutating or review-required app actions must be placed in `pendingActions`.
+                - Use `request_app_action` for app navigation and app-level tool actions.
+                - Append the `cocaptain-actions` block at the end of every response that involves node content changes.
+                - Safe actions are only for non-mutating autonomous app actions. Mutating or review-required app actions must use executionMode `pending`.
                 """
             )
         )
     }
+
+    private static let requestAppActionDeclaration = FunctionDeclaration(
+        name: CoCaptainFunctionCallAgentAdapter.requestAppActionName,
+        description: "Requests a Ficruty app action. The app validates and either executes or stages the action for user review.",
+        parameters: [
+            "actionId": .string(description: "The exact app action id to request."),
+            "executionMode": .enumeration(
+                values: ["safe", "pending"],
+                description: "`safe` only for non-mutating autonomous actions. `pending` for mutating or review-required actions."
+            ),
+            "reason": .string(description: "Short reason for requesting the action.")
+        ],
+        optionalParameters: ["reason"]
+    )
 
     private func buildPrompt(
         userMessage: String,
@@ -170,16 +210,18 @@ public final class LLMService {
                 """
                 Agent contract:
                 - Respond conversationally first (concise).
+                - For app navigation or app-level tool actions, use the `request_app_action` function instead of manually writing app actions in JSON.
                 - Then, for any request to build, make, create, add, change, update, fix, remove, style, implement, or improve, you MUST append a fenced block named `cocaptain-actions` with concrete `nodeEdits`.
                 - CRITICAL: If you are building a game or a full feature, use `replace_all` for the html, css, and javascript nodes. 
                 - NEVER provide a full file implementation inside the chat text. Put it in the `nodeEdits`.
 
                 App actions:
-                - `safeActions` may contain ONLY these non-mutating autonomous action ids:
+                - Prefer `request_app_action(actionId, executionMode, reason)` for app actions.
+                - Use executionMode `safe` ONLY for these non-mutating autonomous action ids:
                 \(autonomousActionLines.isEmpty ? "- none" : autonomousActionLines)
-                - `pendingActions` may contain these review-required or mutating action ids:
+                - Use executionMode `pending` for these review-required or mutating action ids:
                 \(reviewActionLines.isEmpty ? "- none" : reviewActionLines)
-                - Never put a mutating or non-autonomous action in `safeActions`.
+                - Never request a mutating or non-autonomous action with executionMode `safe`.
 
                 Node edits:
                 - Only target these node roles for edits: srs, html, css, javascript.
@@ -208,5 +250,30 @@ public final class LLMService {
 
         parts.append("User request:\n\(userMessage)")
         return parts.joined(separator: "\n\n")
+    }
+}
+
+private extension CoCaptainAgentFunctionCall {
+    init(_ functionCall: FunctionCallPart) {
+        self.init(
+            name: functionCall.name,
+            arguments: functionCall.args.compactMapValues(\.cocaptainStringValue),
+            id: functionCall.functionId
+        )
+    }
+}
+
+private extension JSONValue {
+    var cocaptainStringValue: String? {
+        switch self {
+        case .string(let value):
+            return value
+        case .number(let value):
+            return String(value)
+        case .bool(let value):
+            return value ? "true" : "false"
+        case .null, .object, .array:
+            return nil
+        }
     }
 }

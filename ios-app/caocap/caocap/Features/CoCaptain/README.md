@@ -60,7 +60,7 @@ Rules:
 
 Invalid structured payloads are not partially executed. The coordinator retries once with parse or validation feedback. If the retry is still invalid, the user sees a conflicted review item rather than a silent no-op or unsafe action.
 
-The fenced JSON block is the current compatibility format for streaming chat. The coordinator consumes `CoCaptainAgentDirective` so a future Gemini `FunctionCallPart` adapter or schema-constrained structured-output adapter can feed the same validator/review path without rewriting UI orchestration.
+Firebase function calling is the preferred path for app actions through the `request_app_action` tool. The fenced JSON block remains the compatibility format for node edits until structured-output node edit payloads replace it.
 
 If this payload changes, update parser/coordinator tests and the prompt contract in `LLMService`.
 
@@ -81,6 +81,7 @@ Preserve this conflict guard when refactoring review state.
 - Be careful with cancellation: closing the sheet cancels streaming and removes empty assistant messages.
 - Keep validation near the coordinator boundary. SwiftUI views should render review state, not decide whether model output is safe.
 - Keep raw model wire formats behind output adapters. The coordinator should consume directives, not Firebase/Gemini-specific response parts.
+- Keep app actions in `request_app_action`; keep code/content changes in `nodeEdits`.
 
 ## Verification Checklist
 
@@ -98,6 +99,7 @@ Useful test coverage for this feature:
 - parser success, malformed JSON fallback, and trailing fence behavior.
 - coordinator safe action execution and review bundle generation.
 - validator rejection for unknown actions, unsafe safe actions, unavailable pending actions, and empty node edit operations.
+- function-call adapter mapping for safe actions, pending actions, malformed arguments, and mixed function-call + fenced node edits.
 - node edit conflict handling when base text changes.
 - direct command handling for autonomous vs review-required actions.
 - retry behavior when agentic work is requested but no structured payload is returned.

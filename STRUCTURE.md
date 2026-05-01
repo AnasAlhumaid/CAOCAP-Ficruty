@@ -164,7 +164,7 @@ The agentic AI companion. A native sheet interface for real-time collaboration.
 | `CoCaptainViewModel.swift` | High-level state management for the CoCaptain UI. |
 | `CoCaptainAgentCoordinator.swift` | The orchestrator of agentic control. Manages the dual-path execution flow and review bundle generation. |
 | `CoCaptainAgentModels.swift` | Domain models for agent actions, node edits, review items, and the chat timeline. |
-| `CoCaptainAgentOutputAdapter.swift` | Source-agnostic adapter layer that converts model output into directives for validation and execution. |
+| `CoCaptainAgentOutputAdapter.swift` | Source-agnostic adapter layer that converts Firebase function calls and fenced JSON into directives for validation and execution. |
 | `CoCaptainAgentParser.swift` | Logic to parse raw LLM text into structured `CoCaptainAgentPayload` objects. |
 | `CoCaptainAgentValidator.swift` | Validates parsed agent payloads before any app action execution or review bundle generation. |
 

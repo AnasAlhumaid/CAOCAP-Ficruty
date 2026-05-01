@@ -155,6 +155,94 @@ struct CoCaptainAgentTests {
         #expect(directive.source == .fencedJSON)
     }
 
+    @Test func functionCallAdapterMapsSafeAction() throws {
+        let adapter = CoCaptainFunctionCallAgentAdapter()
+
+        let directive = adapter.directive(from: [
+            CoCaptainAgentFunctionCall(
+                name: CoCaptainFunctionCallAgentAdapter.requestAppActionName,
+                arguments: ["actionId": "go_home", "executionMode": "safe"]
+            )
+        ])
+
+        #expect(directive.payload?.safeActions.first?.actionID == "go_home")
+        #expect(directive.payload?.pendingActions.isEmpty == true)
+        #expect(directive.diagnostics.isEmpty)
+        #expect(directive.source == .functionCall)
+    }
+
+    @Test func functionCallAdapterMapsPendingAction() throws {
+        let adapter = CoCaptainFunctionCallAgentAdapter()
+
+        let directive = adapter.directive(from: [
+            CoCaptainAgentFunctionCall(
+                name: CoCaptainFunctionCallAgentAdapter.requestAppActionName,
+                arguments: ["actionId": "create_node", "executionMode": "pending"]
+            )
+        ])
+
+        #expect(directive.payload?.pendingActions.first?.actionID == "create_node")
+        #expect(directive.payload?.safeActions.isEmpty == true)
+        #expect(directive.diagnostics.isEmpty)
+    }
+
+    @Test func functionCallAdapterReportsMalformedCalls() throws {
+        let adapter = CoCaptainFunctionCallAgentAdapter()
+
+        let missingAction = adapter.directive(from: [
+            CoCaptainAgentFunctionCall(
+                name: CoCaptainFunctionCallAgentAdapter.requestAppActionName,
+                arguments: ["executionMode": "safe"]
+            )
+        ])
+        let unknownFunction = adapter.directive(from: [
+            CoCaptainAgentFunctionCall(name: "unknown_function", arguments: ["actionId": "go_home"])
+        ])
+
+        #expect(missingAction.payload == nil)
+        #expect(missingAction.diagnostics.first?.contains("missing `actionId`") == true)
+        #expect(unknownFunction.payload == nil)
+        #expect(unknownFunction.diagnostics.first?.contains("Unknown function call") == true)
+    }
+
+    @Test func compositeAdapterMergesFunctionActionsAndFencedNodeEdits() throws {
+        let adapter = CoCaptainCompositeAgentAdapter()
+        let response =
+            """
+            I updated the project.
+
+            ```cocaptain-actions
+            {
+              "assistantMessage": "I updated the project.",
+              "safeActions": [],
+              "pendingActions": [],
+              "nodeEdits": [{
+                "role": "html",
+                "summary": "Update HTML.",
+                "operations": [{
+                  "type": "replace_all",
+                  "content": "<h1>Fixed</h1>"
+                }]
+              }]
+            }
+            ```
+            """
+
+        let directive = adapter.directive(
+            from: response,
+            functionCalls: [
+                CoCaptainAgentFunctionCall(
+                    name: CoCaptainFunctionCallAgentAdapter.requestAppActionName,
+                    arguments: ["actionId": "go_home", "executionMode": "safe"]
+                )
+            ]
+        )
+
+        #expect(directive.payload?.safeActions.first?.actionID == "go_home")
+        #expect(directive.payload?.nodeEdits.first?.role == .html)
+        #expect(directive.source == .combined)
+    }
+
     @MainActor
     @Test func coordinatorRetriesMalformedStructuredPayloadWithParseDiagnostic() async throws {
         let dispatcher = TestActionDispatcher()
@@ -239,6 +327,131 @@ struct CoCaptainAgentTests {
         #expect(dispatcher.executedActionIDs == [.goHome])
         #expect(result.executionSummary?.summary.contains("Go to Home") == true)
         #expect(result.reviewBundle?.items.count == 2)
+    }
+
+    @MainActor
+    @Test func coordinatorExecutesFunctionCalledSafeAction() async throws {
+        let dispatcher = TestActionDispatcher()
+        let llm = TestLLMClient(
+            response: "Opening settings.",
+            functionCalls: [[
+                CoCaptainAgentFunctionCall(
+                    name: CoCaptainFunctionCallAgentAdapter.requestAppActionName,
+                    arguments: ["actionId": "open_settings", "executionMode": "safe"]
+                )
+            ]]
+        )
+        let coordinator = CoCaptainAgentCoordinator(llmClient: llm)
+
+        let result = try await coordinator.run(
+            userMessage: "open settings",
+            store: makeStore(),
+            dispatcher: dispatcher
+        ) { _ in }
+
+        #expect(dispatcher.executedActionIDs == [.openSettings])
+        #expect(result.executionSummary?.summary.contains("Open Settings") == true)
+    }
+
+    @MainActor
+    @Test func coordinatorStagesFunctionCalledPendingAction() async throws {
+        let dispatcher = TestActionDispatcher()
+        let llm = TestLLMClient(
+            response: "I prepared the action for review.",
+            functionCalls: [[
+                CoCaptainAgentFunctionCall(
+                    name: CoCaptainFunctionCallAgentAdapter.requestAppActionName,
+                    arguments: ["actionId": "create_node", "executionMode": "pending"]
+                )
+            ]]
+        )
+        let coordinator = CoCaptainAgentCoordinator(llmClient: llm)
+
+        let result = try await coordinator.run(
+            userMessage: "create a node",
+            store: makeStore(),
+            dispatcher: dispatcher
+        ) { _ in }
+
+        #expect(dispatcher.executedActionIDs.isEmpty)
+        #expect(result.reviewBundle?.items.first?.targetLabel == "Create New Node")
+    }
+
+    @MainActor
+    @Test func coordinatorRetriesUnsafeFunctionCalledSafeAction() async throws {
+        let dispatcher = TestActionDispatcher()
+        let llm = TestLLMClient(
+            responses: [
+                "I will create a node.",
+                "I prepared the action for review."
+            ],
+            functionCalls: [
+                [
+                    CoCaptainAgentFunctionCall(
+                        name: CoCaptainFunctionCallAgentAdapter.requestAppActionName,
+                        arguments: ["actionId": "create_node", "executionMode": "safe"]
+                    )
+                ],
+                [
+                    CoCaptainAgentFunctionCall(
+                        name: CoCaptainFunctionCallAgentAdapter.requestAppActionName,
+                        arguments: ["actionId": "create_node", "executionMode": "pending"]
+                    )
+                ]
+            ]
+        )
+        let coordinator = CoCaptainAgentCoordinator(llmClient: llm)
+
+        let result = try await coordinator.run(
+            userMessage: "create a node",
+            store: makeStore(),
+            dispatcher: dispatcher
+        ) { _ in }
+
+        #expect(dispatcher.executedActionIDs.isEmpty)
+        #expect(llm.receivedMessages.count == 2)
+        #expect(llm.receivedMessages.last?.contains("move it to `pendingActions`") == true)
+        #expect(result.reviewBundle?.items.first?.targetLabel == "Create New Node")
+    }
+
+    @MainActor
+    @Test func coordinatorDoesNotPartiallyExecuteMalformedFunctionCall() async throws {
+        let dispatcher = TestActionDispatcher()
+        let llm = TestLLMClient(
+            responses: [
+                "Opening settings.",
+                "Opening settings."
+            ],
+            functionCalls: [
+                [
+                    CoCaptainAgentFunctionCall(
+                        name: CoCaptainFunctionCallAgentAdapter.requestAppActionName,
+                        arguments: ["actionId": "open_settings", "executionMode": "safe"]
+                    ),
+                    CoCaptainAgentFunctionCall(
+                        name: CoCaptainFunctionCallAgentAdapter.requestAppActionName,
+                        arguments: ["executionMode": "safe"]
+                    )
+                ],
+                [
+                    CoCaptainAgentFunctionCall(
+                        name: CoCaptainFunctionCallAgentAdapter.requestAppActionName,
+                        arguments: ["actionId": "open_settings", "executionMode": "safe"]
+                    )
+                ]
+            ]
+        )
+        let coordinator = CoCaptainAgentCoordinator(llmClient: llm)
+
+        _ = try await coordinator.run(
+            userMessage: "open settings",
+            store: makeStore(),
+            dispatcher: dispatcher
+        ) { _ in }
+
+        #expect(dispatcher.executedActionIDs == [.openSettings])
+        #expect(llm.receivedMessages.count == 2)
+        #expect(llm.receivedMessages.last?.contains("missing `actionId`") == true)
     }
 
     @MainActor
@@ -500,31 +713,49 @@ struct CoCaptainAgentTests {
 @MainActor
 private final class TestLLMClient: CoCaptainLLMClient {
     private let responses: [String]
+    private let functionCalls: [[CoCaptainAgentFunctionCall]]
     private var streamCount = 0
     var receivedMessages: [String] = []
 
     init(response: String) {
         self.responses = [response]
+        self.functionCalls = []
+    }
+
+    init(response: String, functionCalls: [[CoCaptainAgentFunctionCall]]) {
+        self.responses = [response]
+        self.functionCalls = functionCalls
     }
 
     init(responses: [String]) {
         self.responses = responses
+        self.functionCalls = []
+    }
+
+    init(responses: [String], functionCalls: [[CoCaptainAgentFunctionCall]]) {
+        self.responses = responses
+        self.functionCalls = functionCalls
     }
 
     func resetChat() {}
 
-    func streamResponse(
+    func streamAgentEvents(
         for userMessage: String,
         context: String?,
         expectsStructuredResponse: Bool,
         availableActions: [AppActionDefinition]
-    ) -> AsyncThrowingStream<String, Error> {
+    ) -> AsyncThrowingStream<CoCaptainLLMStreamEvent, Error> {
         receivedMessages.append(userMessage)
-        let response = responses[min(streamCount, responses.count - 1)]
+        let index = streamCount
+        let response = responses[min(index, responses.count - 1)]
+        let calls = functionCalls.indices.contains(index) ? functionCalls[index] : []
         streamCount += 1
 
         return AsyncThrowingStream { continuation in
-            continuation.yield(response)
+            continuation.yield(.text(response))
+            if !calls.isEmpty {
+                continuation.yield(.functionCalls(calls))
+            }
             continuation.finish()
         }
     }

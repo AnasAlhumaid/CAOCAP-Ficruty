@@ -46,6 +46,23 @@ public struct CoCaptainAgentPayload: Codable, Hashable {
     }
 }
 
+public struct CoCaptainAgentFunctionCall: Hashable {
+    public let name: String
+    public let arguments: [String: String]
+    public let id: String?
+
+    public init(name: String, arguments: [String: String], id: String? = nil) {
+        self.name = name
+        self.arguments = arguments
+        self.id = id
+    }
+}
+
+public enum CoCaptainLLMStreamEvent: Hashable {
+    case text(String)
+    case functionCalls([CoCaptainAgentFunctionCall])
+}
+
 public struct CoCaptainParsedResponse: Hashable {
     public let visibleText: String
     public let payload: CoCaptainAgentPayload?

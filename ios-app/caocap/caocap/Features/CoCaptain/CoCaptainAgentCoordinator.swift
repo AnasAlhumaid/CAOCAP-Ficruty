@@ -3,12 +3,12 @@ import Foundation
 @MainActor
 public protocol CoCaptainLLMClient: AnyObject {
     func resetChat()
-    func streamResponse(
+    func streamAgentEvents(
         for userMessage: String,
         context: String?,
         expectsStructuredResponse: Bool,
         availableActions: [AppActionDefinition]
-    ) -> AsyncThrowingStream<String, Error>
+    ) -> AsyncThrowingStream<CoCaptainLLMStreamEvent, Error>
 }
 
 extension LLMService: CoCaptainLLMClient {}
@@ -40,7 +40,9 @@ public final class CoCaptainAgentCoordinator {
         self.llmClient = llmClient ?? LLMService.shared
         self.contextBuilder = contextBuilder
         self.patchEngine = patchEngine
-        self.outputAdapter = outputAdapter ?? CoCaptainFencedJSONAgentAdapter(parser: parser)
+        self.outputAdapter = outputAdapter ?? CoCaptainCompositeAgentAdapter(
+            fencedJSONAdapter: CoCaptainFencedJSONAgentAdapter(parser: parser)
+        )
         self.validator = validator
     }
 
@@ -93,26 +95,59 @@ public final class CoCaptainAgentCoordinator {
         allowAgenticRetry: Bool
     ) async throws -> CoCaptainAgentRunResult {
         var responseText = ""
-        let stream = llmClient.streamResponse(
+        var functionCalls: [CoCaptainAgentFunctionCall] = []
+        var seenFunctionCallIDs = Set<String>()
+
+        let stream = llmClient.streamAgentEvents(
             for: userMessage,
             context: context,
             expectsStructuredResponse: expectsStructuredResponse,
             availableActions: dispatcher?.availableActions ?? []
         )
 
-        for try await chunk in stream {
-            responseText += chunk
-            onVisibleText(outputAdapter.visibleText(from: responseText))
+        for try await event in stream {
+            switch event {
+            case .text(let chunk):
+                responseText += chunk
+                onVisibleText(outputAdapter.visibleText(from: responseText))
+            case .functionCalls(let calls):
+                for call in calls where shouldAppend(functionCall: call, seenIDs: &seenFunctionCallIDs) {
+                    functionCalls.append(call)
+                }
+            }
         }
 
         // The visible chat can stream before the structured block is complete;
         // only parse actions after the model has finished the turn.
-        let directive = outputAdapter.directive(from: responseText)
+        let directive = outputAdapter.directive(from: responseText, functionCalls: functionCalls)
         let payload = expectsStructuredResponse ? directive.payload : nil
 
         let requiresAgenticWork = shouldRequireAgenticWork(for: userMessage)
 
         if expectsStructuredResponse {
+            if !directive.diagnostics.isEmpty {
+                if allowAgenticRetry {
+                    return try await runOnce(
+                        userMessage: agenticRetryMessage(
+                            for: userMessage,
+                            validationIssues: directive.diagnostics
+                        ),
+                        context: context,
+                        expectsStructuredResponse: true,
+                        store: store,
+                        dispatcher: dispatcher,
+                        onVisibleText: onVisibleText,
+                        allowAgenticRetry: false
+                    )
+                }
+
+                return CoCaptainAgentRunResult(
+                    visibleText: directive.visibleText,
+                    executionSummary: nil,
+                    reviewBundle: validationReviewBundle(issues: directive.diagnostics)
+                )
+            }
+
             // Build/edit requests should produce executable work. If the model only
             // chatted back, retry once with a stronger contract before falling back.
             if payload == nil, allowAgenticRetry, requiresAgenticWork {
@@ -193,7 +228,13 @@ public final class CoCaptainAgentCoordinator {
             "style",
             "implement",
             "improve",
-            "game"
+            "game",
+            "open",
+            "go",
+            "show",
+            "navigate",
+            "settings",
+            "home"
         ]
 
         return triggers.contains { lowercased.contains($0) }
@@ -211,14 +252,23 @@ public final class CoCaptainAgentCoordinator {
         CRITICAL: 
         1. Do NOT just provide code in markdown chat. 
         2. You MUST include a `cocaptain-actions` fenced block.
-        3. Put code/content implementation in `nodeEdits`.
-        4. Put mutating or non-autonomous app actions in `pendingActions`, never `safeActions`.
-        5. Use `safeActions` only for available, non-mutating, autonomous app actions.
-        6. For full builds or games, use `replace_all` for html, css, and javascript nodes.
+        3. For app navigation/tool actions, call `request_app_action`.
+        4. Put code/content implementation in `nodeEdits`.
+        5. Put mutating or non-autonomous app actions in `pendingActions` or call `request_app_action` with `executionMode=pending`.
+        6. Use `safeActions` or `executionMode=safe` only for available, non-mutating, autonomous app actions.
+        7. For full builds or games, use `replace_all` for html, css, and javascript nodes.
         
         Original user request:
         \(userMessage)
         """
+    }
+
+    private func shouldAppend(
+        functionCall: CoCaptainAgentFunctionCall,
+        seenIDs: inout Set<String>
+    ) -> Bool {
+        guard let id = functionCall.id else { return true }
+        return seenIDs.insert(id).inserted
     }
 
     private func validationReviewBundle(issues: [String]) -> ReviewBundleItem {
