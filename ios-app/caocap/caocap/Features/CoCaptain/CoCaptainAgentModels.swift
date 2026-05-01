@@ -186,11 +186,19 @@ public struct ChatBubbleItem: Identifiable, Hashable {
             result = (try? AttributedString(markdown: text, options: fallbackOptions)) ?? AttributedString(text)
         }
 
-        // Apply a base font to the whole string if it doesn't have one,
-        // but preserve other attributes (like bold/header sizes).
-        if result.font == nil {
-            result.font = .system(size: 15, weight: .medium)
+        // Apply a base font if no font attributes are present.
+        if result.characters.count > 0 {
+            result.mergeAttributes(AttributeContainer().font(.system(size: 15, weight: .medium)), mergePolicy: .keepCurrent)
+            
+            // Style inline code snippets
+            for run in result.runs {
+                if run.inlineCode != nil {
+                    result[run.range].foregroundColor = .orange
+                    result[run.range].backgroundColor = .primary.opacity(0.05)
+                }
+            }
         }
+        
         return result
     }
 }

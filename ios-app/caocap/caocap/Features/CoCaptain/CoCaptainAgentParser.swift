@@ -45,6 +45,8 @@ public struct CoCaptainAgentParser {
     /// In CAOCAP, we hide all markdown code blocks from the chat bubble because
     /// code implementation belongs on the spatial canvas nodes.
     public func visibleText(from response: String) -> String {
+        // We only hide triple-backtick blocks (which are large implementations).
+        // Single backtick inline code should remain visible for context.
         if let range = response.range(of: "```") {
             return sanitizedVisiblePrefix(String(response[..<range.lowerBound]))
         }
@@ -88,27 +90,20 @@ public struct CoCaptainAgentParser {
     }
 
     private func loosePayloadStart(in response: String) -> String.Index? {
-        // Look for the first occurrence of any known payload key.
-        // We use various quote styles to be robust.
-        let keys = ["\"assistantMessage\"", "\"nodeEdits\"", "\"safeActions\"", "\"pendingActions\"",
-                    "'assistantMessage'", "'nodeEdits'", "'safeActions'", "'pendingActions'"]
-
-        var earliestKeyIndex: String.Index?
-        for key in keys {
-            if let range = response.range(of: key) {
-                if earliestKeyIndex == nil || range.lowerBound < earliestKeyIndex! {
-                    earliestKeyIndex = range.lowerBound
-                }
-            }
+        // Use a regex to find the start of a JSON block containing our payload keys.
+        // This is robust against curly quotes, missing spaces, and newlines.
+        let pattern = #"\{\s*["'“]?(?:assistantMessage|nodeEdits|safeActions|pendingActions)["'”]?\s*:"#
+        
+        guard let regex = try? NSRegularExpression(pattern: pattern, options: []) else {
+            return nil
         }
-
-        guard let keyIndex = earliestKeyIndex else { return nil }
-
-        // Search backwards from that key for the opening brace.
-        if let range = response.range(of: "{", options: .backwards, range: response.startIndex..<keyIndex) {
-            return range.lowerBound
+        
+        let range = NSRange(response.startIndex..<response.endIndex, in: response)
+        // We look for the FIRST occurrence of a payload-like block.
+        if let match = regex.firstMatch(in: response, options: [], range: range) {
+            return Range(match.range, in: response)?.lowerBound
         }
-
+        
         return nil
     }
 

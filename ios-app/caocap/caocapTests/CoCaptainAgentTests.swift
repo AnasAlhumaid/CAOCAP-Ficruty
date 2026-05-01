@@ -243,9 +243,9 @@ struct CoCaptainAgentTests {
         #expect(!parser.visibleText(from: response).contains("assistantMessage"))
     }
 
-    @Test func parserHidesLooseTrailingActionJSONWithMalformedQuotes() throws {
+    @Test func parserHidesLooseTrailingActionJSONWithCurlyQuotes() throws {
         let parser = CoCaptainAgentParser()
-        let response = "Done.{ assistantMessage: 'Done' }"
+        let response = "Done.{ “assistantMessage”: “Done” }"
 
         let parsed = parser.parse(response)
 
@@ -262,6 +262,37 @@ struct CoCaptainAgentTests {
         // This should always succeed and at least render the italics if possible.
         let renderedText = String(bubble.markdownText.characters)
         #expect(renderedText.contains("world"))
+    }
+
+    @Test func chatBubbleMarkdownStylesInlineCode() {
+        let bubble = ChatBubbleItem(
+            text: "Use `let x = 5` here",
+            isUser: false
+        )
+
+        let attributed = bubble.markdownText
+        // Check if we have attributes for inline code
+        var foundInlineCode = false
+        for run in attributed.runs {
+            if run.inlineCode != nil {
+                foundInlineCode = true
+            }
+        }
+        #expect(foundInlineCode)
+    }
+
+    @Test func parserHandlesMultiLineLooseJSON() throws {
+        let parser = CoCaptainAgentParser()
+        let response = """
+        Updating:
+        {
+          "assistantMessage": "Multi-line"
+        }
+        """
+
+        let parsed = parser.parse(response)
+        #expect(parsed.visibleText == "Updating:")
+        #expect(parsed.payload?.assistantMessage == "Multi-line")
     }
 
     @Test func parserFallsBackOnMalformedStructuredBlock() throws {
