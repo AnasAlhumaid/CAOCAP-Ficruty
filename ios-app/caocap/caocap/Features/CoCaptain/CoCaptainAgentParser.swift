@@ -88,21 +88,25 @@ public struct CoCaptainAgentParser {
     }
 
     private func loosePayloadStart(in response: String) -> String.Index? {
-        // Look for any of our known payload keys to decide if we should look for a loose JSON block.
-        // We use a lenient check because models sometimes omit quotes or use weird spacing.
-        let keys = ["assistantMessage", "nodeEdits", "safeActions", "pendingActions"]
-        guard keys.contains(where: { response.contains($0) }) else {
-            return nil
+        // Look for the first occurrence of any known payload key.
+        // We use various quote styles to be robust.
+        let keys = ["\"assistantMessage\"", "\"nodeEdits\"", "\"safeActions\"", "\"pendingActions\"",
+                    "'assistantMessage'", "'nodeEdits'", "'safeActions'", "'pendingActions'"]
+
+        var earliestKeyIndex: String.Index?
+        for key in keys {
+            if let range = response.range(of: key) {
+                if earliestKeyIndex == nil || range.lowerBound < earliestKeyIndex! {
+                    earliestKeyIndex = range.lowerBound
+                }
+            }
         }
 
-        var searchEnd = response.endIndex
-        // Search backwards for the opening brace that introduces the payload.
-        while let range = response.range(of: "{", options: .backwards, range: response.startIndex..<searchEnd) {
-            let candidate = response[range.lowerBound...]
-            if keys.contains(where: { candidate.contains($0) }) {
-                return range.lowerBound
-            }
-            searchEnd = range.lowerBound
+        guard let keyIndex = earliestKeyIndex else { return nil }
+
+        // Search backwards from that key for the opening brace.
+        if let range = response.range(of: "{", options: .backwards, range: response.startIndex..<keyIndex) {
+            return range.lowerBound
         }
 
         return nil

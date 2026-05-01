@@ -526,7 +526,6 @@ struct ChatBubbleText: View {
 
     var body: some View {
         Text(message.isUser ? AttributedString(message.text) : message.markdownText)
-            .font(.system(size: 15, weight: .medium))
             .textSelection(.enabled)
             .fixedSize(horizontal: false, vertical: true)
     }

@@ -174,21 +174,24 @@ public struct ChatBubbleItem: Identifiable, Hashable {
             failurePolicy: .returnPartiallyParsedIfPossible
         )
 
+        var result: AttributedString
         if let attributed = try? AttributedString(markdown: text, options: fullOptions) {
-            return attributed
+            result = attributed
+        } else {
+            let fallbackOptions = AttributedString.MarkdownParsingOptions(
+                allowsExtendedAttributes: true,
+                interpretedSyntax: .inlineOnlyPreservingWhitespace,
+                failurePolicy: .returnPartiallyParsedIfPossible
+            )
+            result = (try? AttributedString(markdown: text, options: fallbackOptions)) ?? AttributedString(text)
         }
 
-        let fallbackOptions = AttributedString.MarkdownParsingOptions(
-            allowsExtendedAttributes: true,
-            interpretedSyntax: .inlineOnlyPreservingWhitespace,
-            failurePolicy: .returnPartiallyParsedIfPossible
-        )
-
-        if let attributed = try? AttributedString(markdown: text, options: fallbackOptions) {
-            return attributed
+        // Apply a base font to the whole string if it doesn't have one,
+        // but preserve other attributes (like bold/header sizes).
+        if result.font == nil {
+            result.font = .system(size: 15, weight: .medium)
         }
-
-        return AttributedString(text)
+        return result
     }
 }
 
