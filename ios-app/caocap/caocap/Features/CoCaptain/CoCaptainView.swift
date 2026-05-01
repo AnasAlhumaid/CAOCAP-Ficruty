@@ -262,15 +262,6 @@ struct ReviewBundleView: View {
                 Text(bundle.title)
                     .font(.system(size: 16, weight: .bold))
                 Spacer()
-                Button("Apply All") {
-                    viewModel.applyAll(in: bundleID)
-                }
-                .font(.system(size: 12, weight: .semibold))
-                Button("Reject All") {
-                    viewModel.rejectAll(in: bundleID)
-                }
-                .font(.system(size: 12, weight: .semibold))
-                .foregroundColor(.red)
             }
 
             ForEach(bundle.items) { item in
@@ -280,10 +271,31 @@ struct ReviewBundleView: View {
                     viewModel.rejectReviewItem(bundleID: bundleID, itemID: item.id)
                 }
             }
+
+            HStack(spacing: 16) {
+                Spacer()
+                Button("Apply All") {
+                    viewModel.applyAll(in: bundleID)
+                }
+                .font(.system(size: 12, weight: .semibold))
+                .disabled(!hasPendingItems)
+
+                Button("Reject All") {
+                    viewModel.rejectAll(in: bundleID)
+                }
+                .font(.system(size: 12, weight: .semibold))
+                .foregroundColor(.red)
+                .disabled(!hasPendingItems)
+            }
+            .padding(.top, 2)
         }
         .padding(14)
         .background(Color.primary.opacity(0.05))
         .clipShape(RoundedRectangle(cornerRadius: 18, style: .continuous))
+    }
+
+    private var hasPendingItems: Bool {
+        bundle.items.contains { $0.status == .pending }
     }
 }
 
