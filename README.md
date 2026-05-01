@@ -8,65 +8,95 @@
 > *"The most dangerous thought you can have as a creative person is to think you know what you're doing."*
 > — Bret Victor, [The Future of Programming](https://youtu.be/8pTEmbeENF4)
 
-**CAOCAP is my integrated development environment agentic operating system for turning ideas into software.**
+**CAOCAP is the refusal to accept today's software development process as the final form.**
 
-CAOCAP is built natively for iOS/iPadOS as the workspace where that agent comes to life: your software requirements, HTML, CSS, JavaScript, and live preview can exist on an infinite canvas as interconnected nodes — all compiling and running in real-time.
+**CAOCAP is not defined by any single interface, feature, or implementation. It is a relentless belief that the software development process can be improved, and a commitment to keep pushing until building software feels closer to thinking.**
+
+The current iOS/iPadOS app is the first artifact of that belief: a native, spatial, agentic development environment where requirements, code, live preview, and AI collaboration can exist in one immediate workspace.
+
+But CAOCAP is bigger than the current app. Spatial canvases, agents, nodes, native editors, and live previews are not the doctrine. They are experiments in service of the larger act: challenging the inherited shape of software development and building better ways to turn ideas into working systems.
 
 ---
 
-[Mission](#the-mission) · [What It Does](#what-it-does) · [Philosophy](#the-philosophy) · [Tech Stack](#tech-stack) · [Status](#current-status) · [Repository Layout](#repository-layout) · [Getting Started](#getting-started) · [Devlog](#devlog) · [Contributing](#contributing) · [License](#license)
+[Mission](#the-mission) · [Principles](#principles) · [The Current Artifact](#the-current-artifact) · [What CAOCAP Does Today](#what-caocap-does-today) · [CoCaptain](#the-cocaptain) · [Tech Stack](#tech-stack) · [Status](#current-status) · [Repository Layout](#repository-layout) · [Getting Started](#getting-started) · [Devlog](#devlog) · [Contributing](#contributing) · [License](#license)
 
 ---
 
 ## The Mission
-**Push the boundaries. Improve the experience.**
 
-I am not here to advocate for a specific niche or a "new way" to program. I am here to relentlessly challenge how software is built. If a boundary exists that limits a developer's creativity, I want to push it. If an experience is broken, I want to fix it.
+**Relentlessly improve the act of building software.**
 
-CAOCAP is the pursuit of the ultimate developer experience, by any means necessary.
+CAOCAP starts from a simple belief: the developer experience we inherited is not sacred. Every ritual can be questioned. Every boundary can be pushed. Every slow, fragmented, overcomplicated step between an idea and a working system is a place where the future can be brought closer.
+
+This project is not here to defend one feature, one interface, one platform, or one "new way" to program. It is here to keep asking:
+
+- What if building software felt more immediate?
+- What if tools amplified imagination instead of interrupting it?
+- What if AI collaboration stayed human-in-the-loop, inspectable, and grounded in the project itself?
+- What if the development environment became a medium for thought, not just a container for files?
+
+CAOCAP is the collaborative act of pushing the software development world forward.
 
 ---
 
-## What It Does
+## Principles
 
-When you create a new project in CAOCAP, you don't open a file. You open a **spatial workspace** with five interconnected nodes already wired together:
+- **No final form** — Today's development process is not the endpoint. It is material to be improved.
+- **Developer experience first** — Speed, clarity, agency, and creative flow matter as core engineering concerns.
+- **Implementation is not identity** — The current app is a vessel for the mission, not the limit of the mission.
+- **Human-in-the-loop agents** — AI should expand the developer's control, not hide changes or erase authorship.
+- **Directness over ceremony** — The path from intent to working software should keep getting shorter, clearer, and more inspectable.
+- **Experiment in public** — CAOCAP grows through building, testing, shipping, learning, and pushing again.
 
-```
-[SRS] ──────────── [HTML] ──── [Live Preview]
-                     │
-               ┌─────┴─────┐
+---
+
+## The Current Artifact
+
+The first product expression of CAOCAP is a native iOS/iPadOS app.
+
+CAOCAP explores a development environment where your software requirements, HTML, CSS, JavaScript, live preview, and AI collaborator can share one workspace. It is intentionally local-first, direct-manipulation-heavy, and built around the belief that programming tools can feel more alive than a stack of tabs and terminals.
+
+The spatial model matters because it is one strong experiment in improving development. The agentic model matters because it is another. Neither is the whole point. The whole point is the relentless improvement of how software gets made.
+
+---
+
+## What CAOCAP Does Today
+
+When you create a new project in CAOCAP, you open a workspace with five interconnected nodes already wired together:
+
+```text
+[SRS] ----------- [HTML] ---- [Live Preview]
+                     |
+               +-----+-----+
              [CSS]       [JavaScript]
 ```
 
-- **SRS Node** — Write your software requirements in a distraction-free Notion-style editor.
+- **SRS Node** — Write software requirements in a distraction-free Notion-style editor.
 - **HTML Node** — Edit full HTML structure with native syntax highlighting and a line-number gutter.
-- **CSS Node** — Style your app with real-time syntax highlighting (properties, selectors, values).
+- **CSS Node** — Style your app with real-time syntax highlighting for properties, selectors, and values.
 - **JavaScript Node** — Add interactivity with keyword, comment, and string highlighting.
-- **Live Preview Node** — A 9:16 `WKWebView` that automatically compiles all three code nodes and renders them live. Tap it for a full-screen immersive preview.
+- **Live Preview Node** — Render the compiled app in a 9:16 `WKWebView`, with full-screen immersive preview available on tap.
 
-**Every time you edit code and tap "Done", the Live Compilation Engine merges your HTML, CSS, and JavaScript into a single document and pushes it to the WebView — automatically.**
-
----
-
-## The CoCaptain 🧠
-CAOCAP isn't just spatial; it's **agentic**. The **CoCaptain** is your AI sidekick that understands the entire spatial graph.
-
-- **Context-Aware Intelligence**: CoCaptain reads the SRS requirements, HTML structure, CSS styles and JS logic via the `ProjectContextBuilder` to provide grounded coding assistance.
-- **Agentic Control (Vibe Coding)**: Ask CoCaptain to "fix the layout" or "add a dark mode," and it can generate precise `nodeEdits` or trigger `AppActions` (like "Create New Node").
-- **Human-in-the-Loop**: All AI-proposed changes are bundled into **Review Items**, allowing you to preview and "Apply" them with a single tap.
-- **Firebase AI Logic**: Powered by Google **Gemini 3 Flash** through Firebase AI Logic for low-latency, streaming responses.
+Every time you edit code and tap **Done**, the Live Compilation Engine merges the HTML, CSS, and JavaScript nodes into one document and pushes it to the WebView automatically.
 
 ---
 
-## The Philosophy
-CAOCAP is a technical pursuit of the "Forgotten Future" described by **Bret Victor** in [The Future of Programming](https://youtu.be/8pTEmbeENF4). The premise: in 1973, the future of programming was spatial, direct, and immediate. We ended up in a world of text files and compilers instead.
+## The CoCaptain
 
-CAOCAP is the correction.
+CAOCAP's agentic path is expressed today through **CoCaptain**, an AI collaborator that understands the current project graph.
+
+- **Context-aware intelligence**: CoCaptain reads the SRS requirements, HTML structure, CSS styles, and JavaScript logic through `ProjectContextBuilder`.
+- **Agentic control**: CoCaptain can propose precise `nodeEdits` or trigger typed `AppActions`, such as creating a new node.
+- **Human-in-the-loop review**: AI-proposed code changes become review items that can be inspected before they are applied.
+- **Firebase AI Logic**: The current implementation streams model responses through Firebase AI Logic for low-latency collaboration.
+
+CoCaptain is not meant to replace the developer. It is meant to make the development environment more responsive to intent while preserving inspection, authorship, and control.
 
 ---
 
 ## Tech Stack
-Built with a strict focus on **native performance** and **zero third-party dependencies** for core functionality.
+
+Built with a strict focus on native performance and zero third-party dependencies for core editing, canvas, compilation, syntax highlighting, and routing logic.
 
 | Layer | Technology |
 |---|---|
@@ -76,7 +106,7 @@ Built with a strict focus on **native performance** and **zero third-party depen
 | AI Model | Google Gemini 3 Flash |
 | Web Engine | WebKit (`WKWebView`) for HTML5/CSS3/JS execution |
 | Code Editing | Native `UITextView` with custom regex-based syntax highlighting |
-| Spatial Engine | SwiftUI infinite canvas with pinch-to-zoom and pan gestures |
+| Spatial Runtime | SwiftUI infinite canvas with pinch-to-zoom and pan gestures |
 | Persistence | Atomic JSON writes with debounced background saves |
 | Monetization | StoreKit 2 for Pro subscriptions |
 
@@ -86,18 +116,19 @@ Built with a strict focus on **native performance** and **zero third-party depen
 
 **Phase 0: MVP** — Released on the App Store.
 
-The core spatial development environment is fully functional:
+The current app implementation is fully functional:
+
 - ✅ Infinite canvas with node linking
-- ✅ Native syntax-highlighted code editors (HTML, CSS, JS)
-- ✅ Live compilation engine (500ms debounce)
+- ✅ Native syntax-highlighted code editors for HTML, CSS, and JavaScript
+- ✅ Live compilation engine with a 500ms debounce
 - ✅ Full-screen WebView previewing
-- ✅ CoCaptain Agentic Assistant (Multi-turn chat, context harvesting)
-- ✅ Firebase Authentication (Apple, Google, GitHub)
+- ✅ CoCaptain agentic assistant with multi-turn chat and context harvesting
+- ✅ Firebase Authentication with Apple, Google, and GitHub
 - ✅ StoreKit 2 Pro monetization
 - ✅ App Store release
 - ⏳ Post-launch onboarding polish
 
-The current product priority is post-launch hardening: preserving trust with real users, improving first-run retention, and expanding the CoCaptain agent flow into the next meaningful "wow" loop.
+The current product priority is post-launch hardening: preserving trust with real users, improving first-run retention, and expanding CoCaptain into the next meaningful "wow" loop.
 
 See [ROADMAP.md](ROADMAP.md) for the full breakdown.
 
@@ -111,7 +142,7 @@ CAOCAP is organized as a public product monorepo.
 |---|---|
 | `ios-app/` | Native iOS/iPadOS app and Xcode project |
 | `android-app/` | Reserved for the future Android app |
-| `website/` | Reserved for the public website, support pages, and policies |
+| `website/` | Public website, support pages, and policies |
 | Root docs | Product overview, roadmap, architecture, contribution guide, and license |
 
 ---
@@ -131,14 +162,18 @@ open CAOCAP-CAOCAP/ios-app/caocap/caocap.xcodeproj
 ```
 
 > [!TIP]
-> Run on a physical iPhone for the best spatial canvas experience. Pinch-to-zoom feels dramatically better on real hardware.
+> Run on a physical iPhone for the best current CAOCAP experience. The direct manipulation model feels dramatically better on real hardware.
 
 ---
 
 ## Devlog
 
+### 2026-05-01: Movement-First README
+- **Mission Rewrite**: Reframed CAOCAP as a movement and a relentless belief in improving the software development process, with the iOS app positioned as the current product artifact.
+- **Principles Added**: Added project principles that separate the mission from any single implementation, feature, or interface.
+
 ### 2026-04-30: App Store Release
-- **App Store Launch**: Ficruty is now released on the App Store, moving the project from pre-launch MVP work into post-launch iteration.
+- **App Store Launch**: CAOCAP is now released on the App Store, moving the project from pre-launch MVP work into post-launch iteration.
 - **Post-Launch Focus**: The next product cycle prioritizes first-user feedback, onboarding refinement, reliability, and deeper CoCaptain workflows.
 
 ### 2026-04-29: Technical Debt & Refactoring
@@ -178,22 +213,24 @@ open CAOCAP-CAOCAP/ios-app/caocap/caocap.xcodeproj
 - **StoreKit 2**: Initial premium subscription integration with a glassmorphic purchase sheet.
 
 ### 2026-04-20: The Vision
-- Mission locked: relentless focus on **Developer Experience (DX)**.
-- Committed to the Bret Victor "Forgotten Future" philosophy as the north star.
+- Mission locked: relentless focus on improving the software development process.
+- Committed to challenging the inherited developer experience and building toward better futures.
 
 ---
 
 ## Contributing
 
-CAOCAP is in active early-stage development ("War Room" mode). I prioritize **architectural stability** and **long-term vision** over rapid feature growth.
+CAOCAP is in active early-stage development. The work prioritizes architectural stability, product trust, and long-term vision over unfocused feature growth.
 
 - **Discuss First**: For major changes, open an issue to align with the project philosophy before writing code.
-- **Standards**: `@Observable` (iOS 17+) for state, `async/await` for concurrency, no blocking `@MainActor` I/O.
+- **Standards**: Use `@Observable` on iOS 17+, Swift structured concurrency, and non-blocking infrastructure.
 - **Clean Docs**: If your change alters the architecture, update [STRUCTURE.md](STRUCTURE.md).
+- **Movement Mindset**: Contributions should improve the act of building software, strengthen the current product, or clarify the path toward better development environments.
 
 See [CONTRIBUTING.md](CONTRIBUTING.md) for the full guide.
 
 ---
 
 ## License
+
 Distributed under the **GNU General Public License v3.0**. See [LICENSE](LICENSE) for the full text.
