@@ -33,9 +33,11 @@ public struct CoCaptainAgentParser {
     }
 
     /// Returns the text that is safe to stream into the chat bubble while the
-    /// model may still be generating a hidden structured payload.
+    /// model may still be generating a hidden structured payload or markdown code.
+    /// In CAOCAP, we hide all markdown code blocks from the chat bubble because
+    /// code implementation belongs on the spatial canvas nodes.
     public func visibleText(from response: String) -> String {
-        if let range = response.range(of: Self.fence) {
+        if let range = response.range(of: "```") {
             return String(response[..<range.lowerBound]).trimmingCharacters(in: .whitespacesAndNewlines)
         }
         return response.trimmingCharacters(in: .whitespacesAndNewlines)

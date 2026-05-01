@@ -28,12 +28,22 @@ public class ProjectStore {
     /// A reference to the pending save task used for debouncing disk writes.
     private var saveTask: Task<Void, Never>? = nil
     
+    /// The current version of the project file schema. Incremented when
+    /// structural changes are made to nodes or the project envelope.
+    public static let currentSchemaVersion: Int = 1
+
     /// The internal structure used for JSON serialization of the project state.
     private struct ProjectData: Codable {
+        let schemaVersion: Int
         let projectName: String?
         let nodes: [SpatialNode]
         let viewportOffset: CGSize
         let viewportScale: CGFloat
+    }
+
+    /// A minimal representation used to check the version before full decoding.
+    private struct VersionCheck: Codable {
+        let schemaVersion: Int?
     }
     
     /// Returns the local file URL where project data is stored.
@@ -78,29 +88,45 @@ public class ProjectStore {
         
         do {
             let data = try Data(contentsOf: url)
-            let decoded = try JSONDecoder().decode(ProjectData.self, from: data)
+            let decoder = JSONDecoder()
             
-            var migratedNodes = decoded.nodes
+            // 1. Check the version
+            let versionCheck = try? decoder.decode(VersionCheck.self, from: data)
+            let sourceVersion = versionCheck?.schemaVersion ?? 0
             
-            // Migrate old nodes that lack the action property
-            for i in 0..<migratedNodes.count {
-                if migratedNodes[i].action == nil {
-                    if migratedNodes[i].title == "Retry Onboarding" {
-                        migratedNodes[i].action = .retryOnboarding
-                    } else if migratedNodes[i].title == "Go to the Home workspace" {
-                        migratedNodes[i].action = .navigateHome
-                    } else if migratedNodes[i].title == "New Project" {
-                        migratedNodes[i].action = .createNewProject
-                    } else if migratedNodes[i].title == "Settings" {
-                        migratedNodes[i].action = .openSettings
-                    } else if migratedNodes[i].title == "Profile" {
-                        migratedNodes[i].action = .openProfile
-                    } else if migratedNodes[i].title == "Projects" {
-                        migratedNodes[i].action = .openProjectExplorer
-                    } else if migratedNodes[i].title == "Ask CoCaptain" {
-                        migratedNodes[i].action = .summonCoCaptain
-                    }
+            if sourceVersion > Self.currentSchemaVersion {
+                logger.error("Project version \(sourceVersion) is newer than app version \(Self.currentSchemaVersion). Aborting load to prevent data loss.")
+                // Fallback to defaults to prevent a crash, but log heavily.
+                self.nodes = initialNodes ?? OnboardingProvider.manifestoNodes
+                return
+            }
+            
+            // 2. Decode the data
+            let decoded: ProjectData
+            if sourceVersion == 0 {
+                // Decode legacy format (no schemaVersion)
+                struct LegacyData: Codable {
+                    let projectName: String?
+                    let nodes: [SpatialNode]
+                    let viewportOffset: CGSize
+                    let viewportScale: CGFloat
                 }
+                let legacy = try decoder.decode(LegacyData.self, from: data)
+                decoded = ProjectData(
+                    schemaVersion: 0,
+                    projectName: legacy.projectName,
+                    nodes: legacy.nodes,
+                    viewportOffset: legacy.viewportOffset,
+                    viewportScale: legacy.viewportScale
+                )
+            } else {
+                decoded = try decoder.decode(ProjectData.self, from: data)
+            }
+            
+            // 3. Apply migrations
+            var migratedNodes = decoded.nodes
+            if sourceVersion < 1 {
+                migratedNodes = migrateV0ToV1(nodes: migratedNodes)
             }
             
             // Update the live state with the decoded data
@@ -109,7 +135,12 @@ public class ProjectStore {
             self.viewportOffset = decoded.viewportOffset
             self.viewportScale = decoded.viewportScale
             
-            logger.info("Successfully loaded project from disk.")
+            logger.info("Successfully loaded project (v\(sourceVersion)) from disk.")
+            
+            // If we migrated, schedule a save to modernize the file
+            if sourceVersion < Self.currentSchemaVersion {
+                save()
+            }
         } catch {
             logger.error("Failed to load project: \(error.localizedDescription)")
             // Fallback to initial nodes if data is corrupted or missing
@@ -119,6 +150,27 @@ public class ProjectStore {
         // Ensure the Live Preview is synced with the code nodes on startup
         compileLivePreview()
     }
+
+    /// Migration from Version 0 (Legacy/Versionless) to Version 1.
+    /// Handles the ad-hoc 'action' property assignment for canonical nodes.
+    private func migrateV0ToV1(nodes: [SpatialNode]) -> [SpatialNode] {
+        var migrated = nodes
+        for i in 0..<migrated.count {
+            if migrated[i].action == nil {
+                switch migrated[i].title {
+                case "Retry Onboarding": migrated[i].action = .retryOnboarding
+                case "Go to the Home workspace": migrated[i].action = .navigateHome
+                case "New Project": migrated[i].action = .createNewProject
+                case "Settings": migrated[i].action = .openSettings
+                case "Profile": migrated[i].action = .openProfile
+                case "Projects": migrated[i].action = .openProjectExplorer
+                case "Ask CoCaptain": migrated[i].action = .summonCoCaptain
+                default: break
+                }
+            }
+        }
+        return migrated
+    }
     
     /// Persists a snapshot of the current project state using a temporary file
     /// and atomic replacement so interrupted writes do not corrupt the main file.
@@ -127,6 +179,7 @@ public class ProjectStore {
         let tempURL = url.appendingPathExtension("\(UUID().uuidString).tmp")
         
         let projectData = ProjectData(
+            schemaVersion: Self.currentSchemaVersion,
             projectName: projectName,
             nodes: nodes,
             viewportOffset: viewportOffset,

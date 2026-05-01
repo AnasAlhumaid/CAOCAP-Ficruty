@@ -160,11 +160,14 @@ public final class CoCaptainAgentCoordinator {
 
     private func agenticRetryMessage(for userMessage: String) -> String {
         """
-        The previous response did not include executable Co-Captain work.
-
-        Retry this user request and include a `cocaptain-actions` fenced block with concrete nodeEdits. For full builds, games, or demos, use `replace_all` operations for the html, css, and javascript nodes.
-
-        Original user request:
+        The previous response did NOT include the machine-readable `cocaptain-actions` block. 
+        
+        CRITICAL: 
+        1. Do NOT just provide code in markdown chat. 
+        2. You MUST include a `cocaptain-actions` fenced block.
+        3. Put the full implementation in `nodeEdits` using `replace_all` for html, css, and javascript nodes.
+        
+        User's build request was:
         \(userMessage)
         """
     }

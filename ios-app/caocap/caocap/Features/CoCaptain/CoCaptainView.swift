@@ -397,16 +397,17 @@ struct ChatBubbleView: View {
     @Environment(\.colorScheme) var colorScheme
 
     var body: some View {
-        HStack(alignment: .bottom, spacing: 8) {
+        HStack(alignment: .bottom, spacing: 10) {
             if message.isUser {
                 Spacer()
             } else {
                 Image("cocaptain")
                     .resizable()
                     .scaledToFill()
-                    .frame(width: 28, height: 28)
+                    .frame(width: 32, height: 32)
                     .clipShape(Circle())
-                    .shadow(color: .blue.opacity(0.5), radius: 4, x: 0, y: 0)
+                    .overlay(Circle().stroke(Color.blue.opacity(0.3), lineWidth: 1))
+                    .shadow(color: .blue.opacity(0.4), radius: 6)
             }
 
             VStack(alignment: message.isUser ? .trailing : .leading, spacing: 4) {
@@ -419,59 +420,52 @@ struct ChatBubbleView: View {
                                 MessageBubbleShape(isUser: true)
                                     .fill(
                                         LinearGradient(
-                                            colors: [Color(hex: "007AFF"), Color(hex: "0051FF")],
+                                            colors: [Color(hex: "0066FF"), Color(hex: "00CCFF")],
                                             startPoint: .topLeading,
                                             endPoint: .bottomTrailing
                                         )
                                     )
+                                    .shadow(color: .blue.opacity(0.2), radius: 4, y: 2)
                             } else {
-                                let aiGradient = ColorScheme.light == colorScheme ?
-                                    [Color(white: 1.0), Color(white: 0.96)] :
-                                    [Color(white: 0.18), Color(white: 0.14)]
-
                                 MessageBubbleShape(isUser: false)
-                                    .fill(
-                                        LinearGradient(
-                                            colors: aiGradient,
-                                            startPoint: .topLeading,
-                                            endPoint: .bottomTrailing
-                                        )
-                                    )
+                                    .fill(.ultraThinMaterial)
                                     .overlay(
                                         MessageBubbleShape(isUser: false)
                                             .stroke(
                                                 LinearGradient(
                                                     colors: [
-                                                        Color.blue.opacity(0.3),
-                                                        Color.cyan.opacity(0.1)
+                                                        Color.blue.opacity(0.4),
+                                                        Color.cyan.opacity(0.2)
                                                     ],
                                                     startPoint: .topLeading,
                                                     endPoint: .bottomTrailing
                                                 ),
-                                                lineWidth: 0.8
+                                                lineWidth: 1
                                             )
                                     )
                             }
                         }
                     )
                     .foregroundColor(message.isUser ? .white : .primary)
-                    .font(.system(size: 15, weight: .regular))
+                    .font(.system(size: 15, weight: .medium))
             }
 
             if message.isUser {
                 ZStack {
                     Circle()
-                        .fill(Color.primary.opacity(0.1))
-                        .frame(width: 32, height: 32)
+                        .fill(.ultraThinMaterial)
+                        .frame(width: 34, height: 34)
+                        .overlay(Circle().stroke(Color.primary.opacity(0.1), lineWidth: 1))
 
                     Image(systemName: "person.fill")
                         .font(.system(size: 14))
-                        .foregroundColor(.primary.opacity(0.6))
+                        .foregroundColor(.primary.opacity(0.7))
                 }
             } else {
                 Spacer()
             }
         }
+        .transition(.asymmetric(insertion: .push(from: .bottom).combined(with: .opacity), removal: .opacity))
     }
 }
 
