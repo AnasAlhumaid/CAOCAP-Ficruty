@@ -529,13 +529,6 @@ struct ChatBubbleText: View {
             .font(.system(size: 15, weight: .medium))
             .textSelection(.enabled)
             .fixedSize(horizontal: false, vertical: true)
-            .contextMenu {
-                Button {
-                    UIPasteboard.general.string = message.text
-                } label: {
-                    Label("Copy", systemImage: "doc.on.doc")
-                }
-            }
     }
 }
 

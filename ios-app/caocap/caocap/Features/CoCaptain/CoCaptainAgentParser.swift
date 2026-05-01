@@ -46,7 +46,7 @@ public struct CoCaptainAgentParser {
     /// code implementation belongs on the spatial canvas nodes.
     public func visibleText(from response: String) -> String {
         if let range = response.range(of: "```") {
-            return String(response[..<range.lowerBound]).trimmingCharacters(in: .whitespacesAndNewlines)
+            return sanitizedVisiblePrefix(String(response[..<range.lowerBound]))
         }
         if let loosePayloadStart = loosePayloadStart(in: response) {
             return sanitizedVisiblePrefix(String(response[..<loosePayloadStart]))
@@ -55,17 +55,23 @@ public struct CoCaptainAgentParser {
     }
 
     private func parseLooseTrailingPayload(_ response: String) -> CoCaptainParsedResponse {
-        guard let jsonStart = loosePayloadStart(in: response),
-              let jsonEnd = balancedJSONObjectEnd(startingAt: jsonStart, in: response) else {
-            return CoCaptainParsedResponse(visibleText: response.trimmingCharacters(in: .whitespacesAndNewlines), payload: nil)
-        }
-
-        let remainder = response[jsonEnd...].trimmingCharacters(in: .whitespacesAndNewlines)
-        guard remainder.isEmpty else {
+        guard let jsonStart = loosePayloadStart(in: response) else {
             return CoCaptainParsedResponse(visibleText: response.trimmingCharacters(in: .whitespacesAndNewlines), payload: nil)
         }
 
         let visibleText = sanitizedVisiblePrefix(String(response[..<jsonStart]))
+
+        guard let jsonEnd = balancedJSONObjectEnd(startingAt: jsonStart, in: response) else {
+            // It is a loose payload but it is not finished. Hide it from the visible text.
+            return CoCaptainParsedResponse(visibleText: visibleText, payload: nil)
+        }
+
+        let remainder = response[jsonEnd...].trimmingCharacters(in: .whitespacesAndNewlines)
+        guard remainder.isEmpty else {
+            // Extra text after JSON? Treat the whole thing as plain text to be safe.
+            return CoCaptainParsedResponse(visibleText: response.trimmingCharacters(in: .whitespacesAndNewlines), payload: nil)
+        }
+
         let json = String(response[jsonStart..<jsonEnd]).trimmingCharacters(in: .whitespacesAndNewlines)
 
         guard let data = json.data(using: .utf8),
@@ -82,14 +88,18 @@ public struct CoCaptainAgentParser {
     }
 
     private func loosePayloadStart(in response: String) -> String.Index? {
-        guard response.contains("\"assistantMessage\"") || response.contains(#""nodeEdits""#) else {
+        // Look for any of our known payload keys to decide if we should look for a loose JSON block.
+        // We use a lenient check because models sometimes omit quotes or use weird spacing.
+        let keys = ["assistantMessage", "nodeEdits", "safeActions", "pendingActions"]
+        guard keys.contains(where: { response.contains($0) }) else {
             return nil
         }
 
         var searchEnd = response.endIndex
+        // Search backwards for the opening brace that introduces the payload.
         while let range = response.range(of: "{", options: .backwards, range: response.startIndex..<searchEnd) {
             let candidate = response[range.lowerBound...]
-            if candidate.contains("\"assistantMessage\"") || candidate.contains(#""nodeEdits""#) {
+            if keys.contains(where: { candidate.contains($0) }) {
                 return range.lowerBound
             }
             searchEnd = range.lowerBound

@@ -214,6 +214,56 @@ struct CoCaptainAgentTests {
         #expect(!parser.visibleText(from: response).contains("assistantMessage"))
     }
 
+    @Test func parserHidesIncompleteLooseTrailingActionJSON() throws {
+        let parser = CoCaptainAgentParser()
+        let response =
+            """
+            Working on it.
+
+            {
+              "assistantMessage": "Still generating..."
+            """
+
+        let parsed = parser.parse(response)
+
+        // Should NOT show the JSON even if it's not balanced yet.
+        #expect(parsed.visibleText == "Working on it.")
+        #expect(parsed.payload == nil)
+        #expect(!parser.visibleText(from: response).contains("assistantMessage"))
+    }
+
+    @Test func parserHidesLooseTrailingActionJSONWithoutSpace() throws {
+        let parser = CoCaptainAgentParser()
+        let response = "Done.{\"assistantMessage\":\"Done\"}"
+
+        let parsed = parser.parse(response)
+
+        #expect(parsed.visibleText == "Done.")
+        #expect(parsed.payload != nil)
+        #expect(!parser.visibleText(from: response).contains("assistantMessage"))
+    }
+
+    @Test func parserHidesLooseTrailingActionJSONWithMalformedQuotes() throws {
+        let parser = CoCaptainAgentParser()
+        let response = "Done.{ assistantMessage: 'Done' }"
+
+        let parsed = parser.parse(response)
+
+        #expect(parsed.visibleText == "Done.")
+        #expect(!parser.visibleText(from: response).contains("assistantMessage"))
+    }
+
+    @Test func chatBubbleMarkdownFallsBackToInlineSyntax() {
+        let bubble = ChatBubbleItem(
+            text: "Hello *world*",
+            isUser: false
+        )
+
+        // This should always succeed and at least render the italics if possible.
+        let renderedText = String(bubble.markdownText.characters)
+        #expect(renderedText.contains("world"))
+    }
+
     @Test func parserFallsBackOnMalformedStructuredBlock() throws {
         let parser = CoCaptainAgentParser()
         let response =

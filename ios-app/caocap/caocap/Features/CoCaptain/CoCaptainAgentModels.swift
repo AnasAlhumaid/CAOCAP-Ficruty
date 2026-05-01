@@ -168,11 +168,27 @@ public struct ChatBubbleItem: Identifiable, Hashable {
     }
 
     public var markdownText: AttributedString {
-        if let attributed = try? AttributedString(markdown: text) {
+        let fullOptions = AttributedString.MarkdownParsingOptions(
+            allowsExtendedAttributes: true,
+            interpretedSyntax: .full,
+            failurePolicy: .returnPartiallyParsedIfPossible
+        )
+
+        if let attributed = try? AttributedString(markdown: text, options: fullOptions) {
             return attributed
-        } else {
-            return AttributedString(text)
         }
+
+        let fallbackOptions = AttributedString.MarkdownParsingOptions(
+            allowsExtendedAttributes: true,
+            interpretedSyntax: .inlineOnlyPreservingWhitespace,
+            failurePolicy: .returnPartiallyParsedIfPossible
+        )
+
+        if let attributed = try? AttributedString(markdown: text, options: fallbackOptions) {
+            return attributed
+        }
+
+        return AttributedString(text)
     }
 }
 
