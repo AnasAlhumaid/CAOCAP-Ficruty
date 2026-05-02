@@ -232,6 +232,7 @@ public final class LLMService {
                 - Exact operations require a non-empty `target`; append/prepend/replace_all do not.
 
                 - JSON schema for `cocaptain-actions`:
+                
                 {
                   "assistantMessage": "short summary",
                   "safeActions": [{"actionId": "id"}],

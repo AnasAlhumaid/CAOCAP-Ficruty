@@ -40,7 +40,10 @@ caocap/
 │   │   └── Providers/
 │   ├── Omnibox/
 │   ├── CoCaptain/
+│   ├── Launch/
 │   ├── Overlays/
+│   ├── ProjectExplorer/
+│   ├── Settings/
 │   └── Subscription/
 ├── Resources/
 └── Preview Content/
@@ -56,7 +59,7 @@ The application shell and lifecycle management. The thinnest layer possible — 
 | File | Responsibility |
 |---|---|
 | `caocapApp.swift` | `@main` entry point. Initializes Firebase and injects `AppRouter` as an environment object. |
-| `ContentView.swift` | Root view. Observes `AppRouter` and switches between Onboarding, Auth, Home, and Project workspaces. |
+| `ContentView.swift` | Root view. Observes `AppRouter` and switches between Onboarding, Home, and Project workspaces while presenting global sheets. |
 | `AppConfiguration.swift` | Static configuration for Firebase Function names and environment keys. |
 | `Info.plist` | System-level permissions and metadata. |
 
@@ -67,7 +70,7 @@ Centralized, type-safe routing. All workspace transitions flow through here — 
 
 | File | Responsibility |
 |---|---|
-| `AppRouter.swift` | `@Observable` class managing `WorkspaceState` (`.onboarding`, `.auth`, `.home`, `.project`). Owns all `ProjectStore` instances. and `createNewProject()` initialization logic. |
+| `AppRouter.swift` | `@Observable` class managing `WorkspaceState` (`.onboarding`, `.home`, `.project`). Owns all `ProjectStore` instances and project creation/resume routing. |
 
 ---
 
@@ -78,6 +81,8 @@ Pure domain data. No UI, no persistence, no side effects. These structs define t
 |---|---|
 | `SpatialNode.swift` | The core canvas primitive. Holds `id`, `type` (`.standard`, `.webView`, `.srs`, `.code`), `position`, `textContent`, `htmlContent`, `connectedNodeIds`, and `theme`. |
 | `NodeTheme.swift` | Color tokens for the six node themes (blue, purple, green, orange, red, gray). |
+| `NodeRole.swift` | Canonical role inference for SRS, HTML, CSS, JavaScript, Live Preview, and custom nodes. |
+| `SRSReadinessState.swift` | Domain state for whether an SRS node is empty, structured, drafted, or ready. |
 
 ---
 
@@ -86,12 +91,19 @@ Infrastructure and heavy-lifting. These are long-lived objects that outlive indi
 
 | File | Responsibility |
 |---|---|
-| `ProjectStore.swift` | The core persistence engine. Manages `[SpatialNode]` state, atomic JSON writes, debounced `requestSave()`, viewport persistence, and the **Live Compilation Engine** (`compileLivePreview()`). |
+| `ProjectStore.swift` | Observable project state owner. Manages `[SpatialNode]`, viewport state, undo wiring, debounced save requests, and Live Preview refresh. |
+| `ProjectPersistenceService.swift` | Project file URLs, JSON schema decoding/encoding, migrations, and atomic writes. |
+| `LivePreviewCompiler.swift` | Pure compiler that combines canonical HTML, CSS, and JavaScript nodes into a WebView payload. |
+| `ProjectManager.swift` | Lists and deletes saved local project files for the project explorer. |
 | `AuthenticationManager.swift` | Wraps Firebase Auth. Handles anonymous login, account linking, and social provider flows. |
 | `LLMService.swift` | Interface for the Firebase AI Logic SDK. Manages streaming sessions with the Gemini backend. |
 | `AppActionDispatcher.swift` | Centralized action registry. Allows the app and the AI agent to trigger high-level navigation and project mutations. |
+| `CommandIntentResolver.swift` | Maps plain-language command palette and CoCaptain prompts to available app actions. |
+| `HapticsManager.swift` | Central haptic feedback helper that honors app haptics settings. |
+| `LocalizationManager.swift` | Runtime language selection, localized strings, localized project/node labels, and date formatting. |
 | `ProjectContextBuilder.swift` | Logic to "harvest" the spatial graph and serialize it into a grounded prompt context for the LLM. |
 | `NodePatchEngine.swift` | A precision editing engine that applies partial patches (replace/insert/append) to HTML, CSS, and JS nodes. |
+| `SRSReadinessEvaluator.swift` | Evaluates SRS text completeness and acceptance-check readiness. |
 | `SubscriptionManager.swift` | StoreKit 2 integration. Manages Pro subscription state, purchase flow, and transaction verification. |
 
 ---
@@ -162,11 +174,21 @@ The agentic AI companion. A native sheet interface for real-time collaboration.
 |---|---|
 | `CoCaptainView.swift` | Implements a spatial chat UI with monochromatic gradients and persistent scroll states. |
 | `CoCaptainViewModel.swift` | High-level state management for the CoCaptain UI. |
+| `CoCaptainTimelineListView.swift` | Scrollable chat timeline and scroll restoration behavior. |
+| `CoCaptainInputComposer.swift` | Prompt field, quick prompts, send/stop controls, and active context pill. |
+| `CoCaptainBubbleViews.swift` | Chat bubble, markdown text, bubble shape, and thinking indicator UI. |
+| `CoCaptainReviewViews.swift` | Review bundle and pending edit/action cards for human approval. |
+| `CoCaptainTimelineViews.swift` | Lightweight timeline item routing plus shared context/execution rows. |
 | `CoCaptainAgentCoordinator.swift` | The orchestrator of agentic control. Manages the dual-path execution flow and review bundle generation. |
 | `CoCaptainAgentModels.swift` | Domain models for agent actions, node edits, review items, and the chat timeline. |
 | `CoCaptainAgentOutputAdapter.swift` | Source-agnostic adapter layer that converts Firebase function calls and fenced JSON into directives for validation and execution. |
 | `CoCaptainAgentParser.swift` | Logic to parse raw LLM text into structured `CoCaptainAgentPayload` objects. |
 | `CoCaptainAgentValidator.swift` | Validates parsed agent payloads before any app action execution or review bundle generation. |
+
+---
+
+#### `Launch/`
+Launch transition UI shown by the root app shell.
 
 ---
 
@@ -177,6 +199,16 @@ Persistent floating HUD elements — the project header bar, zoom indicator, and
 |---|---|
 | `FloatingCommandButton.swift` | Implements a **Slide-to-Select radial menu** for quick access to tools. |
 | `CanvasHUDView.swift` | Displays project title and current zoom percentage. |
+
+---
+
+#### `ProjectExplorer/`
+Saved-project browsing and selection UI backed by `ProjectManager`.
+
+---
+
+#### `Settings/`
+Profile, app settings, support, legal, account, and preference screens.
 
 ---
 
@@ -196,7 +228,7 @@ Assets used exclusively by Xcode Previews. Not included in production builds.
 ## Architectural Principles
 
 1. **Unidirectional Data Flow**: `AppRouter` owns workspace state. `ProjectStore` owns node state. Views observe and never mutate state directly.
-2. **No Blocking Main Thread**: All disk I/O and network requests run on detached background tasks.
+2. **No Blocking Main Thread**: Disk I/O and network requests should stay outside view bodies and main-actor interaction paths.
 3. **Agentic Context Harvesting**: CoCaptain reads the *entire* spatial graph state before every prompt, ensuring grounded AI responses.
 4. **Zero Core Dependencies**: Core logic (compilation, syntax highlighting) remains in pure Swift. Firebase is used exclusively for identity and AI.
-5. **Type-Safe Everything**: `NodeAction`, `WorkspaceState`, and `LLMMessage` are all strict enums or structs.
+5. **Type-Safe Everything**: `NodeAction`, `NodeRole`, `WorkspaceState`, and LLM/agent payloads are strict enums or structs.

@@ -65,6 +65,52 @@ struct CoCaptainAgentTests {
         }
     }
 
+    @Test func nodeRoleInferenceRecognizesCanonicalTemplateNodes() {
+        #expect(SpatialNode(type: .srs, position: .zero, title: "Software Requirements (SRS)").role == .srs)
+        #expect(SpatialNode(type: .code, position: .zero, title: "HTML").role == .html)
+        #expect(SpatialNode(type: .code, position: .zero, title: "CSS").role == .css)
+        #expect(SpatialNode(type: .code, position: .zero, title: "JavaScript").role == .javascript)
+        #expect(SpatialNode(type: .webView, position: .zero, title: "Live Preview").role == .livePreview)
+        #expect(SpatialNode(type: .code, position: .zero, title: "New Logic").role == .custom)
+    }
+
+    @Test func livePreviewCompilerInjectsCSSAndJavaScriptIntoDocumentTags() throws {
+        let nodes = makePreviewNodes(
+            html: "<html><head></head><body><h1>Hello</h1></body></html>",
+            css: "body { color: white; }",
+            javascript: "console.log('hi');"
+        )
+
+        let compilation = try #require(LivePreviewCompiler().compile(nodes: nodes))
+
+        #expect(compilation.html.contains("<style>\nbody { color: white; }\n</style>"))
+        #expect(compilation.html.contains("<script>\nconsole.log('hi');\n</script>"))
+        #expect(compilation.html.range(of: "<style>")!.lowerBound < compilation.html.range(of: "</head>")!.lowerBound)
+        #expect(compilation.html.range(of: "<script>")!.lowerBound < compilation.html.range(of: "</body>")!.lowerBound)
+    }
+
+    @Test func livePreviewCompilerHandlesMissingHeadAndBodyTags() throws {
+        let nodes = makePreviewNodes(
+            html: "<main>Hello</main>",
+            css: ".title { color: orange; }",
+            javascript: "window.ready = true;"
+        )
+
+        let compilation = try #require(LivePreviewCompiler().compile(nodes: nodes))
+
+        #expect(compilation.html.hasPrefix("\n<style>\n.title { color: orange; }\n</style>\n"))
+        #expect(compilation.html.hasSuffix("\n<script>\nwindow.ready = true;\n</script>\n"))
+    }
+
+    @Test func livePreviewCompilerRequiresPreviewAndHTMLNodes() {
+        let compiler = LivePreviewCompiler()
+        let htmlOnly = [SpatialNode(type: .code, position: .zero, title: "HTML", textContent: "<h1>Hello</h1>")]
+        let previewOnly = [SpatialNode(type: .webView, position: .zero, title: "Live Preview")]
+
+        #expect(compiler.compile(nodes: htmlOnly) == nil)
+        #expect(compiler.compile(nodes: previewOnly) == nil)
+    }
+
     @Test func chatBubbleMarkdownPreservesVisibleContent() {
         let bubble = ChatBubbleItem(
             text: """
@@ -887,6 +933,19 @@ struct CoCaptainAgentTests {
                 )
             ]
         )
+    }
+
+    private func makePreviewNodes(
+        html: String,
+        css: String,
+        javascript: String
+    ) -> [SpatialNode] {
+        [
+            SpatialNode(type: .webView, position: .zero, title: "Live Preview"),
+            SpatialNode(type: .code, position: .zero, title: "HTML", textContent: html),
+            SpatialNode(type: .code, position: .zero, title: "CSS", textContent: css),
+            SpatialNode(type: .code, position: .zero, title: "JavaScript", textContent: javascript)
+        ]
     }
 }
 

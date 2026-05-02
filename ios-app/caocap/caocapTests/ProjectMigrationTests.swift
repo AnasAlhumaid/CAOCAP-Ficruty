@@ -6,7 +6,10 @@ final class ProjectMigrationTests: XCTestCase {
     
     @MainActor
     func testLoadingLegacyFileMigratesToV1() throws {
-        // 1. Create a versionless (v0) JSON
+        let tempDirectory = try makeTemporaryDirectory()
+        defer { try? FileManager.default.removeItem(at: tempDirectory) }
+        let persistence = ProjectPersistenceService(baseDirectory: tempDirectory)
+        let fileName = "legacy.json"
         let legacyJSON = """
         {
             "projectName": "Legacy Project",
@@ -24,31 +27,24 @@ final class ProjectMigrationTests: XCTestCase {
             ]
         }
         """
-        let data = legacyJSON.data(using: .utf8)!
-        
-        let fileName = "test-legacy-\(UUID().uuidString).json"
-        let store = ProjectStore(fileName: fileName, initialNodes: [])
-        
-        // Write legacy data to disk manually
-        let paths = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask)
-        let appSupport = paths[0].appendingPathComponent("com.ficruty.caocap", isDirectory: true)
-        let fileURL = appSupport.appendingPathComponent(fileName)
-        try data.write(to: fileURL)
-        
-        // 2. Load it
-        store.load()
-        
-        // 3. Verify migration
-        XCTAssertEqual(store.projectName, "Legacy Project")
-        XCTAssertEqual(store.nodes.count, 1)
-        XCTAssertEqual(store.nodes.first?.action, .retryOnboarding, "Action should be migrated from title")
-        
-        // Cleanup
-        try? FileManager.default.removeItem(at: fileURL)
+
+        try legacyJSON.data(using: .utf8)!.write(to: persistence.fileURL(for: fileName))
+
+        let result = try persistence.load(fileName: fileName)
+
+        XCTAssertEqual(result.sourceSchemaVersion, 0)
+        XCTAssertTrue(result.didMigrate)
+        XCTAssertEqual(result.snapshot.projectName, "Legacy Project")
+        XCTAssertEqual(result.snapshot.nodes.count, 1)
+        XCTAssertEqual(result.snapshot.nodes.first?.action, .retryOnboarding, "Action should be migrated from title")
     }
     
     @MainActor
     func testLoadingCurrentVersionSucceeds() throws {
+        let tempDirectory = try makeTemporaryDirectory()
+        defer { try? FileManager.default.removeItem(at: tempDirectory) }
+        let persistence = ProjectPersistenceService(baseDirectory: tempDirectory)
+        let fileName = "v1.json"
         let v1JSON = """
         {
             "schemaVersion": 1,
@@ -58,25 +54,23 @@ final class ProjectMigrationTests: XCTestCase {
             "nodes": []
         }
         """
-        let data = v1JSON.data(using: .utf8)!
-        let fileName = "test-v1-\(UUID().uuidString).json"
-        let store = ProjectStore(fileName: fileName, initialNodes: [])
-        
-        let paths = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask)
-        let appSupport = paths[0].appendingPathComponent("com.ficruty.caocap", isDirectory: true)
-        let fileURL = appSupport.appendingPathComponent(fileName)
-        try data.write(to: fileURL)
-        
-        store.load()
-        
-        XCTAssertEqual(store.projectName, "V1 Project")
-        XCTAssertEqual(store.viewportScale, 0.5)
-        
-        try? FileManager.default.removeItem(at: fileURL)
+
+        try v1JSON.data(using: .utf8)!.write(to: persistence.fileURL(for: fileName))
+
+        let result = try persistence.load(fileName: fileName)
+
+        XCTAssertEqual(result.sourceSchemaVersion, 1)
+        XCTAssertFalse(result.didMigrate)
+        XCTAssertEqual(result.snapshot.projectName, "V1 Project")
+        XCTAssertEqual(result.snapshot.viewportScale, 0.5)
     }
     
     @MainActor
     func testLoadingNewerVersionAbortsToPreventDataLoss() throws {
+        let tempDirectory = try makeTemporaryDirectory()
+        defer { try? FileManager.default.removeItem(at: tempDirectory) }
+        let persistence = ProjectPersistenceService(baseDirectory: tempDirectory)
+        let fileName = "future.json"
         let v99JSON = """
         {
             "schemaVersion": 99,
@@ -86,20 +80,62 @@ final class ProjectMigrationTests: XCTestCase {
             "nodes": []
         }
         """
-        let data = v99JSON.data(using: .utf8)!
-        let fileName = "test-future-\(UUID().uuidString).json"
-        let store = ProjectStore(fileName: fileName, initialNodes: [])
-        
-        let paths = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask)
-        let appSupport = paths[0].appendingPathComponent("com.ficruty.caocap", isDirectory: true)
-        let fileURL = appSupport.appendingPathComponent(fileName)
-        try data.write(to: fileURL)
-        
-        store.load()
-        
-        // Should fallback to defaults (OnboardingProvider.manifestoNodes)
-        XCTAssertNotEqual(store.projectName, "Future Project")
-        
-        try? FileManager.default.removeItem(at: fileURL)
+
+        try v99JSON.data(using: .utf8)!.write(to: persistence.fileURL(for: fileName))
+
+        XCTAssertThrowsError(try persistence.load(fileName: fileName)) { error in
+            XCTAssertEqual(
+                error as? ProjectPersistenceError,
+                .unsupportedFutureVersion(99, current: ProjectPersistenceService.currentSchemaVersion)
+            )
+        }
+    }
+
+    @MainActor
+    func testStoreFallsBackToInitialNodesWhenProjectFileIsCorrupted() throws {
+        let tempDirectory = try makeTemporaryDirectory()
+        defer { try? FileManager.default.removeItem(at: tempDirectory) }
+        let persistence = ProjectPersistenceService(baseDirectory: tempDirectory)
+        let fileName = "corrupted.json"
+        try Data("{not-json}".utf8).write(to: persistence.fileURL(for: fileName))
+
+        let fallbackNode = SpatialNode(type: .code, position: .zero, title: "HTML", textContent: "<h1>Fallback</h1>")
+        let store = ProjectStore(
+            fileName: fileName,
+            projectName: "Fallback Project",
+            initialNodes: [fallbackNode],
+            persistence: persistence
+        )
+
+        XCTAssertEqual(store.nodes, [fallbackNode])
+        XCTAssertEqual(store.projectName, "Fallback Project")
+    }
+
+    func testPersistenceSaveLoadRoundTrip() throws {
+        let tempDirectory = try makeTemporaryDirectory()
+        defer { try? FileManager.default.removeItem(at: tempDirectory) }
+        let persistence = ProjectPersistenceService(baseDirectory: tempDirectory)
+        let fileName = "roundtrip.json"
+        let snapshot = ProjectSnapshot(
+            projectName: "Round Trip",
+            nodes: [
+                SpatialNode(type: .code, position: CGPoint(x: 12, y: 24), title: "HTML", textContent: "<h1>Hello</h1>")
+            ],
+            viewportOffset: CGSize(width: 10, height: 20),
+            viewportScale: 0.75
+        )
+
+        try persistence.save(snapshot, fileName: fileName)
+        let loaded = try persistence.load(fileName: fileName)
+
+        XCTAssertEqual(loaded.snapshot, snapshot)
+        XCTAssertEqual(loaded.sourceSchemaVersion, ProjectPersistenceService.currentSchemaVersion)
+    }
+
+    private func makeTemporaryDirectory() throws -> URL {
+        let url = FileManager.default.temporaryDirectory
+            .appendingPathComponent("ficruty-tests-\(UUID().uuidString)", isDirectory: true)
+        try FileManager.default.createDirectory(at: url, withIntermediateDirectories: true)
+        return url
     }
 }

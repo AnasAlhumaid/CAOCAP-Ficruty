@@ -10,7 +10,7 @@ public struct ProjectContextBuilder {
             return "- \(node.title) [\(node.type.rawValue)] links: \(linkCount)"
         }.joined(separator: "\n")
 
-        let sections = NodeRole.allCases.compactMap { role -> String? in
+        let sections = NodeRole.editableCanonicalRoles.compactMap { role -> String? in
             guard let node = node(for: role, in: store.nodes) else { return nil }
             // Keep context compact; large prompts can cause Firebase AI Logic calls
             // to fail with opaque errors (e.g. GenerateContentError error 0).
@@ -38,7 +38,7 @@ public struct ProjectContextBuilder {
     /// whether to ask clarifying questions or proceed to code generation.
     @MainActor
     private func srsReadinessContext(from store: ProjectStore) -> String? {
-        guard let srsNode = store.nodes.first(where: { $0.type == .srs }) else { return nil }
+        guard let srsNode = store.nodes.first(where: { $0.role == .srs }) else { return nil }
         let state = srsNode.srsReadinessState ?? .empty
         return "SRS Readiness: \(state.contextLabel)"
     }

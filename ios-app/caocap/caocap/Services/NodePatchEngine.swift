@@ -1,38 +1,5 @@
 import Foundation
 
-public enum NodeRole: String, CaseIterable, Codable, Hashable {
-    case srs
-    case html
-    case css
-    case javascript
-
-    public var displayName: String {
-        switch self {
-        case .srs: return "SRS"
-        case .html: return "HTML"
-        case .css: return "CSS"
-        case .javascript: return "JavaScript"
-        }
-    }
-
-    public var localizedDisplayName: String {
-        LocalizationManager.shared.localizedString(displayName)
-    }
-
-    public func matches(node: SpatialNode) -> Bool {
-        switch self {
-        case .srs:
-            return node.type == .srs || node.title.localizedCaseInsensitiveContains("software requirements")
-        case .html:
-            return node.title.caseInsensitiveCompare("HTML") == .orderedSame
-        case .css:
-            return node.title.caseInsensitiveCompare("CSS") == .orderedSame
-        case .javascript:
-            return node.title.caseInsensitiveCompare("JavaScript") == .orderedSame
-        }
-    }
-}
-
 public enum NodePatchOperationType: String, Codable, Hashable {
     case replaceAll = "replace_all"
     case replaceExact = "replace_exact"
@@ -82,7 +49,8 @@ public struct NodePatchEngine {
 
     @MainActor
     public func resolveNode(for role: NodeRole, in store: ProjectStore) -> SpatialNode? {
-        store.nodes.first(where: { role.matches(node: $0) })
+        guard role.isEditableCanonicalRole else { return nil }
+        return store.nodes.first(where: { role.matches(node: $0) })
     }
 
     @MainActor
