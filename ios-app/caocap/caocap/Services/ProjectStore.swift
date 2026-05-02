@@ -302,6 +302,9 @@ public class ProjectStore {
             case .webView:
                 // Will be populated by the Live Preview compiler if connected
                 break
+            case .art:
+                // Drawing data starts empty
+                break
             case .standard:
                 break
             }
@@ -310,6 +313,30 @@ public class ProjectStore {
                 requestSave()
             }
             compileLivePreview()
+        }
+    }
+
+    /// Updates the PencilKit drawing data for an .art node.
+    /// - Parameters:
+    ///   - id: The UUID of the node to update.
+    ///   - data: The serialized PKDrawing data.
+    ///   - persist: If true, triggers a debounced save to disk.
+    public func updateNodeDrawingData(id: UUID, data: Data, persist: Bool = true) {
+        if let index = nodes.firstIndex(where: { $0.id == id }) {
+            let oldData = nodes[index].drawingData
+            
+            // Register Undo
+            undoManager?.registerUndo(withTarget: self) { target in
+                MainActor.assumeIsolated {
+                    target.updateNodeDrawingData(id: id, data: oldData ?? Data(), persist: persist)
+                }
+            }
+            undoStackChanged += 1
+            
+            nodes[index].drawingData = data
+            if persist {
+                requestSave()
+            }
         }
     }
     
@@ -402,11 +429,11 @@ public class ProjectStore {
     ///   - id: The UUID of the node to delete.
     ///   - persist: If true, triggers a debounced save to disk.
     public func deleteNode(id: UUID, persist: Bool = true) {
-        guard let index = nodes.firstIndex(where: { $0.id == id }) else { return }
+        guard let index = self.nodes.firstIndex(where: { $0.id == id }) else { return }
         
         // Prevent deletion of protected main nodes (e.g. SRS, HTML, CSS, JS)
-        if nodes[index].isProtected {
-            logger.warning("Attempted to delete protected node: \(nodes[index].title)")
+        if self.nodes[index].isProtected {
+            self.logger.warning("Attempted to delete protected node: \(self.nodes[index].title)")
             return
         }
         

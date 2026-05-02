@@ -92,6 +92,19 @@ struct CoCaptainInputComposer: View {
                 .onSubmit {
                     onSend()
                 }
+                .onKeyPress { press in
+                    if press.key == .return {
+                        if press.modifiers.contains(.shift) {
+                            return .ignored
+                        } else {
+                            if canSend {
+                                onSend()
+                                return .handled
+                            }
+                        }
+                    }
+                    return .ignored
+                }
                 .padding(.horizontal, 16)
                 .padding(.vertical, 12)
         }

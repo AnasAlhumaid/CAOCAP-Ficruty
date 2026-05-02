@@ -37,6 +37,8 @@ struct NodeDetailView: View {
             CodeEditorView(node: node, store: store)
         } else if node.type == .srs {
             SRSEditorView(node: node, store: store)
+        } else if node.type == .art {
+            ArtEditorView(node: node, store: store)
         } else {
             NavigationView {
                 ZStack {
