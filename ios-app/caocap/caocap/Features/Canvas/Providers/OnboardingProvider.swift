@@ -1,89 +1,122 @@
 import Foundation
 import CoreGraphics
+import OSLog
+
+public struct OnboardingManifest: Codable, Equatable {
+    public let version: Int
+    public let projectName: String
+    public let initialViewportScale: CGFloat
+    public let nodes: [SpatialNode]
+    public let steps: [OnboardingStep]?
+}
 
 public struct OnboardingProvider {
+    private static let logger = Logger(subsystem: "com.ficruty.caocap", category: "Onboarding")
+    private static let resourceName = "tutorial"
+
+    public static var projectName: String {
+        manifest.projectName
+    }
+
+    public static var initialViewportScale: CGFloat {
+        manifest.initialViewportScale
+    }
+
     public static var manifestoNodes: [SpatialNode] {
+        manifest.nodes
+    }
+
+    public static var steps: [OnboardingStep] {
+        manifest.steps ?? []
+    }
+
+    public static func decodeManifest(from data: Data) throws -> OnboardingManifest {
+        try JSONDecoder().decode(OnboardingManifest.self, from: data)
+    }
+
+    private static let manifest: OnboardingManifest = loadManifest() ?? fallbackManifest
+
+    private static func loadManifest(bundle: Bundle = .main) -> OnboardingManifest? {
+        let candidates = [
+            bundle.url(forResource: resourceName, withExtension: "json"),
+            bundle.url(forResource: resourceName, withExtension: "json", subdirectory: "Resources")
+        ].compactMap { $0 }
+
+        for url in candidates {
+            do {
+                let data = try Data(contentsOf: url)
+                return try decodeManifest(from: data)
+            } catch {
+                logger.error("Failed to decode onboarding manifest at \(url.path): \(error.localizedDescription)")
+            }
+        }
+
+        logger.warning("Using fallback onboarding manifest because tutorial.json was not found in the app bundle.")
+        return nil
+    }
+
+    private static var fallbackManifest: OnboardingManifest {
+        OnboardingManifest(
+            version: 0,
+            projectName: "Onboarding",
+            initialViewportScale: 1.0,
+            nodes: fallbackNodes,
+            steps: fallbackSteps
+        )
+    }
+
+    private static var fallbackSteps: [OnboardingStep] {
+        return [
+            OnboardingStep(
+                label: "Welcome! Try panning the canvas to look around.",
+                gate: .pan
+            ),
+            OnboardingStep(
+                label: "Great. Now pinch to zoom in or out.",
+                gate: .zoom
+            ),
+            OnboardingStep(
+                label: "Tap a node to see its details, or use the green arrow to enter Home.",
+                gate: .none
+            )
+        ]
+    }
+
+    private static var fallbackNodes: [SpatialNode] {
         let node1Id = UUID()
         let node2Id = UUID()
         let node3Id = UUID()
-        let node4Id = UUID()
-        let node5Id = UUID()
-        let node6Id = UUID()
-        let node7Id = UUID()
         
         return [
             SpatialNode(
                 id: node1Id,
-                position: .zero,
+                position: CGPoint(x: 0, y: -180),
                 title: "Welcome to CAOCAP",
-                subtitle: "The spatial landscape for agentic software design.",
+                subtitle: "This is a canvas, not a file tree. Move slowly, look around, and start from intent.",
                 icon: "sparkles",
-                theme: .purple,
-                nextNodeId: node2Id
+                theme: .purple
             ),
             SpatialNode(
                 id: node2Id,
-                position: CGPoint(x: 600, y: 150),
-                title: "The Infinite Canvas",
-                subtitle: "Break free from the file tree. Pan and zoom to navigate your architecture.",
-                icon: "map.fill",
+                type: .srs,
+                position: CGPoint(x: 0, y: 40),
+                title: "Start With Intent",
+                subtitle: "Your first project will open with requirements, code, and preview nodes already arranged for you.",
+                icon: "doc.text.fill",
                 theme: .blue,
-                nextNodeId: node3Id
-            ),
-            SpatialNode(
-                id: node3Id,
-                position: CGPoint(x: 1200, y: -100),
-                title: "Nodes of Intent",
-                subtitle: "Each node represents a component, a logic block, or a vision. Drag them to organize your mind.",
-                icon: "square.grid.3x3.fill",
-                theme: .orange,
-                nextNodeId: node4Id
-            ),
-            SpatialNode(
-                id: node4Id,
-                position: CGPoint(x: 1800, y: 300),
-                title: "Agentic Design",
-                subtitle: "You define the 'What'. Your Co-Captain handles the 'How'. Spatial programming starts here.",
-                icon: "brain.head.profile",
-                theme: .pink,
-                nextNodeId: node5Id
-            ),
-            SpatialNode(
-                id: node5Id,
-                type: .webView,
-                position: CGPoint(x: 1500, y: 900),
-                title: "Live Preview",
-                subtitle: "See your creations come to life in real-time. This node is a live browser engine.",
-                icon: "safari.fill",
-                theme: .green,
-                nextNodeId: node6Id,
-                htmlContent: """
-                <html>
-                <body style="background: linear-gradient(135deg, #7C3AED, #3B82F6); color: white; display: flex; align-items: center; justify-content: center; height: 100vh; font-family: system-ui, sans-serif; margin: 0; text-align: center;">
-                    <div>
-                        <h1 style="font-size: 3rem; margin-bottom: 0.5rem;">Hello, CAOCAP</h1>
-                        <p style="font-size: 1.2rem; opacity: 0.8;">Live Spatial Preview</p>
-                    </div>
-                </body>
-                </html>
+                textContent: """
+                A CAOCAP project starts with intent.
+
+                Write what the software should do, then let the workspace keep requirements, code, preview, and CoCaptain close together.
                 """
             ),
             SpatialNode(
-                id: node6Id,
-                position: CGPoint(x: 600, y: 1200),
-                title: "The Command Palette",
-                subtitle: "Press the Floating Action Button to summon tools, create nodes, or talk to the AI.",
-                icon: "command",
-                theme: .blue,
-                nextNodeId: node7Id
-            ),
-            SpatialNode(
-                id: node7Id,
-                position: CGPoint(x: -400, y: 800),
-                title: "Your Journey Begins",
-                subtitle: "Enter your Home workspace to start building your first spatial project.",
-                icon: "rocket.fill",
-                theme: .purple,
+                id: node3Id,
+                position: CGPoint(x: 0, y: 280),
+                title: "Enter Home",
+                subtitle: "Create your first spatial project from the Home workspace.",
+                icon: "arrow.right.circle.fill",
+                theme: .green,
                 action: .navigateHome
             )
         ]

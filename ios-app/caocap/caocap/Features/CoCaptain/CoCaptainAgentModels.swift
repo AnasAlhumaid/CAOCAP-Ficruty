@@ -46,13 +46,41 @@ public struct CoCaptainAgentPayload: Codable, Hashable {
     }
 }
 
-public struct CoCaptainParsedResponse: Hashable {
-    public let visibleText: String
-    public let payload: CoCaptainAgentPayload?
+public struct CoCaptainAgentFunctionCall: Hashable {
+    public let name: String
+    public let arguments: [String: String]
+    public let id: String?
 
-    public init(visibleText: String, payload: CoCaptainAgentPayload?) {
-        self.visibleText = visibleText
+    public init(name: String, arguments: [String: String], id: String? = nil) {
+        self.name = name
+        self.arguments = arguments
+        self.id = id
+    }
+}
+
+public enum CoCaptainLLMStreamEvent: Hashable {
+    case text(String)
+    case functionCalls([CoCaptainAgentFunctionCall])
+}
+
+public struct CoCaptainParsedResponse: Hashable {
+    /// The text before any structured payload or code blocks.
+    public let preamble: String
+    public let payload: CoCaptainAgentPayload?
+    public let diagnostic: String?
+
+    public init(preamble: String, payload: CoCaptainAgentPayload?, diagnostic: String? = nil) {
+        self.preamble = preamble
         self.payload = payload
+        self.diagnostic = diagnostic
+    }
+
+    /// Backwards compatibility or merged view
+    public var visibleText: String {
+        if preamble.isEmpty {
+            return payload?.assistantMessage ?? ""
+        }
+        return preamble
     }
 }
 
@@ -87,7 +115,7 @@ public struct ExecutionStatusItem: Identifiable, Hashable {
 }
 
 public enum PendingReviewSource: Hashable {
-    case appAction(AppActionID)
+    case appAction(AppActionID, [String: String]? = nil)
     case nodeEdit(role: NodeRole, operations: [NodePatchOperation], baseText: String)
 }
 
@@ -98,6 +126,9 @@ public struct PendingReviewItem: Identifiable, Hashable {
     public let preview: String
     public var status: ReviewItemStatus
     public let source: PendingReviewSource
+    /// Human-readable explanation of why this item entered the conflicted state.
+    /// Nil when the item has not yet conflicted.
+    public var conflictDescription: String?
 
     public init(
         id: UUID = UUID(),
@@ -105,7 +136,8 @@ public struct PendingReviewItem: Identifiable, Hashable {
         summary: String,
         preview: String,
         status: ReviewItemStatus = .pending,
-        source: PendingReviewSource
+        source: PendingReviewSource,
+        conflictDescription: String? = nil
     ) {
         self.id = id
         self.targetLabel = targetLabel
@@ -113,6 +145,7 @@ public struct PendingReviewItem: Identifiable, Hashable {
         self.preview = preview
         self.status = status
         self.source = source
+        self.conflictDescription = conflictDescription
     }
 }
 
@@ -143,12 +176,23 @@ public struct ChatBubbleItem: Identifiable, Hashable {
         self.isUser = isUser
     }
 
-    public var attributedText: AttributedString {
-        if let attributed = try? AttributedString(markdown: text, options: .init(interpretedSyntax: .inlineOnlyPreservingWhitespace)) {
+    public var markdownText: AttributedString {
+        let fullOptions = AttributedString.MarkdownParsingOptions(
+            allowsExtendedAttributes: true,
+            interpretedSyntax: .full,
+            failurePolicy: .returnPartiallyParsedIfPossible
+        )
+
+        if let attributed = try? AttributedString(markdown: text, options: fullOptions) {
             return attributed
-        } else {
-            return AttributedString(text)
         }
+
+        let fallbackOptions = AttributedString.MarkdownParsingOptions(
+            allowsExtendedAttributes: true,
+            interpretedSyntax: .inlineOnlyPreservingWhitespace,
+            failurePolicy: .returnPartiallyParsedIfPossible
+        )
+        return (try? AttributedString(markdown: text, options: fallbackOptions)) ?? AttributedString(text)
     }
 }
 

@@ -118,7 +118,7 @@ private struct ProjectRow: View {
                     
                     Text(
                         LocalizationManager.shared.localizedString(
-                            "Last edited %@",
+                            "project.lastEditedDate",
                             arguments: [LocalizationManager.shared.relativeDateString(for: project.lastModified)]
                         )
                     )

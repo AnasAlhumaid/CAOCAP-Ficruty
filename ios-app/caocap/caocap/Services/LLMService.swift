@@ -53,20 +53,36 @@ public final class LLMService {
     /// - Parameter prompt: The raw user message.
     /// - Returns: An `AsyncThrowingStream` of partial response strings.
     public func streamResponse(for prompt: String) -> AsyncThrowingStream<String, Error> {
-        streamResponse(
+        let events = streamAgentEvents(
             for: prompt,
             context: nil,
             expectsStructuredResponse: false,
             availableActions: []
         )
+
+        return AsyncThrowingStream { continuation in
+            let task = Task {
+                do {
+                    for try await event in events {
+                        if case .text(let text) = event {
+                            continuation.yield(text)
+                        }
+                    }
+                    continuation.finish()
+                } catch {
+                    continuation.finish(throwing: error)
+                }
+            }
+            continuation.onTermination = { _ in task.cancel() }
+        }
     }
 
-    public func streamResponse(
+    public func streamAgentEvents(
         for userMessage: String,
         context: String?,
         expectsStructuredResponse: Bool,
         availableActions: [AppActionDefinition]
-    ) -> AsyncThrowingStream<String, Error> {
+    ) -> AsyncThrowingStream<CoCaptainLLMStreamEvent, Error> {
         // Initialize chat session if it doesn't exist
         if chat == nil {
             // Ensure model is initialised with the latest preferred name at first use.
@@ -92,7 +108,12 @@ public final class LLMService {
                     
                     for try await chunk in stream {
                         if let text = chunk.text {
-                            continuation.yield(text)
+                            continuation.yield(.text(text))
+                        }
+
+                        let functionCalls = chunk.functionCalls.map(CoCaptainAgentFunctionCall.init)
+                        if !functionCalls.isEmpty {
+                            continuation.yield(.functionCalls(functionCalls))
                         }
                     }
                     continuation.finish()
@@ -115,26 +136,48 @@ public final class LLMService {
     private func makeModel(modelName: String) -> GenerativeModel {
         FirebaseAI.firebaseAI(backend: .googleAI()).generativeModel(
             modelName: modelName,
+            tools: [.functionDeclarations([Self.requestAppActionDeclaration])],
+            toolConfig: ToolConfig(
+                functionCallingConfig: .auto()
+            ),
             systemInstruction: ModelContent(
                 role: "system",
                 parts: """
                 You are Co-Captain, a spatial programming assistant for the Ficruty platform.
-                Your goal is to help users build web applications using a node-based spatial canvas.
-
+                You can request app actions with the `request_app_action` function and request node edits with a `cocaptain_actions` XML block. The app validates every requested action before execution.
+                
                 Personality:
-                - Encouraging, technical, and concise.
-                - You embrace "vibe coding" — thinking in terms of intents, nodes, and flows.
-                - Your primary languages are HTML, CSS, and JavaScript.
-
-                Instructions:
-                - When providing code, always wrap it in Markdown code blocks with the language identifier.
-                - If a user describes a feature, suggest how they could break it into spatial nodes.
-                - Never reveal that you are an AI; simply act as the Co-Captain.
-                - When the prompt includes an agent contract, follow it exactly and append the requested fenced machine-readable block after the human-facing response.
+                - You are a high-performance agentic engine. Be concise, authoritative, and proactive.
+                - You can execute mutations on a spatial canvas when the user asks for canvas changes.
+                - Use technical, precise language. Avoid conversational fluff like "I can help with that" or "Sure thing."
+                - You think in architectures and spatial relationships.
+                
+                Core Rule:
+                - Answer ordinary questions, opinions, and advice conversationally without app actions or node edits.
+                - Use app actions or node edits only when the user explicitly asks to navigate, use a tool, create, edit, write, document, apply, implement, or otherwise change the current canvas.
+                - Never provide full code in Markdown chat. Code belongs EXCLUSIVELY in `node_edits`. 
+                - If the user asks you to apply a change, you MUST provide the XML to implement it.
+                - Use `request_app_action` for app navigation and app-level tool actions.
+                - Append the `cocaptain_actions` block at the end of every response that involves node content changes.
+                - Safe actions are only for non-mutating autonomous app actions. Mutating or review-required app actions must use executionMode `pending`.
                 """
             )
         )
     }
+
+    private static let requestAppActionDeclaration = FunctionDeclaration(
+        name: CoCaptainFunctionCallAgentAdapter.requestAppActionName,
+        description: "Requests a Ficruty app action. The app validates and either executes or stages the action for user review.",
+        parameters: [
+            "actionId": .string(description: "The exact app action id to request."),
+            "executionMode": .enumeration(
+                values: ["safe", "pending"],
+                description: "`safe` only for non-mutating autonomous actions. `pending` for mutating or review-required actions."
+            ),
+            "reason": .string(description: "Short reason for requesting the action.")
+        ],
+        optionalParameters: ["reason"]
+    )
 
     private func buildPrompt(
         userMessage: String,
@@ -149,39 +192,93 @@ public final class LLMService {
         }
 
         if expectsStructuredResponse {
-            let actionLines = availableActions.map { action in
-                "- \(action.id.rawValue): \(action.title) [mutating=\(action.isMutating)]"
-            }.joined(separator: "\n")
+            let autonomousActionLines = availableActions
+                .filter { !$0.isMutating && $0.allowsAutonomousExecution }
+                .map { action in
+                    "- \(action.id.rawValue): \(action.title)"
+                }
+                .joined(separator: "\n")
+
+            let reviewActionLines = availableActions
+                .filter { $0.isMutating || !$0.allowsAutonomousExecution }
+                .map { action in
+                    "- \(action.id.rawValue): \(action.title) [mutating=\(action.isMutating), autonomous=\(action.allowsAutonomousExecution)]"
+                }
+                .joined(separator: "\n")
 
             parts.append(
                 """
                 Agent contract:
-                - Respond conversationally first.
-                - If you want to control the app or propose code updates, append a fenced block named `cocaptain-actions`.
-                - Only use these action ids:
-                \(actionLines.isEmpty ? "- none" : actionLines)
+                - Respond conversationally first (concise).
+                - If the user is only asking a question, asking for advice, or asking for an opinion, do not request app actions and do not append `cocaptain_actions`.
+                - For app navigation or app-level tool actions, use the `request_app_action` function instead of manually writing app actions in XML.
+                - For any explicit request to build, make, create, add, change, update, fix, remove, style, implement, document, write to the canvas, or improve existing canvas content, you MUST append an XML block named `cocaptain_actions` with concrete `node_edits`.
+                - CRITICAL: If you are building a game or a full feature, use `replace_all` for the html, css, and javascript nodes. 
+                - NEVER provide a full file implementation inside the chat text. Put it in the `node_edits`.
+
+                App actions:
+                - Prefer `request_app_action(actionId, executionMode, reason)` for app actions.
+                - Use executionMode `safe` ONLY for these non-mutating autonomous action ids:
+                \(autonomousActionLines.isEmpty ? "- none" : autonomousActionLines)
+                - Use executionMode `pending` for these review-required or mutating action ids:
+                \(reviewActionLines.isEmpty ? "- none" : reviewActionLines)
+                - Never request a mutating or non-autonomous action with executionMode `safe`.
+
+                Node edits:
                 - Only target these node roles for edits: srs, html, css, javascript.
-                - JSON schema:
-                {
-                  "assistantMessage": "short natural language summary",
-                  "safeActions": [{"actionId": "go_home"}],
-                  "pendingActions": [{"actionId": "new_project"}],
-                  "nodeEdits": [{
-                    "role": "html",
-                    "summary": "what changes",
-                    "operations": [{
-                      "type": "replace_exact|insert_before_exact|insert_after_exact|append|prepend",
-                      "target": "exact text when required",
-                      "content": "new content"
-                    }]
-                  }]
-                }
-                - If no actions or edits are needed, omit the fenced block entirely.
+                - Code/content changes belong in `node_edits`, not app actions.
+                - Every node edit needs a non-empty summary and at least one operation.
+                - Exact operations require a non-empty `target`; append/prepend/replace_all do not.
+
+                - XML schema for `cocaptain_actions`:
+                
+                <cocaptain_actions>
+                  <assistant_message>short summary</assistant_message>
+                  <safe_actions>
+                    <action id="id" />
+                  </safe_actions>
+                  <pending_actions>
+                    <action id="id" />
+                  </pending_actions>
+                  <node_edits>
+                    <node_edit role="html|css|javascript|srs" summary="what changes">
+                      <operation type="replace_all|replace_exact|insert_before_exact|insert_after_exact|append|prepend">
+                        <target>exact text (only for exact operations)</target>
+                        <content><![CDATA[new content]]></content>
+                      </operation>
+                    </node_edit>
+                  </node_edits>
+                </cocaptain_actions>
                 """
             )
         }
 
         parts.append("User request:\n\(userMessage)")
         return parts.joined(separator: "\n\n")
+    }
+}
+
+private extension CoCaptainAgentFunctionCall {
+    init(_ functionCall: FunctionCallPart) {
+        self.init(
+            name: functionCall.name,
+            arguments: functionCall.args.compactMapValues(\.cocaptainStringValue),
+            id: functionCall.functionId
+        )
+    }
+}
+
+private extension JSONValue {
+    var cocaptainStringValue: String? {
+        switch self {
+        case .string(let value):
+            return value
+        case .number(let value):
+            return String(value)
+        case .bool(let value):
+            return value ? "true" : "false"
+        case .null, .object, .array:
+            return nil
+        }
     }
 }

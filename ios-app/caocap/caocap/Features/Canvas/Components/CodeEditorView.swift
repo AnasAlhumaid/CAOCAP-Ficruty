@@ -23,6 +23,30 @@ struct CodeEditorView: View {
                     Text("\(node.title.lowercased()).\(fileExtension(for: node.title))")
                         .font(.system(size: 13, weight: .medium, design: .monospaced))
                         .foregroundColor(.white)
+                        .contextMenu {
+                            Section("Aesthetics") {
+                                ForEach(NodeTheme.allCases, id: \.self) { theme in
+                                    Button {
+                                        store.updateNodeTheme(id: node.id, theme: theme)
+                                    } label: {
+                                        Label(theme.rawValue.capitalized, systemImage: "circle.fill")
+                                            .foregroundColor(theme.color)
+                                    }
+                                }
+                            }
+                            
+                            Section("Transform") {
+                                ForEach(NodeType.allCases, id: \.self) { type in
+                                    if type != node.type {
+                                        Button {
+                                            store.updateNodeType(id: node.id, type: type)
+                                        } label: {
+                                            Label(type.displayName, systemImage: "arrow.triangle.2.circlepath")
+                                        }
+                                    }
+                                }
+                            }
+                        }
                 }
                 .padding(.horizontal, 16)
                 .padding(.vertical, 8)

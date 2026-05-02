@@ -1,9 +1,11 @@
 import SwiftUI
 import FirebaseAuth
+import OSLog
 
 struct ProfileView: View {
     @Environment(AuthenticationManager.self) private var authManager
     @Environment(\.dismiss) private var dismiss
+    private let logger = Logger(subsystem: "Ficruty", category: "ProfileView")
     @AppStorage("app_theme") private var selectedTheme = "System"
     
     var onSignIn: (() -> Void)? = nil
@@ -65,7 +67,7 @@ struct ProfileView: View {
                                         Text("Authenticated User")
                                     case .failed(let reason):
                                         Text("Auth Error")
-                                            .onAppear { print("Auth failed: \(reason)") }
+                                            .onAppear { logger.error("Auth failed: \(reason)") }
                                     }
                                 }
                                 .font(.system(size: 20, weight: .bold, design: .rounded))
@@ -204,7 +206,7 @@ struct ProfileView: View {
                             dismiss()
                         } catch {
                             // In a real app, show a re-auth prompt here
-                            print("Deletion failed: \(error)")
+                            logger.error("Deletion failed: \(error)")
                         }
                     }
                 }

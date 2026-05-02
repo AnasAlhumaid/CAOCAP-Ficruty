@@ -1,6 +1,8 @@
 import SwiftUI
 import Observation
 
+/// Encapsulates canvas pan and zoom math. Views should feed gestures into this
+/// object rather than reimplementing coordinate transforms locally.
 @Observable
 public class ViewportState {
     /// The current visual offset of the canvas.
@@ -43,7 +45,9 @@ public class ViewportState {
         lastOffset = offset
     }
     
-    /// Updates the current scale and offset based on a magnification gesture at a specific location.
+    /// Updates scale and offset around the user's pinch anchor. The offset is
+    /// recalculated so the canvas point under the fingers stays visually pinned
+    /// while zoom changes.
     public func handleMagnificationChanged(_ magnification: CGFloat, at location: CGPoint, in viewSize: CGSize) {
         let newScale = min(max(lastScale * magnification, minScale), maxScale)
         
@@ -71,5 +75,23 @@ public class ViewportState {
     public func handleMagnificationEnded() {
         lastScale = scale
         lastOffset = offset
+    }
+
+    /// Computes and applies the offset/scale needed to center a canvas-space node
+    /// position in the visible container. Caller should wrap in withAnimation.
+    public func flyTo(nodePosition: CGPoint, containerSize: CGSize, targetScale: CGFloat = 1.0) {
+        let clampedScale = min(max(targetScale, minScale), maxScale)
+        
+        // Target offset = -nodePosition * scale
+        // This centers the node at the origin (center of the screen)
+        let newOffset = CGSize(
+            width: -nodePosition.x * clampedScale,
+            height: -nodePosition.y * clampedScale
+        )
+        
+        self.scale = clampedScale
+        self.lastScale = clampedScale
+        self.offset = newOffset
+        self.lastOffset = newOffset
     }
 }

@@ -1,5 +1,12 @@
 import SwiftUI
 
+extension Notification.Name {
+    static let openCommandPalette = Notification.Name("openCommandPalette")
+    static let summonCoCaptain = Notification.Name("summonCoCaptain")
+    static let performUndo = Notification.Name("performUndo")
+    static let performRedo = Notification.Name("performRedo")
+}
+
 struct ContentView: View {
     @State var commandPalette = CommandPaletteViewModel()
     @State var coCaptain = CoCaptainViewModel()
@@ -13,25 +20,44 @@ struct ContentView: View {
     @State private var currentScale: CGFloat = 1.0
     @Environment(\.undoManager) var undoManager
     @Environment(\.colorScheme) var colorScheme
-    @AppStorage("app_theme") private var selectedTheme = "System"
+    @State private var selectedTheme = "System"
+    @State private var isLaunching = true
+    @State private var onboardingCoordinator = OnboardingCoordinator()
+    @State private var viewport = ViewportState()
 
     var body: some View {
         ZStack {
             switch router.currentWorkspace {
             case .home:
-                InfiniteCanvasView(store: router.homeStore, currentScale: $currentScale, onNodeAction: { action in
-                    handleNodeAction(action)
-                })
+                InfiniteCanvasView(
+                    store: router.homeStore,
+                    viewport: $viewport,
+                    currentScale: $currentScale,
+                    onNodeAction: { action in
+                        handleNodeAction(action)
+                    }
+                )
                 .id("home_canvas")
             case .onboarding:
-                InfiniteCanvasView(store: router.onboardingStore, currentScale: $currentScale, onNodeAction: { action in
-                    handleNodeAction(action)
-                })
+                InfiniteCanvasView(
+                    store: router.onboardingStore,
+                    viewport: $viewport,
+                    currentScale: $currentScale,
+                    onboardingCoordinator: onboardingCoordinator,
+                    onNodeAction: { action in
+                        handleNodeAction(action)
+                    }
+                )
                 .id("onboarding_canvas")
             case .project(let fileName):
-                InfiniteCanvasView(store: router.activeStore, currentScale: $currentScale, onNodeAction: { action in
-                    handleNodeAction(action)
-                })
+                InfiniteCanvasView(
+                    store: router.activeStore,
+                    viewport: $viewport,
+                    currentScale: $currentScale,
+                    onNodeAction: { action in
+                        handleNodeAction(action)
+                    }
+                )
                 .id("project_canvas_\(fileName)")
             }
 
@@ -64,6 +90,13 @@ struct ContentView: View {
             CommandPaletteView(viewModel: commandPalette)
         }
         .background(Color.black.ignoresSafeArea())
+        .overlay {
+            if isLaunching {
+                LaunchScreenView()
+                    .transition(.opacity)
+                    .zIndex(100)
+            }
+        }
         .preferredColorScheme(currentColorScheme)
         .sheet(isPresented: $coCaptain.isPresented) {
             CoCaptainView(viewModel: coCaptain)
@@ -119,10 +152,53 @@ struct ContentView: View {
 
             coCaptain.store = router.activeStore
             coCaptain.actionDispatcher = actionDispatcher
+
+            onboardingCoordinator.load(steps: OnboardingProvider.steps)
+
+            // Dismiss launch screen after animation
+            Task {
+                try? await Task.sleep(for: .seconds(2.5))
+                withAnimation(.easeInOut(duration: 0.5)) {
+                    isLaunching = false
+                }
+            }
+        }
+        .onChange(of: onboardingCoordinator.isComplete) { _, isComplete in
+            if isComplete {
+                handleNodeAction(.navigateHome)
+            }
         }
         .onChange(of: router.currentWorkspace) {
             router.activeStore.undoManager = undoManager
             coCaptain.store = router.activeStore
+            commandPalette.nodes = router.activeStore.nodes
+            
+            // Sync viewport with new store
+            let isOnboarding = router.currentWorkspace == .onboarding
+            viewport = ViewportState(
+                offset: isOnboarding ? .zero : router.activeStore.viewportOffset,
+                scale: isOnboarding ? 1.0 : router.activeStore.viewportScale
+            )
+        }
+        .onReceive(NotificationCenter.default.publisher(for: .NSUndoManagerDidUndoChange)) { _ in
+            router.activeStore.undoStackChanged += 1
+        }
+        .onReceive(NotificationCenter.default.publisher(for: .NSUndoManagerDidRedoChange)) { _ in
+            router.activeStore.undoStackChanged += 1
+        }
+        .onReceive(NotificationCenter.default.publisher(for: .openCommandPalette)) { _ in
+            commandPalette.setPresented(true)
+        }
+        .onReceive(NotificationCenter.default.publisher(for: .summonCoCaptain)) { _ in
+            _ = actionDispatcher.perform(.summonCoCaptain, source: .user)
+        }
+        .onReceive(NotificationCenter.default.publisher(for: .performUndo)) { _ in
+            undoManager?.undo()
+            router.activeStore.undoStackChanged += 1
+        }
+        .onReceive(NotificationCenter.default.publisher(for: .performRedo)) { _ in
+            undoManager?.redo()
+            router.activeStore.undoStackChanged += 1
         }
     }
     
@@ -150,6 +226,10 @@ struct ContentView: View {
             _ = actionDispatcher.perform(.openProfile, source: .user)
         case .openProjectExplorer:
             _ = actionDispatcher.perform(.openProjectExplorer, source: .user)
+        case .resumeLastProject:
+            router.resumeLastProject()
+        case .summonCoCaptain:
+            _ = actionDispatcher.perform(.summonCoCaptain, source: .user)
         }
     }
 
@@ -186,14 +266,46 @@ struct ContentView: View {
             },
             openProjectExplorer: {
                 showingProjectExplorer = true
+            },
+            moveNode: { args in
+                guard let idString = args["nodeId"], let uuid = UUID(uuidString: idString),
+                      let xStr = args["x"], let x = Double(xStr),
+                      let yStr = args["y"], let y = Double(yStr) else { return }
+                router.activeStore.updateNodePosition(id: uuid, position: CGPoint(x: x, y: y))
+            },
+            themeNode: { args in
+                guard let idString = args["nodeId"], let uuid = UUID(uuidString: idString),
+                      let themeStr = args["theme"], let theme = NodeTheme(rawValue: themeStr) else { return }
+                router.activeStore.updateNodeTheme(id: uuid, theme: theme)
+            },
+            transformNode: { args in
+                guard let idString = args["nodeId"], let uuid = UUID(uuidString: idString),
+                      let typeStr = args["type"], let type = NodeType(rawValue: typeStr) else { return }
+                router.activeStore.updateNodeType(id: uuid, type: type)
             }
         )
     }
 
     private func setupCommandHandlers() {
         commandPalette.actions = actionDispatcher.availableActions
+        commandPalette.nodes = router.activeStore.nodes
         commandPalette.onExecute = { actionID in
             _ = actionDispatcher.perform(actionID, source: .user)
+        }
+        commandPalette.onFlyToNode = { nodeId in
+            guard let node = router.activeStore.nodes.first(where: { $0.id == nodeId }) else { return }
+            withAnimation(.spring(response: 0.6, dampingFraction: 0.85)) {
+                // GeometryReader size isn't easily available here, but flyTo math
+                // uses containerSize to find center. Since node.position is relative 
+                // to center already, we can pass .zero and it works.
+                viewport.flyTo(nodePosition: node.position, containerSize: .zero)
+            }
+        }
+        commandPalette.onSubmitPrompt = { prompt in
+            coCaptain.store = router.activeStore
+            coCaptain.actionDispatcher = actionDispatcher
+            coCaptain.setPresented(true)
+            coCaptain.sendMessage(prompt)
         }
     }
 }

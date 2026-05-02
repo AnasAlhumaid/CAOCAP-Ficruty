@@ -246,7 +246,9 @@ struct SignInView: View {
         }
     }
 
-    /// Shared error-handling wrapper for all sign-in actions.
+    /// Shared loading and error boundary for provider flows. The provider
+    /// coordinators only return credentials; `AuthenticationManager` decides
+    /// whether to link or sign into an existing account.
     private func perform(_ action: () async throws -> Void) async {
         withAnimation { isLoading = true; errorMessage = nil }
         do {

@@ -42,6 +42,31 @@ struct caocapApp: App {
                 .environment(\.locale, appLocale)
                 .environment(\.layoutDirection, appLayoutDirection)
         }
+        .commands {
+            CommandGroup(replacing: .undoRedo) {
+                Button("Undo") {
+                    NotificationCenter.default.post(name: .performUndo, object: nil)
+                }
+                .keyboardShortcut("z", modifiers: .command)
+
+                Button("Redo") {
+                    NotificationCenter.default.post(name: .performRedo, object: nil)
+                }
+                .keyboardShortcut("z", modifiers: [.command, .shift])
+            }
+
+            CommandMenu("Commands") {
+                Button("Command Palette") {
+                    NotificationCenter.default.post(name: .openCommandPalette, object: nil)
+                }
+                .keyboardShortcut("k", modifiers: .command)
+
+                Button("Summon CoCaptain") {
+                    NotificationCenter.default.post(name: .summonCoCaptain, object: nil)
+                }
+                .keyboardShortcut("j", modifiers: .command)
+            }
+        }
     }
     
     private var colorScheme: ColorScheme? {

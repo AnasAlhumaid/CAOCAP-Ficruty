@@ -1,5 +1,7 @@
 import SwiftUI
 
+/// Spotlight-style command surface. Rendering stays here while filtering,
+/// selection, and execution callbacks live in `CommandPaletteViewModel`.
 struct CommandPaletteView: View {
     @Bindable var viewModel: CommandPaletteViewModel
     @FocusState private var isFocused: Bool
@@ -36,7 +38,8 @@ struct CommandPaletteView: View {
                     Divider()
                         .background(Color.white.opacity(0.1))
                     
-                    // Results List
+                    // The view model owns the selected index so keyboard,
+                    // submit, and pointer/touch selection all share one state.
                     ScrollViewReader { proxy in
                         ScrollView {
                             LazyVStack(spacing: 0) {
@@ -47,14 +50,53 @@ struct CommandPaletteView: View {
                                     ) {
                                         viewModel.executeAction(action)
                                     }
-                                    .id(index)
+                                    .id(action.id.rawValue)
+                                }
+
+                                if !viewModel.nodeResults.isEmpty {
+                                    HStack {
+                                        Text("CANVAS NODES")
+                                            .font(.system(size: 10, weight: .bold))
+                                            .opacity(0.4)
+                                        Spacer()
+                                    }
+                                    .padding(.horizontal, 16)
+                                    .padding(.top, 12)
+                                    .padding(.bottom, 4)
+
+                                    let actionCount = viewModel.filteredActions.count
+                                    ForEach(Array(viewModel.nodeResults.enumerated()), id: \.element.id) { index, nodeResult in
+                                        NodeSearchResultRow(
+                                            result: nodeResult,
+                                            isSelected: (index + actionCount) == viewModel.selectedIndex
+                                        ) {
+                                            viewModel.flyToNode(nodeResult)
+                                        }
+                                        .id(nodeResult.id.uuidString)
+                                    }
+                                }
+
+                                if viewModel.canSubmitPrompt {
+                                    CoCaptainPromptRow(prompt: viewModel.query) {
+                                        viewModel.submitPromptIfNeeded()
+                                    }
+                                    .id("cocaptain-prompt")
                                 }
                             }
                         }
                         .frame(maxHeight: 400)
                         .onChange(of: viewModel.selectedIndex) { oldIndex, newIndex in
-                            withAnimation {
-                                proxy.scrollTo(newIndex, anchor: .center)
+                            let actions = viewModel.filteredActions
+                            let nodeResults = viewModel.nodeResults
+                            
+                            if newIndex >= 0 && newIndex < actions.count {
+                                withAnimation {
+                                    proxy.scrollTo(actions[newIndex].id.rawValue, anchor: .center)
+                                }
+                            } else if newIndex >= actions.count && newIndex < (actions.count + nodeResults.count) {
+                                withAnimation {
+                                    proxy.scrollTo(nodeResults[newIndex - actions.count].id.uuidString, anchor: .center)
+                                }
                             }
                         }
                     }
@@ -127,4 +169,93 @@ struct AppActionRow: View {
         }
         .buttonStyle(.plain)
     }
+}
+
+struct CoCaptainPromptRow: View {
+    let prompt: String
+    let onSelect: () -> Void
+
+    private var trimmedPrompt: String {
+        prompt.trimmingCharacters(in: .whitespacesAndNewlines)
+    }
+
+    var body: some View {
+        Button(action: onSelect) {
+            HStack(spacing: 12) {
+                Image(systemName: "sparkles")
+                    .font(.system(size: 16))
+                    .frame(width: 24)
+
+                VStack(alignment: .leading, spacing: 2) {
+                    Text("Ask CoCaptain")
+                        .font(.system(size: 16, weight: .medium))
+
+                    Text(trimmedPrompt)
+                        .font(.system(size: 12))
+                        .lineLimit(1)
+                        .truncationMode(.tail)
+                        .opacity(0.65)
+                }
+
+                Spacer()
+
+                Image(systemName: "return")
+                    .font(.system(size: 12))
+                    .opacity(0.5)
+            }
+            .padding(.horizontal, 16)
+            .padding(.vertical, 12)
+            .background(Color.blue.opacity(0.15))
+            .contentShape(Rectangle())
+        }
+        .buttonStyle(.plain)
+    }
+}
+struct NodeSearchResultRow: View {
+    let result: NodeSearchResult
+    let isSelected: Bool
+    let onSelect: () -> Void
+    
+    var body: some View {
+        Button {
+            onSelect()
+        } label: {
+            HStack(spacing: 12) {
+                Image(systemName: result.role.icon)
+                    .font(.system(size: 16))
+                    .frame(width: 24)
+                    .foregroundColor(result.role.themeColor)
+                
+                VStack(alignment: .leading, spacing: 2) {
+                    Text(result.title)
+                        .font(.system(size: 16, weight: .medium))
+                    
+                    if !result.snippet.isEmpty {
+                        Text(result.snippet)
+                            .font(.system(size: 12))
+                            .lineLimit(1)
+                            .truncationMode(.tail)
+                            .opacity(0.6)
+                    }
+                }
+                
+                Spacer()
+                
+                if isSelected {
+                    Image(systemName: "location.north.fill")
+                        .font(.system(size: 12))
+                        .opacity(0.5)
+                }
+            }
+            .padding(.horizontal, 16)
+            .padding(.vertical, 12)
+            .background(isSelected ? Color.blue.opacity(0.15) : Color.clear)
+            .contentShape(Rectangle())
+        }
+        .buttonStyle(.plain)
+    }
+}
+
+#Preview {
+    ContentView()
 }

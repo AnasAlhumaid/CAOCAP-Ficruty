@@ -20,6 +20,9 @@ public enum AppActionID: String, CaseIterable, Identifiable, Codable, Hashable {
     case openSettings = "open_settings"
     case openProfile = "open_profile"
     case openProjectExplorer = "open_project_explorer"
+    case moveNode = "move_node"
+    case themeNode = "theme_node"
+    case transformNode = "transform_node"
     case help = "help"
 
     public var id: String { rawValue }
@@ -30,7 +33,11 @@ public struct AppActionDefinition: Identifiable, Hashable {
     public let title: String
     public let icon: String
     public let category: AppActionCategory
+    /// Mutating actions change user data or project structure and should be
+    /// reviewed before an agent performs them.
     public let isMutating: Bool
+    /// Indicates whether trusted non-user callers, such as CoCaptain, may run
+    /// this action without an explicit review item.
     public let allowsAutonomousExecution: Bool
 
     public init(
@@ -79,9 +86,12 @@ public protocol AppActionPerforming: AnyObject {
     var availableActions: [AppActionDefinition] { get }
     func definition(for id: AppActionID) -> AppActionDefinition?
     @discardableResult
-    func perform(_ id: AppActionID, source: AppActionSource) -> AppActionResult
+    func perform(_ id: AppActionID, source: AppActionSource, arguments: [String: String]?) -> AppActionResult
 }
 
+/// Central registry and execution boundary for commands. UI surfaces and agents
+/// request actions by ID; this dispatcher owns whether they are configured and
+/// safe to execute from the given source.
 @MainActor
 public final class AppActionDispatcher: AppActionPerforming {
     public private(set) var availableActions: [AppActionDefinition] = [
@@ -190,6 +200,30 @@ public final class AppActionDispatcher: AppActionPerforming {
             allowsAutonomousExecution: true
         ),
         AppActionDefinition(
+            id: .moveNode,
+            title: "Move Node",
+            icon: "arrow.up.and.down.and.arrow.left.and.right",
+            category: .project,
+            isMutating: true,
+            allowsAutonomousExecution: false
+        ),
+        AppActionDefinition(
+            id: .themeNode,
+            title: "Change Node Theme",
+            icon: "paintbrush.fill",
+            category: .project,
+            isMutating: true,
+            allowsAutonomousExecution: false
+        ),
+        AppActionDefinition(
+            id: .transformNode,
+            title: "Transform Node Type",
+            icon: "arrow.triangle.2.circlepath",
+            category: .project,
+            isMutating: true,
+            allowsAutonomousExecution: false
+        ),
+        AppActionDefinition(
             id: .help,
             title: "Help & Documentation",
             icon: "questionmark.circle",
@@ -213,9 +247,14 @@ public final class AppActionDispatcher: AppActionPerforming {
     private var openProfileHandler: (() -> Void)?
     private var openProjectExplorerHandler: (() -> Void)?
     private var helpHandler: (() -> Void)?
+    private var moveNodeHandler: (([String: String]) -> Void)?
+    private var themeNodeHandler: (([String: String]) -> Void)?
+    private var transformNodeHandler: (([String: String]) -> Void)?
 
     public init() {}
 
+    /// Injects handlers from the app shell. Definitions stay stable while the
+    /// concrete closures can depend on the currently mounted views/services.
     public func configure(
         goHome: @escaping () -> Void,
         goBack: @escaping () -> Void,
@@ -230,7 +269,10 @@ public final class AppActionDispatcher: AppActionPerforming {
         openSettings: (() -> Void)? = nil,
         openProfile: (() -> Void)? = nil,
         openProjectExplorer: (() -> Void)? = nil,
-        help: (() -> Void)? = nil
+        help: (() -> Void)? = nil,
+        moveNode: (([String: String]) -> Void)? = nil,
+        themeNode: (([String: String]) -> Void)? = nil,
+        transformNode: (([String: String]) -> Void)? = nil
     ) {
         self.goHomeHandler = goHome
         self.goBackHandler = goBack
@@ -246,14 +288,19 @@ public final class AppActionDispatcher: AppActionPerforming {
         self.openProfileHandler = openProfile
         self.openProjectExplorerHandler = openProjectExplorer
         self.helpHandler = help
+        self.moveNodeHandler = moveNode
+        self.themeNodeHandler = themeNode
+        self.transformNodeHandler = transformNode
     }
 
     public func definition(for id: AppActionID) -> AppActionDefinition? {
         availableActions.first(where: { $0.id == id })
     }
 
+    /// Executes an action if configured. Automatic agent calls are blocked from
+    /// mutating or non-autonomous actions; reviewed/user calls may continue.
     @discardableResult
-    public func perform(_ id: AppActionID, source: AppActionSource) -> AppActionResult {
+    public func perform(_ id: AppActionID, source: AppActionSource, arguments: [String: String]? = nil) -> AppActionResult {
         guard let definition = definition(for: id) else {
             return AppActionResult(
                 actionID: id,
@@ -304,6 +351,24 @@ public final class AppActionDispatcher: AppActionPerforming {
             handler = openProjectExplorerHandler
         case .help:
             handler = helpHandler
+        case .moveNode:
+            if let moveNodeHandler, let arguments {
+                moveNodeHandler(arguments)
+                return AppActionResult(actionID: definition.id, title: definition.localizedTitle, executed: true, message: "")
+            }
+            handler = nil
+        case .themeNode:
+            if let themeNodeHandler, let arguments {
+                themeNodeHandler(arguments)
+                return AppActionResult(actionID: definition.id, title: definition.localizedTitle, executed: true, message: "")
+            }
+            handler = nil
+        case .transformNode:
+            if let transformNodeHandler, let arguments {
+                transformNodeHandler(arguments)
+                return AppActionResult(actionID: definition.id, title: definition.localizedTitle, executed: true, message: "")
+            }
+            handler = nil
         }
 
         guard let handler else {
@@ -320,7 +385,7 @@ public final class AppActionDispatcher: AppActionPerforming {
             actionID: definition.id,
             title: definition.localizedTitle,
             executed: true,
-            message: LocalizationManager.shared.localizedString("%@ executed.", arguments: [definition.localizedTitle])
+            message: LocalizationManager.shared.localizedString("appAction.executedMessage", arguments: [definition.localizedTitle])
         )
     }
 }

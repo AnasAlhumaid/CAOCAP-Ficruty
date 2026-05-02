@@ -15,6 +15,8 @@ import FirebaseAuth
 @MainActor
 final class GoogleSignInCoordinator {
 
+    /// Presents Google's native sign-in UI and converts the returned tokens into
+    /// a Firebase credential for account linking or sign-in.
     func signIn() async throws -> AuthCredential {
         guard let presentingVC = topViewController() else {
             throw AuthError.missingPresentingViewController
@@ -34,6 +36,8 @@ final class GoogleSignInCoordinator {
 
     // MARK: - Private
 
+    /// Finds the currently presented controller because Google Sign-In needs a
+    /// UIKit presentation anchor even though the app shell is SwiftUI.
     private func topViewController() -> UIViewController? {
         guard let scene = UIApplication.shared.connectedScenes
             .compactMap({ $0 as? UIWindowScene })

@@ -3,6 +3,8 @@ import Observation
 import OSLog
 import SwiftUI
 
+/// Owns the mutable state for one spatial project, including nodes, viewport
+/// position, persistence, undo wiring, and live preview compilation.
 @Observable
 @MainActor
 public class ProjectStore {
@@ -21,45 +23,41 @@ public class ProjectStore {
     /// Tracks if a save operation is currently pending or in progress.
     public var isSaving: Bool = false
     
+    /// Historical checkpoints for this project.
+    public var history: [SnapshotMetadata] = []
+    
     private let logger = Logger(subsystem: "com.ficruty.caocap", category: "Persistence")
+    private let persistence: ProjectPersistenceService
+    private let persistenceWriter: ProjectPersistenceWriter
+    private let livePreviewCompiler = LivePreviewCompiler()
     
     /// A reference to the pending save task used for debouncing disk writes.
     private var saveTask: Task<Void, Never>? = nil
     
-    /// The internal structure used for JSON serialization of the project state.
-    private struct ProjectData: Codable {
-        let projectName: String?
-        let nodes: [SpatialNode]
-        let viewportOffset: CGSize
-        let viewportScale: CGFloat
-    }
+    /// The current version of the project file schema. Incremented when
+    /// structural changes are made to nodes or the project envelope.
+    public static let currentSchemaVersion = ProjectPersistenceService.currentSchemaVersion
     
-    /// Returns the local file URL where project data is stored.
-    /// This property also ensures the parent directory exists.
     public let fileName: String
     
-    private var fileURL: URL {
-        let paths = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask)
-        let appSupport = paths[0].appendingPathComponent("com.ficruty.caocap", isDirectory: true)
-        
-        // Create the directory if it doesn't exist (e.g., on first run)
-        try? FileManager.default.createDirectory(at: appSupport, withIntermediateDirectories: true)
-        
-        return appSupport.appendingPathComponent(self.fileName)
-    }
-    
-    public init(fileName: String = "project_v1.json", projectName: String = "Untitled Project", initialNodes: [SpatialNode]? = nil, initialViewportScale: CGFloat = 1.0) {
+    public init(
+        fileName: String = "project_v1.json",
+        projectName: String = "Untitled Project",
+        initialNodes: [SpatialNode]? = nil,
+        initialViewportScale: CGFloat = 1.0,
+        persistence: ProjectPersistenceService = ProjectPersistenceService()
+    ) {
         self.fileName = fileName
         self.projectName = projectName
         self.viewportScale = initialViewportScale
+        self.persistence = persistence
+        self.persistenceWriter = ProjectPersistenceWriter(persistence: persistence)
         load(initialNodes: initialNodes, initialViewportScale: initialViewportScale)
     }
     
     /// Loads the project data from disk. If no file is found, initializes with default nodes.
     public func load(initialNodes: [SpatialNode]? = nil, initialViewportScale: CGFloat = 1.0) {
-        let url = fileURL
-        
-        if !FileManager.default.fileExists(atPath: url.path) {
+        if !persistence.projectExists(fileName: fileName) {
             logger.info("No saved project found for \(self.fileName). Initializing with defaults.")
             self.nodes = initialNodes ?? OnboardingProvider.manifestoNodes
             self.viewportScale = initialViewportScale
@@ -75,37 +73,19 @@ public class ProjectStore {
         }
         
         do {
-            let data = try Data(contentsOf: url)
-            let decoded = try JSONDecoder().decode(ProjectData.self, from: data)
+            let result = try persistence.load(fileName: fileName)
+            apply(snapshot: result.snapshot)
+            logger.info("Successfully loaded project (v\(result.sourceSchemaVersion)) from disk.")
             
-            var migratedNodes = decoded.nodes
-            
-            // Migrate old nodes that lack the action property
-            for i in 0..<migratedNodes.count {
-                if migratedNodes[i].action == nil {
-                    if migratedNodes[i].title == "Retry Onboarding" {
-                        migratedNodes[i].action = .retryOnboarding
-                    } else if migratedNodes[i].title == "Go to the Home workspace" {
-                        migratedNodes[i].action = .navigateHome
-                    } else if migratedNodes[i].title == "New Project" {
-                        migratedNodes[i].action = .createNewProject
-                    } else if migratedNodes[i].title == "Settings" {
-                        migratedNodes[i].action = .openSettings
-                    } else if migratedNodes[i].title == "Profile" {
-                        migratedNodes[i].action = .openProfile
-                    } else if migratedNodes[i].title == "Projects" {
-                        migratedNodes[i].action = .openProjectExplorer
-                    }
-                }
+            // If we migrated, schedule a save to modernize the file
+            if result.didMigrate {
+                save()
             }
-            
-            // Update the live state with the decoded data
-            self.projectName = decoded.projectName ?? self.projectName
-            self.nodes = migratedNodes
-            self.viewportOffset = decoded.viewportOffset
-            self.viewportScale = decoded.viewportScale
-            
-            logger.info("Successfully loaded project from disk.")
+        } catch ProjectPersistenceError.unsupportedFutureVersion(let version, let current) {
+            logger.error("Project version \(version) is newer than app version \(current). Aborting load to prevent data loss.")
+            // Fallback to defaults to prevent a crash, but log heavily.
+            self.nodes = initialNodes ?? OnboardingProvider.manifestoNodes
+            return
         } catch {
             logger.error("Failed to load project: \(error.localizedDescription)")
             // Fallback to initial nodes if data is corrupted or missing
@@ -114,13 +94,16 @@ public class ProjectStore {
         
         // Ensure the Live Preview is synced with the code nodes on startup
         compileLivePreview()
+        
+        // Load history
+        self.history = persistence.listSnapshots(for: fileName)
     }
     
+    /// Persists a snapshot of the current project state using a temporary file
+    /// and atomic replacement so interrupted writes do not corrupt the main file.
     public func save() {
-        let url = fileURL
-        let tempURL = url.appendingPathExtension("\(UUID().uuidString).tmp")
-        
-        let projectData = ProjectData(
+        let snapshot = ProjectSnapshot(
+            schemaVersion: Self.currentSchemaVersion,
             projectName: projectName,
             nodes: nodes,
             viewportOffset: viewportOffset,
@@ -128,35 +111,17 @@ public class ProjectStore {
         )
         
         let log = logger
+        let fileName = self.fileName
+        let persistenceWriter = persistenceWriter
         
-        Task.detached(priority: .background) {
+        Task(priority: .background) { [weak self] in
             do {
-                let encoder = JSONEncoder()
-                encoder.outputFormatting = .prettyPrinted
-                let data = try encoder.encode(projectData)
-                
-                // 1. Write to a temporary file first
-                try data.write(to: tempURL, options: .atomic)
-                
-                // 2. Perform an atomic swap to prevent data corruption during write
-                if FileManager.default.fileExists(atPath: url.path) {
-                    _ = try FileManager.default.replaceItemAt(url, withItemAt: tempURL)
-                } else {
-                    try FileManager.default.moveItem(at: tempURL, to: url)
-                }
-                
+                try await persistenceWriter.save(snapshot, fileName: fileName)
                 log.info("Successfully saved project to disk.")
             } catch {
                 log.error("Failed to save project: \(error.localizedDescription)")
             }
-            
-            // Clean up the temp file if the atomic swap failed or it wasn't consumed
-            try? FileManager.default.removeItem(at: tempURL)
-        }
-        
-        // Reset isSaving only if no other task is pending
-        if saveTask == nil {
-            isSaving = false
+            await MainActor.run { self?.isSaving = false }
         }
     }
     
@@ -177,46 +142,76 @@ public class ProjectStore {
             }
         }
     }
+
+    /// Creates a durable checkpoint of the current project state.
+    public func createCheckpoint(label: String = "Manual Checkpoint") {
+        let snapshot = currentSnapshot()
+        let fileName = self.fileName
+        let persistence = self.persistence
+        
+        Task(priority: .background) { [weak self] in
+            do {
+                let metadata = try persistence.saveSnapshot(snapshot, fileName: fileName, label: label)
+                await MainActor.run {
+                    self?.history.insert(metadata, at: 0)
+                    // Keep history to last 20 for now
+                    if (self?.history.count ?? 0) > 20 {
+                        self?.history.removeLast()
+                    }
+                }
+            } catch {
+                self?.logger.error("Failed to create checkpoint: \(error.localizedDescription)")
+            }
+        }
+    }
+
+    /// Creates an automatic checkpoint before significant mutations (e.g. Co-Captain edits).
+    public func createAutoCheckpoint(label: String = "Pre-AI Snapshot") {
+        createCheckpoint(label: label)
+    }
+
+    /// Restores the project graph from a historical checkpoint.
+    public func restore(from metadata: SnapshotMetadata) {
+        do {
+            let snapshot = try persistence.loadSnapshot(metadata: metadata, for: fileName)
+            withAnimation(.spring()) {
+                apply(snapshot: snapshot)
+            }
+            save()
+            compileLivePreview()
+        } catch {
+            logger.error("Failed to restore snapshot: \(error.localizedDescription)")
+        }
+    }
+
+    private func currentSnapshot() -> ProjectSnapshot {
+        ProjectSnapshot(
+            schemaVersion: Self.currentSchemaVersion,
+            projectName: projectName,
+            nodes: nodes,
+            viewportOffset: viewportOffset,
+            viewportScale: viewportScale
+        )
+    }
     
-    /// Combines HTML, CSS, and JS node contents and updates the Live Preview node.
+    /// Combines canonical code nodes and updates the Live Preview node.
     private func compileLivePreview() {
-        guard let webViewIndex = nodes.firstIndex(where: { $0.type == .webView }),
-              let htmlNode = nodes.first(where: { $0.title.lowercased() == "html" }) else {
+        guard let compilation = livePreviewCompiler.compile(nodes: nodes),
+              let webViewIndex = nodes.firstIndex(where: { $0.id == compilation.webViewNodeID }) else {
             return
         }
         
-        var compiledHTML = htmlNode.textContent ?? ""
-        
-        // Inject CSS
-        if let cssNode = nodes.first(where: { $0.title.lowercased() == "css" }),
-           let cssContent = cssNode.textContent, !cssContent.isEmpty {
-            let styleTag = "\n<style>\n\(cssContent)\n</style>\n"
-            if let headRange = compiledHTML.range(of: "</head>", options: .caseInsensitive) {
-                compiledHTML.insert(contentsOf: styleTag, at: headRange.lowerBound)
-            } else if let htmlRange = compiledHTML.range(of: "<html>", options: .caseInsensitive) {
-                compiledHTML.insert(contentsOf: "<head>\n\(styleTag)\n</head>\n", at: htmlRange.upperBound)
-            } else {
-                compiledHTML = styleTag + compiledHTML
-            }
-        }
-        
-        // Inject JS
-        if let jsNode = nodes.first(where: { $0.title.lowercased() == "javascript" }),
-           let jsContent = jsNode.textContent, !jsContent.isEmpty {
-            let scriptTag = "\n<script>\n\(jsContent)\n</script>\n"
-            if let bodyRange = compiledHTML.range(of: "</body>", options: .caseInsensitive) {
-                compiledHTML.insert(contentsOf: scriptTag, at: bodyRange.lowerBound)
-            } else if let htmlRange = compiledHTML.range(of: "</html>", options: .caseInsensitive) {
-                compiledHTML.insert(contentsOf: scriptTag, at: htmlRange.lowerBound)
-            } else {
-                compiledHTML += scriptTag
-            }
-        }
-        
         // Update the WebView node if the content changed
-        if nodes[webViewIndex].htmlContent != compiledHTML {
-            nodes[webViewIndex].htmlContent = compiledHTML
+        if nodes[webViewIndex].htmlContent != compilation.html {
+            nodes[webViewIndex].htmlContent = compilation.html
         }
+    }
+
+    private func apply(snapshot: ProjectSnapshot) {
+        self.projectName = snapshot.projectName ?? self.projectName
+        self.nodes = snapshot.nodes
+        self.viewportOffset = snapshot.viewportOffset
+        self.viewportScale = snapshot.viewportScale
     }
     
     /// A reference to the system UndoManager, injected by the view layer.
@@ -250,8 +245,103 @@ public class ProjectStore {
             }
         }
     }
+
+    /// Updates a specific node's theme.
+    /// - Parameters:
+    ///   - id: The UUID of the node to update.
+    ///   - theme: The new theme.
+    ///   - persist: If true, triggers a debounced save to disk.
+    public func updateNodeTheme(id: UUID, theme: NodeTheme, persist: Bool = true) {
+        if let index = nodes.firstIndex(where: { $0.id == id }) {
+            let oldTheme = nodes[index].theme
+            
+            // Register Undo
+            undoManager?.registerUndo(withTarget: self) { target in
+                MainActor.assumeIsolated {
+                    target.updateNodeTheme(id: id, theme: oldTheme, persist: persist)
+                }
+            }
+            undoStackChanged += 1
+            
+            nodes[index].theme = theme
+            if persist {
+                requestSave()
+            }
+        }
+    }
+
+    /// Changes a node's fundamental type (e.g. from Code to WebView).
+    /// - Parameters:
+    ///   - id: The UUID of the node to transform.
+    ///   - type: The target NodeType.
+    ///   - persist: If true, triggers a debounced save to disk.
+    public func updateNodeType(id: UUID, type: NodeType, persist: Bool = true) {
+        if let index = nodes.firstIndex(where: { $0.id == id }) {
+            let oldType = nodes[index].type
+            
+            // Register Undo
+            undoManager?.registerUndo(withTarget: self) { target in
+                MainActor.assumeIsolated {
+                    target.updateNodeType(id: id, type: oldType, persist: persist)
+                }
+            }
+            undoStackChanged += 1
+            
+            nodes[index].type = type
+            
+            // Type-specific initialization if content is empty
+            switch type {
+            case .srs:
+                if nodes[index].textContent?.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty != false {
+                    nodes[index].textContent = SRSScaffold.defaultText
+                }
+            case .code:
+                if nodes[index].textContent?.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty != false {
+                    nodes[index].textContent = "// Write code here..."
+                }
+            case .webView:
+                // Will be populated by the Live Preview compiler if connected
+                break
+            case .art:
+                // Drawing data starts empty
+                break
+            case .standard:
+                break
+            }
+            
+            if persist {
+                requestSave()
+            }
+            compileLivePreview()
+        }
+    }
+
+    /// Updates the PencilKit drawing data for an .art node.
+    /// - Parameters:
+    ///   - id: The UUID of the node to update.
+    ///   - data: The serialized PKDrawing data.
+    ///   - persist: If true, triggers a debounced save to disk.
+    public func updateNodeDrawingData(id: UUID, data: Data, persist: Bool = true) {
+        if let index = nodes.firstIndex(where: { $0.id == id }) {
+            let oldData = nodes[index].drawingData
+            
+            // Register Undo
+            undoManager?.registerUndo(withTarget: self) { target in
+                MainActor.assumeIsolated {
+                    target.updateNodeDrawingData(id: id, data: oldData ?? Data(), persist: persist)
+                }
+            }
+            undoStackChanged += 1
+            
+            nodes[index].drawingData = data
+            if persist {
+                requestSave()
+            }
+        }
+    }
     
     /// Updates a specific node's text content.
+    /// For SRS nodes, also evaluates and persists the new readiness state.
     /// - Parameters:
     ///   - id: The UUID of the node to update.
     ///   - text: The new text content.
@@ -259,7 +349,8 @@ public class ProjectStore {
     public func updateNodeTextContent(id: UUID, text: String, persist: Bool = true) {
         if let index = nodes.firstIndex(where: { $0.id == id }) {
             let oldText = nodes[index].textContent ?? ""
-            
+            let oldReadiness = nodes[index].srsReadinessState
+
             // Register Undo
             // UndoManager always calls back on the main thread;
             // assumeIsolated bridges the nonisolated closure to @MainActor.
@@ -269,8 +360,15 @@ public class ProjectStore {
                 }
             }
             undoStackChanged += 1
-            
+
             nodes[index].textContent = text
+
+            // Keep SRS readiness state in sync for .srs nodes.
+            if nodes[index].type == .srs {
+                let evaluator = SRSReadinessEvaluator()
+                nodes[index].srsReadinessState = evaluator.evaluate(text: text, currentState: oldReadiness)
+            }
+
             if persist {
                 requestSave()
             }
@@ -312,9 +410,68 @@ public class ProjectStore {
             textContent: "// Start coding here..."
         )
         
+        // Register Undo
+        undoManager?.registerUndo(withTarget: self) { target in
+            MainActor.assumeIsolated {
+                target.deleteNode(id: newNode.id, persist: true)
+            }
+        }
+        undoStackChanged += 1
+
         withAnimation(.spring()) {
             nodes.append(newNode)
         }
         requestSave()
+    }
+
+    /// Removes a node from the project and cleans up any references to it.
+    /// - Parameters:
+    ///   - id: The UUID of the node to delete.
+    ///   - persist: If true, triggers a debounced save to disk.
+    public func deleteNode(id: UUID, persist: Bool = true) {
+        guard let index = self.nodes.firstIndex(where: { $0.id == id }) else { return }
+        
+        // Prevent deletion of protected main nodes (e.g. SRS, HTML, CSS, JS)
+        if self.nodes[index].isProtected {
+            self.logger.warning("Attempted to delete protected node: \(self.nodes[index].title)")
+            return
+        }
+        
+        let removedNode = nodes[index]
+        
+        // Register Undo
+        undoManager?.registerUndo(withTarget: self) { target in
+            MainActor.assumeIsolated {
+                // To restore a node properly, we'd need to restore its connections too.
+                // For now, we restore the node itself.
+                target.nodes.append(removedNode) // Simplification: append instead of original index for now
+                if persist {
+                    target.requestSave()
+                }
+            }
+        }
+        undoStackChanged += 1
+
+        withAnimation(.spring()) {
+            // 1. Remove the node itself
+            nodes.remove(at: index)
+            
+            // 2. Clean up connections in other nodes
+            for i in 0..<nodes.count {
+                if nodes[i].nextNodeId == id {
+                    nodes[i].nextNodeId = nil
+                }
+                if let connections = nodes[i].connectedNodeIds {
+                    nodes[i].connectedNodeIds = connections.filter { $0 != id }
+                    if nodes[i].connectedNodeIds?.isEmpty == true {
+                        nodes[i].connectedNodeIds = nil
+                    }
+                }
+            }
+        }
+        
+        if persist {
+            requestSave()
+        }
     }
 }

@@ -1,8 +1,12 @@
 import SwiftUI
 import StoreKit
+import OSLog
 
+/// StoreKit paywall for CAOCAP Pro. The view owns presentation state while
+/// `SubscriptionManager` owns products, entitlements, and transactions.
 struct PurchaseView: View {
     @Environment(\.dismiss) var dismiss
+    private let logger = Logger(subsystem: "Ficruty", category: "PurchaseView")
     @State private var manager = SubscriptionManager.shared
     @State private var selectedProductID: String = "CAOCAP_Pro_Yearly"
     @State private var isPurchasing = false
@@ -55,7 +59,7 @@ struct PurchaseView: View {
                         }
                         
                         VStack(spacing: 8) {
-                            Text("CAOCAP PRO")
+                            Text(LocalizedStringKey("subscription.paywallBadge"))
                                 .font(.system(size: 14, weight: .black))
                                 .kerning(4)
                                 .foregroundStyle(
@@ -247,6 +251,8 @@ struct PurchaseView: View {
         }
     }
     
+    /// Uses StoreKit's localized price when available, with launch-copy
+    /// fallbacks so the paywall remains readable while products load.
     private func productPrice(for id: String) -> String {
         manager.products.first(where: { $0.id == id })?.displayPrice ?? (id.localizedCaseInsensitiveContains("monthly") ? "$9.99" : "$79.99")
     }
@@ -262,6 +268,8 @@ struct PurchaseView: View {
         return LocalizationManager.shared.localizedString(key)
     }
     
+    /// Routes subscribed users to Apple's subscription management page and
+    /// starts a StoreKit purchase for non-subscribed users.
     private func purchaseAction() {
         if manager.isSubscribed {
             // Redirect to App Store Manage Subscriptions
@@ -286,14 +294,14 @@ struct PurchaseView: View {
                 isPurchasing = false
                 
                 if transaction != nil {
-                    // Success!
+                    // A verified transaction is the only successful purchase path.
                     UINotificationFeedbackGenerator().notificationOccurred(.success)
                     withAnimation { showSuccess = true }
                     try? await Task.sleep(nanoseconds: 1_500_000_000)
                     dismiss()
                 } else {
-                    // Transaction was nil (cancelled or pending)
-                    // We stay silent here as per plan
+                    // StoreKit reports cancellation and pending approval as nil;
+                    // neither should be presented as a purchase failure.
                 }
             } catch {
                 isPurchasing = false
@@ -301,11 +309,11 @@ struct PurchaseView: View {
                 // Ignore cancellation errors from throwing
                 let errorString = error.localizedDescription.lowercased()
                 if errorString.contains("cancel") || errorString.contains("usercancelled") {
-                    print("Purchase cancelled by user.")
+                    logger.info("Purchase cancelled by user.")
                     return
                 }
                 
-                print("Purchase failed: \(error)")
+                logger.error("Purchase failed: \(error)")
                 purchaseError = error.localizedDescription
             }
         }

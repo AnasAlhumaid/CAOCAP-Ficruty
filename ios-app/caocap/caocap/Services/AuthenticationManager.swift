@@ -6,7 +6,6 @@ import Observation
 // MARK: - Auth State
 
 /// Represents the current authentication state of the user.
-/// Represents the current authentication state of the user.
 public enum AuthState: Equatable {
     /// No auth session exists yet. The app is checking for an existing user.
     case loading
@@ -88,7 +87,8 @@ final class AuthenticationManager {
 
     // MARK: - Bootstrap
 
-    /// Starts the auth listener. Call once from `AppConfiguration`.
+    /// Attaches the Firebase session listener once at app startup and normalizes
+    /// every callback into the app's small `AuthState` surface.
     func start() {
         listenerCanceller.handle = Auth.auth().addStateDidChangeListener { [weak self] _, user in
             guard let self else { return }
@@ -154,8 +154,8 @@ final class AuthenticationManager {
         }
     }
 
-    /// Deletes the current user account and all associated data.
-    /// Note: Firebase may require re-authentication for this operation.
+    /// Deletes the Firebase user. Callers should be prepared to surface
+    /// re-authentication errors when Firebase considers the session stale.
     func deleteAccount() async throws {
         guard let user = Auth.auth().currentUser else { return }
         
@@ -212,6 +212,8 @@ final class AuthenticationManager {
         }
     }
 
+    /// Converts Firebase's optional user into app state. A missing user starts
+    /// anonymous sign-in so the local-first app always has a UID to attach data to.
     private func handle(user: User?) {
         guard let user else {
             logger.info("No active session found. Will attempt anonymous sign-in.")

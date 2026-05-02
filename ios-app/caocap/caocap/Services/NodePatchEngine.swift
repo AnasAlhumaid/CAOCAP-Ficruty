@@ -1,39 +1,7 @@
 import Foundation
 
-public enum NodeRole: String, CaseIterable, Codable, Hashable {
-    case srs
-    case html
-    case css
-    case javascript
-
-    public var displayName: String {
-        switch self {
-        case .srs: return "SRS"
-        case .html: return "HTML"
-        case .css: return "CSS"
-        case .javascript: return "JavaScript"
-        }
-    }
-
-    public var localizedDisplayName: String {
-        LocalizationManager.shared.localizedString(displayName)
-    }
-
-    public func matches(node: SpatialNode) -> Bool {
-        switch self {
-        case .srs:
-            return node.type == .srs || node.title.localizedCaseInsensitiveContains("software requirements")
-        case .html:
-            return node.title.caseInsensitiveCompare("HTML") == .orderedSame
-        case .css:
-            return node.title.caseInsensitiveCompare("CSS") == .orderedSame
-        case .javascript:
-            return node.title.caseInsensitiveCompare("JavaScript") == .orderedSame
-        }
-    }
-}
-
 public enum NodePatchOperationType: String, Codable, Hashable {
+    case replaceAll = "replace_all"
     case replaceExact = "replace_exact"
     case insertBeforeExact = "insert_before_exact"
     case insertAfterExact = "insert_after_exact"
@@ -73,12 +41,16 @@ public struct NodePatchPreview: Hashable {
     public let resultText: String
 }
 
+/// Applies deterministic text operations proposed by CoCaptain to canonical
+/// project nodes. It previews changes first so the UI can keep edits
+/// human-approved and conflict-aware.
 public struct NodePatchEngine {
     public init() {}
 
     @MainActor
     public func resolveNode(for role: NodeRole, in store: ProjectStore) -> SpatialNode? {
-        store.nodes.first(where: { role.matches(node: $0) })
+        guard role.isEditableCanonicalRole else { return nil }
+        return store.nodes.first(where: { role.matches(node: $0) })
     }
 
     @MainActor
@@ -96,11 +68,15 @@ public struct NodePatchEngine {
         return NodePatchPreview(role: role, originalText: originalText, resultText: resultText)
     }
 
+    /// Applies operations in order. Exact operations fail fast when their target
+    /// text is missing, preventing model output from silently editing the wrong area.
     public func apply(operations: [NodePatchOperation], to text: String) throws -> String {
         var updatedText = text
 
         for operation in operations {
             switch operation.type {
+            case .replaceAll:
+                updatedText = operation.content
             case .replaceExact:
                 guard let target = operation.target, let range = updatedText.range(of: target) else {
                     throw NodePatchError.conflict("Could not find exact text to replace.")

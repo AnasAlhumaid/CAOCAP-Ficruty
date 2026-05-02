@@ -20,34 +20,27 @@ struct CanvasHUDView: View {
                         Image(systemName: "folder.fill")
                             .font(.system(size: 12))
                             .foregroundStyle(.secondary)
+                            .frame(width: 14)
 
                         Text(LocalizationManager.shared.localizedProjectName(store.projectName, fileName: store.fileName).uppercased())
                             .font(.system(size: 12, weight: .bold, design: .rounded))
                             .kerning(1)
+                            .lineLimit(1)
+                            .truncationMode(.middle)
+                            .minimumScaleFactor(0.85)
                     }
+                    .frame(maxWidth: 150, alignment: .center)
+                    .clipped()
 
                     Divider().frame(height: 16)
 
-                    // Node Count
-                    Text(
-                        LocalizationManager.shared.localizedString(
-                            "%lld nodes",
-                            arguments: [Int64(store.nodes.count)]
-                        )
-                    )
-                    .font(.system(size: 13, weight: .semibold, design: .monospaced))
 
-                    Divider().frame(height: 16)
 
                     // Zoom Level
                     HStack(spacing: 4) {
-                        Text(
-                            LocalizationManager.shared.localizedString(
-                                "%lld%%",
-                                arguments: [Int64(viewportScale * 100)]
-                            )
-                        )
+                        Text(viewportScale, format: .percent.precision(.fractionLength(0)))
                         .font(.system(size: 13, weight: .semibold, design: .monospaced))
+                        .fixedSize(horizontal: true, vertical: false)
 
                         Image(systemName: "magnifyingglass")
                             .font(.system(size: 10))
@@ -66,6 +59,7 @@ struct CanvasHUDView: View {
                             Text("SAVING")
                                 .font(.system(size: 10, weight: .black))
                                 .foregroundStyle(.orange)
+                                .fixedSize(horizontal: true, vertical: false)
                         } else {
                             ZStack {
                                 Circle()
@@ -81,6 +75,7 @@ struct CanvasHUDView: View {
                             Text("LIVE")
                                 .font(.system(size: 10, weight: .black))
                                 .foregroundStyle(.green)
+                                .fixedSize(horizontal: true, vertical: false)
                         }
                     }
                     .animation(.spring(), value: store.isSaving)
@@ -131,6 +126,7 @@ struct CanvasHUDView: View {
                         .allowsHitTesting(false)
                 }
             }
+            .frame(maxWidth: UIScreen.main.bounds.width - 32)
             .background {
                 Capsule()
                     .fill(.ultraThinMaterial)

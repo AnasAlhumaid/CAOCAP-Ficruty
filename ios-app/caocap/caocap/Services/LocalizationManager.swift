@@ -121,7 +121,7 @@ public class LocalizationManager {
         if name.hasPrefix(newProjectPrefix) {
             let suffix = String(name.dropFirst(newProjectPrefix.count))
             if suffix.range(of: #"^[A-Fa-f0-9]{8}$"#, options: .regularExpression) != nil {
-                return localizedString("New Project %@", arguments: [suffix], language: language)
+                return localizedString("project.generatedName", arguments: [suffix], language: language)
             }
         }
 

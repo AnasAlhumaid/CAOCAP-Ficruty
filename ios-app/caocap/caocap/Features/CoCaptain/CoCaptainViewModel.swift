@@ -11,6 +11,10 @@ public final class CoCaptainViewModel {
             handleStoreChange()
         }
     }
+    public var analysisItems: [ProjectSuggestion] = []
+    
+    @ObservationIgnored
+    private let analyzer = ProjectAnalyzer()
     @ObservationIgnored
     public var actionDispatcher: (any AppActionPerforming)?
 
@@ -20,6 +24,8 @@ public final class CoCaptainViewModel {
     @ObservationIgnored
     private let agentCoordinator = CoCaptainAgentCoordinator()
     @ObservationIgnored
+    private let commandIntentResolver = CommandIntentResolver()
+    @ObservationIgnored
     private let patchEngine = NodePatchEngine()
     @ObservationIgnored
     private var lastStoreFileName: String?
@@ -27,6 +33,14 @@ public final class CoCaptainViewModel {
     private var streamingTask: Task<Void, Never>?
 
     public var isThinking: Bool = false
+    public var isAwaitingFirstResponse: Bool {
+        guard isThinking,
+              let lastMessage,
+              !lastMessage.isUser else {
+            return false
+        }
+        return lastMessage.text.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
+    }
 
     public init() {
         self.items = [CoCaptainViewModel.greetingItem()]
@@ -48,11 +62,44 @@ public final class CoCaptainViewModel {
         withAnimation(.spring(response: 0.3, dampingFraction: 0.8)) {
             isPresented = presented
         }
+
+        if presented {
+            runAnalysis()
+        }
+    }
+
+    public func runAnalysis() {
+        guard let nodes = store?.nodes else { return }
+        let newSuggestions = analyzer.analyze(nodes: nodes)
+        
+        // Only update if suggestions have changed to avoid UI flickering
+        if newSuggestions != analysisItems {
+            withAnimation(.spring()) {
+                analysisItems = newSuggestions
+            }
+        }
+    }
+
+    public func dismissSuggestion(_ suggestion: ProjectSuggestion) {
+        withAnimation(.spring()) {
+            analysisItems.removeAll(where: { $0.id == suggestion.id })
+        }
+    }
+
+    public func applySuggestion(_ suggestion: ProjectSuggestion) {
+        dismissSuggestion(suggestion)
+        sendMessage(suggestion.suggestedPrompt)
     }
 
     public func sendMessage(_ text: String) {
+        guard !isThinking else { return }
+
         let userItem = ChatBubbleItem(text: text, isUser: true)
         items.append(CoCaptainTimelineItem(content: .message(userItem)))
+
+        if handleDirectCommand(text) {
+            return
+        }
 
         isThinking = true
         let aiMessageID = UUID()
@@ -69,11 +116,22 @@ public final class CoCaptainViewModel {
                     userMessage: text,
                     store: store,
                     dispatcher: actionDispatcher
-                ) { [weak self] partialText in
-                    self?.updateMessage(id: aiMessageID, text: partialText)
+                ) { _ in
+                    // Stop streaming characters to the UI for a cleaner 'split message' feel.
                 }
 
-                updateMessage(id: aiMessageID, text: result.visibleText)
+                // Remove the empty thinking placeholder.
+                removeEmptyMessage(id: aiMessageID)
+
+                // 1. Add Preamble bubble (the conversational part).
+                if !result.preamble.isEmpty {
+                    items.append(CoCaptainTimelineItem(content: .message(ChatBubbleItem(text: result.preamble, isUser: false))))
+                }
+
+                // 2. Add Payload Message bubble (the intent summary).
+                if let payloadMsg = result.payloadMessage, !payloadMsg.isEmpty, payloadMsg != result.preamble {
+                    items.append(CoCaptainTimelineItem(content: .message(ChatBubbleItem(text: payloadMsg, isUser: false))))
+                }
 
                 if let executionSummary = result.executionSummary {
                     items.append(CoCaptainTimelineItem(content: .execution(executionSummary)))
@@ -83,6 +141,11 @@ public final class CoCaptainViewModel {
                     items.append(CoCaptainTimelineItem(content: .reviewBundle(reviewBundle)))
                 }
             } catch {
+                if error is CancellationError || Task.isCancelled {
+                    removeEmptyMessage(id: aiMessageID)
+                    return
+                }
+
                 let details = String(reflecting: error)
                 updateMessage(
                     id: aiMessageID,
@@ -97,6 +160,72 @@ public final class CoCaptainViewModel {
         }
     }
 
+    public func stopStreaming() {
+        streamingTask?.cancel()
+        streamingTask = nil
+        isThinking = false
+
+        if let lastMessage, !lastMessage.isUser {
+            removeEmptyMessage(id: lastMessage.id)
+        }
+    }
+
+    /// Handles simple app commands locally so navigation does not need a model
+    /// round trip. Mutating commands still become review items.
+    private func handleDirectCommand(_ text: String) -> Bool {
+        guard let actionDispatcher,
+              let actionID = commandIntentResolver.resolve(text, availableActions: actionDispatcher.availableActions),
+              let definition = actionDispatcher.definition(for: actionID) else {
+            return false
+        }
+
+        if definition.isMutating || !definition.allowsAutonomousExecution {
+            items.append(
+                CoCaptainTimelineItem(
+                    content: .message(
+                        ChatBubbleItem(
+                            text: LocalizationManager.shared.localizedString(
+                                "I can do that. Review the action below, then tap Apply."
+                            ),
+                            isUser: false
+                        )
+                    )
+                )
+            )
+            items.append(
+                CoCaptainTimelineItem(
+                    content: .reviewBundle(
+                        ReviewBundleItem(
+                            items: [
+                                PendingReviewItem(
+                                    targetLabel: definition.localizedTitle,
+                                    summary: LocalizationManager.shared.localizedString(
+                                        "Awaiting approval to run %@.",
+                                        arguments: [definition.localizedTitle]
+                                    ),
+                                    preview: definition.localizedTitle,
+                                    source: .appAction(actionID, nil) // args will be handled in handleDirectCommand if needed
+                                )
+                            ]
+                        )
+                    )
+                )
+            )
+            return true
+        }
+
+        let result = actionDispatcher.perform(actionID, source: .agentAutomatic, arguments: nil)
+        items.append(
+            CoCaptainTimelineItem(
+                content: .execution(ExecutionStatusItem(summary: result.message))
+            )
+        )
+        return true
+    }
+
+    /// Applies one user-approved review item. Node edits are revalidated against
+    /// their captured base text so stale AI suggestions cannot overwrite newer
+    /// user edits.
     public func applyReviewItem(bundleID: UUID, itemID: UUID) {
         guard let bundleIndex = items.firstIndex(where: { $0.id == bundleID }),
               case .reviewBundle(var bundle) = items[bundleIndex].content,
@@ -105,10 +234,13 @@ public final class CoCaptainViewModel {
         }
 
         var item = bundle.items[itemIndex]
+        
+        // Create checkpoint before applying a single item
+        store?.createCheckpoint(label: "Apply Suggestion: \(item.targetLabel)")
 
         switch item.source {
-        case .appAction(let actionID):
-            let result = actionDispatcher?.perform(actionID, source: .agentApproved)
+        case .appAction(let actionID, let arguments):
+            let result = actionDispatcher?.perform(actionID, source: .agentApproved, arguments: arguments)
             item.status = result?.executed == true ? .applied : .conflicted
             if let result, result.executed {
                 items.append(
@@ -121,11 +253,13 @@ public final class CoCaptainViewModel {
             guard let store,
                   let node = patchEngine.resolveNode(for: role, in: store) else {
                 item.status = .conflicted
+                item.conflictDescription = LocalizationManager.shared.localizedString("The node could not be found in the current project.")
                 break
             }
 
             guard (node.textContent ?? "") == baseText else {
                 item.status = .conflicted
+                item.conflictDescription = LocalizationManager.shared.localizedString("This node was edited after the suggestion was generated. Ask Co-Captain to revise.")
                 break
             }
 
@@ -147,6 +281,7 @@ public final class CoCaptainViewModel {
                 )
             } catch {
                 item.status = .conflicted
+                item.conflictDescription = error.localizedDescription
             }
         }
 
@@ -160,6 +295,10 @@ public final class CoCaptainViewModel {
 
     public func applyAll(in bundleID: UUID) {
         guard let bundle = reviewBundle(for: bundleID) else { return }
+        
+        // Create one checkpoint for the whole bundle
+        store?.createCheckpoint(label: "Apply All Changes")
+        
         for itemID in bundle.items.filter({ $0.status == .pending }).map(\.id) {
             applyReviewItem(bundleID: bundleID, itemID: itemID)
         }
@@ -172,17 +311,21 @@ public final class CoCaptainViewModel {
         }
     }
 
+    /// Resets chat state when the active project changes so streamed responses
+    /// and review bundles cannot leak across project contexts.
     private func handleStoreChange() {
         let currentFileName = store?.fileName
         guard currentFileName != lastStoreFileName else { return }
         defer { lastStoreFileName = currentFileName }
 
-        guard lastStoreFileName != nil else { return }
-
-        streamingTask?.cancel()
-        streamingTask = nil
-        isThinking = false
-        clearHistory()
+        if lastStoreFileName != nil {
+            streamingTask?.cancel()
+            streamingTask = nil
+            isThinking = false
+            clearHistory()
+        }
+        
+        runAnalysis()
     }
 
     private func reviewBundle(for bundleID: UUID) -> ReviewBundleItem? {
@@ -210,6 +353,22 @@ public final class CoCaptainViewModel {
             bubble.text = text
             items[index].content = .message(bubble)
         }
+    }
+
+    private func removeEmptyMessage(id: UUID) {
+        guard let index = items.firstIndex(where: { $0.id == id }),
+              case .message(let bubble) = items[index].content,
+              !bubble.isUser,
+              bubble.text.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else {
+            return
+        }
+
+        items.remove(at: index)
+    }
+
+    private var lastMessage: ChatBubbleItem? {
+        guard case .message(let bubble) = items.last?.content else { return nil }
+        return bubble
     }
 
     private static func greetingItem() -> CoCaptainTimelineItem {

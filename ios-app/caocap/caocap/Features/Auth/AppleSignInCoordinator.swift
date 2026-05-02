@@ -24,6 +24,8 @@ final class AppleSignInCoordinator: NSObject {
 
     // MARK: - Public
 
+    /// Presents Apple's native authorization sheet and resumes with a Firebase
+    /// credential that can be linked to the current anonymous user.
     func signIn() async throws -> OAuthCredential {
         return try await withCheckedThrowingContinuation { continuation in
             self.continuation = continuation
@@ -43,6 +45,7 @@ final class AppleSignInCoordinator: NSObject {
 
     // MARK: - Nonce Helpers
 
+    /// Generates the raw nonce Firebase will later verify against Apple's token.
     private func randomNonce(length: Int = 32) -> String {
         var randomBytes = [UInt8](repeating: 0, count: length)
         _ = SecRandomCopyBytes(kSecRandomDefault, randomBytes.count, &randomBytes)
@@ -76,6 +79,8 @@ extension AppleSignInCoordinator: ASAuthorizationControllerDelegate {
                 return
             }
 
+            // Firebase needs the original raw nonce, not the SHA-256 value sent
+            // to Apple, to validate that this response belongs to our request.
             let credential = OAuthProvider.appleCredential(
                 withIDToken: idTokenString,
                 rawNonce: nonce,

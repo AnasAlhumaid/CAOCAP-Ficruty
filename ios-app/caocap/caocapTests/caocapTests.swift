@@ -36,4 +36,25 @@ struct caocapTests {
         #expect(viewport.offset == CGSize(width: 60, height: 10))
         #expect(viewport.lastOffset == CGSize(width: 50, height: 12))
     }
+
+    @Test func defaultProjectStartsWithStructuredSRS() throws {
+        let srsNode = try #require(ProjectTemplateProvider.defaultNodes.first { $0.type == .srs })
+        let text = try #require(srsNode.textContent)
+
+        #expect(text.contains("# Intent"))
+        #expect(text.contains("## Why It Matters"))
+        #expect(text.contains("## Core Flow"))
+        #expect(text.contains("## Acceptance Checks"))
+        #expect(text.contains("CoCaptain has enough context"))
+    }
+
+    @Test func srsScaffoldPreservesDraftAndAddsMissingSections() {
+        let draft = "# Intent\nBuild a calmer way to shape software requirements."
+        let structuredText = SRSScaffold.structuredText(from: draft)
+
+        #expect(structuredText.hasPrefix(draft))
+        #expect(structuredText.contains("## People"))
+        #expect(structuredText.contains("## Requirements"))
+        #expect(structuredText.contains("## Constraints"))
+    }
 }

@@ -34,6 +34,23 @@ struct NodeView: View {
                             .fixedSize(horizontal: false, vertical: true)
                             .lineLimit(3)
                     }
+
+                    // Show SRS readiness badge for SRS nodes.
+                    if node.type == .srs {
+                        let state = node.srsReadinessState ?? .empty
+                        HStack(spacing: 5) {
+                            Image(systemName: state.icon)
+                                .font(.system(size: 10, weight: .semibold))
+                            Text(state.displayTitle)
+                                .font(.system(size: 11, weight: .semibold, design: .rounded))
+                        }
+                        .foregroundColor(state == .stale ? .orange : themeColor)
+                        .padding(.horizontal, 8)
+                        .padding(.vertical, 4)
+                        .background((state == .stale ? Color.orange : themeColor).opacity(0.12))
+                        .clipShape(Capsule())
+                        .padding(.top, 4)
+                    }
                 }
                 .frame(maxWidth: 240, alignment: .leading)
             }
@@ -45,6 +62,7 @@ struct NodeView: View {
                     .frame(width: 360, height: 640)
                     .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
             }
+
         }
         .padding(.horizontal, 20)
         .padding(.vertical, 20)
@@ -56,6 +74,12 @@ struct NodeView: View {
                 RoundedRectangle(cornerRadius: 24, style: .continuous)
                     .fill(isDragging ? themeColor.opacity(0.08) : themeColor.opacity(0.03))
             }
+            .shadow(
+                color: Color.black.opacity(isDragging ? 0.25 : 0.15),
+                radius: isDragging ? 30 : 20,
+                x: 0,
+                y: isDragging ? 20 : 10
+            )
         )
         .overlay(
             RoundedRectangle(cornerRadius: 24, style: .continuous)
@@ -71,12 +95,6 @@ struct NodeView: View {
                     ),
                     lineWidth: isDragging ? 2 : 1
                 )
-        )
-        .shadow(
-            color: Color.black.opacity(isDragging ? 0.25 : 0.15),
-            radius: isDragging ? 30 : 20,
-            x: 0,
-            y: isDragging ? 20 : 10
         )
         .scaleEffect(isDragging ? 1.05 : (isHovering ? 1.02 : 1.0))
         .animation(.spring(response: 0.3, dampingFraction: 0.7), value: isDragging)
