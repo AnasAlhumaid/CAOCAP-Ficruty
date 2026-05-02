@@ -5,9 +5,12 @@ struct CoCaptainInputComposer: View {
     @FocusState.Binding var isFocused: Bool
     let store: ProjectStore?
     let isThinking: Bool
+    let analysisItems: [ProjectSuggestion]
     let onSend: () -> Void
     let onStop: () -> Void
     let onQuickPrompt: (String) -> Void
+    let onApplySuggestion: (ProjectSuggestion) -> Void
+    let onDismissSuggestion: (ProjectSuggestion) -> Void
 
     private var isInputValid: Bool {
         !text.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
@@ -20,6 +23,15 @@ struct CoCaptainInputComposer: View {
     var body: some View {
         VStack(spacing: 10) {
             Divider().opacity(0.5)
+
+            if !analysisItems.isEmpty {
+                CoCaptainAnalysisView(
+                    suggestions: analysisItems,
+                    onApply: onApplySuggestion,
+                    onDismiss: onDismissSuggestion
+                )
+                .transition(.move(edge: .top).combined(with: .opacity))
+            }
 
             if let store {
                 ContextPill(

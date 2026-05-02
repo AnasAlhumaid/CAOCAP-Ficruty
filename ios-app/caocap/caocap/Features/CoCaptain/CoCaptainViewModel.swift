@@ -11,6 +11,10 @@ public final class CoCaptainViewModel {
             handleStoreChange()
         }
     }
+    public var analysisItems: [ProjectSuggestion] = []
+    
+    @ObservationIgnored
+    private let analyzer = ProjectAnalyzer()
     @ObservationIgnored
     public var actionDispatcher: (any AppActionPerforming)?
 
@@ -58,6 +62,33 @@ public final class CoCaptainViewModel {
         withAnimation(.spring(response: 0.3, dampingFraction: 0.8)) {
             isPresented = presented
         }
+
+        if presented {
+            runAnalysis()
+        }
+    }
+
+    public func runAnalysis() {
+        guard let nodes = store?.nodes else { return }
+        let newSuggestions = analyzer.analyze(nodes: nodes)
+        
+        // Only update if suggestions have changed to avoid UI flickering
+        if newSuggestions != analysisItems {
+            withAnimation(.spring()) {
+                analysisItems = newSuggestions
+            }
+        }
+    }
+
+    public func dismissSuggestion(_ suggestion: ProjectSuggestion) {
+        withAnimation(.spring()) {
+            analysisItems.removeAll(where: { $0.id == suggestion.id })
+        }
+    }
+
+    public func applySuggestion(_ suggestion: ProjectSuggestion) {
+        dismissSuggestion(suggestion)
+        sendMessage(suggestion.suggestedPrompt)
     }
 
     public func sendMessage(_ text: String) {
@@ -280,12 +311,14 @@ public final class CoCaptainViewModel {
         guard currentFileName != lastStoreFileName else { return }
         defer { lastStoreFileName = currentFileName }
 
-        guard lastStoreFileName != nil else { return }
-
-        streamingTask?.cancel()
-        streamingTask = nil
-        isThinking = false
-        clearHistory()
+        if lastStoreFileName != nil {
+            streamingTask?.cancel()
+            streamingTask = nil
+            isThinking = false
+            clearHistory()
+        }
+        
+        runAnalysis()
     }
 
     private func reviewBundle(for bundleID: UUID) -> ReviewBundleItem? {

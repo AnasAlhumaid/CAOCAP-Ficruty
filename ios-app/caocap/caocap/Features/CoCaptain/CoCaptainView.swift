@@ -20,9 +20,12 @@ struct CoCaptainView: View {
                     isFocused: $isFocused,
                     store: viewModel.store,
                     isThinking: viewModel.isThinking,
+                    analysisItems: viewModel.analysisItems,
                     onSend: sendCurrentMessage,
                     onStop: viewModel.stopStreaming,
-                    onQuickPrompt: sendQuickPrompt
+                    onQuickPrompt: sendQuickPrompt,
+                    onApplySuggestion: viewModel.applySuggestion,
+                    onDismissSuggestion: viewModel.dismissSuggestion
                 )
             }
             .navigationTitle("Co-Captain")
