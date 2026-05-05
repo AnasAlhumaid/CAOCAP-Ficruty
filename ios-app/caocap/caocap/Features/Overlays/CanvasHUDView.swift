@@ -3,6 +3,7 @@ import SwiftUI
 struct CanvasHUDView: View {
     let store: ProjectStore
     let viewportScale: CGFloat
+    var isHome: Bool = false
     var onSignInTapped: (() -> Void)? = nil
 
     @Environment(AuthenticationManager.self) private var authManager
@@ -80,9 +81,33 @@ struct CanvasHUDView: View {
                     }
                     .animation(.spring(), value: store.isSaving)
                 }
-                .padding(.horizontal, 20)
+                .padding(.leading, 20)
+                .padding(.trailing, 12)
                 .padding(.vertical, 12)
+                .background(.ultraThinMaterial.opacity(0.8))
+                .clipShape(Capsule())
                 .allowsHitTesting(false)
+                
+                // Interactive Tools (Attached to the pill but separate hit-testing)
+                HStack(spacing: 12) {
+                    Button {
+                        store.organizeNodes(isHome: isHome)
+                    } label: {
+                        ZStack {
+                            Circle()
+                                .fill(.primary.opacity(0.1))
+                                .frame(width: 32, height: 32)
+                            
+                            Image(systemName: "wand.and.stars")
+                                .font(.system(size: 14, weight: .bold))
+                                .foregroundStyle(colorScheme == .dark ? .white : .black)
+                        }
+                    }
+                }
+                .padding(.leading, 4)
+                .padding(.trailing, 8)
+                
+                Spacer()
 
                 // Profile Indicator (interactive for anonymous)
                 if authManager.isAnonymous {

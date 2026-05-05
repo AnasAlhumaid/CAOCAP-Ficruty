@@ -97,14 +97,20 @@ public final class LLMService {
             availableActions: availableActions
         )
 
+        guard let session = self.chat else {
+            return AsyncThrowingStream { continuation in
+                continuation.finish(throwing: NSError(domain: "LLMService", code: -1, userInfo: [NSLocalizedDescriptionKey: "Failed to initialize chat session"]))
+            }
+        }
+
         return AsyncThrowingStream { continuation in
             let task = Task {
                 do {
                     logger.debug("Starting LLM stream with history.")
                     logger.debug("Model: \(self.preferredModelName, privacy: .public) structured=\(expectsStructuredResponse, privacy: .public) contextChars=\((context ?? "").count, privacy: .public)")
                     
-                    // Use sendMessageStream to participate in the multi-turn session
-                    let stream = try chat!.sendMessageStream(prompt)
+                    // Use the captured session to prevent nil-unwrapping crashes if self.chat changes
+                    let stream = try session.sendMessageStream(prompt)
                     
                     for try await chunk in stream {
                         if let text = chunk.text {
@@ -121,6 +127,12 @@ public final class LLMService {
                 } catch {
                     let reflected = String(reflecting: error)
                     logger.error("LLM stream error: \(reflected, privacy: .public)")
+                    
+                    if reflected.contains("429") || reflected.contains("quota") || reflected.contains("RESOURCE_EXHAUSTED") {
+                        continuation.yield(.text("[Sandbox Mode] API Quota limit reached. This is a simulated response to allow you to continue testing your Node Linking and Prompt Templates."))
+                        continuation.finish()
+                        return
+                    }
 
                     // Attempt a one-time recovery by resetting the chat session.
                     // This helps when the underlying session is in a bad state.

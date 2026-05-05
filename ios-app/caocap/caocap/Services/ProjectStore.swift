@@ -201,6 +201,23 @@ public class ProjectStore {
             return
         }
         
+        // Ensure the source code nodes are registered as inputs to the WebView 
+        // so that the Magic Organize clustering treats them as a group.
+        let sourceNodeIds = nodes.filter { [.html, .css, .javascript].contains($0.role) }.map { $0.id }
+        if Set(nodes[webViewIndex].inputNodeIds ?? []) != Set(sourceNodeIds) {
+            nodes[webViewIndex].inputNodeIds = sourceNodeIds
+        }
+        
+        // Also ensure SRS is linked as an input to the HTML node so the entire chain stays together
+        if let srsNode = nodes.first(where: { $0.role == .srs }),
+           let htmlIndex = nodes.firstIndex(where: { $0.role == .html }) {
+            if !(nodes[htmlIndex].inputNodeIds ?? []).contains(srsNode.id) {
+                var currentInputs = nodes[htmlIndex].inputNodeIds ?? []
+                currentInputs.append(srsNode.id)
+                nodes[htmlIndex].inputNodeIds = currentInputs
+            }
+        }
+        
         // Update the WebView node if the content changed
         if nodes[webViewIndex].htmlContent != compilation.html {
             nodes[webViewIndex].htmlContent = compilation.html
@@ -305,8 +322,30 @@ public class ProjectStore {
             case .art:
                 // Drawing data starts empty
                 break
+            case .table:
+                if nodes[index].textContent?.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty != false {
+                    nodes[index].textContent = "Header 1, Header 2\nData 1, Data 2"
+                }
+            case .text:
+                if nodes[index].textContent?.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty != false {
+                    nodes[index].textContent = "Write notes here..."
+                }
+            case .number:
+                if nodes[index].textContent?.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty != false {
+                    nodes[index].textContent = "0"
+                }
+            case .calculation:
+                if nodes[index].operation == nil {
+                    nodes[index].operation = .add
+                }
+            case .display:
+                break
             case .standard:
                 break
+            case .aiAgent:
+                if nodes[index].promptTemplate == nil {
+                    nodes[index].promptTemplate = "Compare {{input1}} and {{input2}}"
+                }
             }
             
             if persist {
@@ -372,6 +411,8 @@ public class ProjectStore {
             if persist {
                 requestSave()
             }
+            
+            recalculateGraph()
         }
     }
     
@@ -396,18 +437,119 @@ public class ProjectStore {
         }
         requestSave()
     }
+
+    /// Automatically organizes all nodes into a context-aware layout.
+    public func organizeNodes(isHome: Bool = false) {
+        guard !nodes.isEmpty else { return }
+        
+        var nodePositions = [UUID: CGPoint]()
+        
+        if isHome {
+            // HEXAGON / HONEYCOMB LAYOUT (Home)
+            let hexRadius: CGFloat = 220
+            let horizontalSpacing = hexRadius * 1.5
+            let verticalSpacing = hexRadius * sqrt(3) / 2
+            
+            for (index, node) in nodes.enumerated() {
+                // Find nearest spiral index or ring-based hex position
+                // For a simple hex grid:
+                let q = Int(round(sqrt(Double(index)) * cos(Double(index)))) // Simplified spiral
+                let r = Int(round(sqrt(Double(index)) * sin(Double(index))))
+                
+                // Real hex to pixel formula
+                let x = hexRadius * 3/2 * CGFloat(q)
+                let y = hexRadius * sqrt(3) * (CGFloat(r) + CGFloat(q)/2)
+                
+                nodePositions[node.id] = CGPoint(x: x, y: y)
+            }
+        } else {
+            // CENTRALITY & GROUPED LAYOUT (Project)
+            // 1. Group nodes by connectivity (Clusters)
+            var clusters: [[UUID]] = []
+            var unvisited = Set(nodes.map { $0.id })
+            
+            while let startId = unvisited.first {
+                var currentCluster: [UUID] = []
+                var queue = [startId]
+                unvisited.remove(startId)
+                
+                while !queue.isEmpty {
+                    let id = queue.removeFirst()
+                    currentCluster.append(id)
+                    
+                    let node = nodes.first { $0.id == id }
+                    let relatedIds = (node?.inputNodeIds ?? []) + nodes.filter { ($0.inputNodeIds ?? []).contains(id) }.map { $0.id }
+                    
+                    for relatedId in relatedIds {
+                        if unvisited.contains(relatedId) {
+                            unvisited.remove(relatedId)
+                            queue.append(relatedId)
+                        }
+                    }
+                }
+                clusters.append(currentCluster)
+            }
+            
+            // 2. Lay out each cluster
+            let columnWidth: CGFloat = 800
+            let rowHeight: CGFloat = 600
+            
+            for (clusterIndex, clusterIds) in clusters.enumerated() {
+                let col = clusterIndex % 2
+                let row = clusterIndex / 2
+                let clusterCenter = CGPoint(x: CGFloat(col) * columnWidth, y: CGFloat(row) * rowHeight)
+                
+                // Find highly connected node (The Hub)
+                let sortedByConnectivity = clusterIds.sorted { idA, idB in
+                    let countA = (nodes.first { $0.id == idA }?.inputNodeIds?.count ?? 0) + nodes.filter { ($0.inputNodeIds ?? []).contains(idA) }.count
+                    let countB = (nodes.first { $0.id == idB }?.inputNodeIds?.count ?? 0) + nodes.filter { ($0.inputNodeIds ?? []).contains(idB) }.count
+                    return countA > countB
+                }
+                
+                // Place Hub at center, others around it
+                if let hubId = sortedByConnectivity.first {
+                    nodePositions[hubId] = clusterCenter
+                    
+                    let others = sortedByConnectivity.dropFirst()
+                    let radius: CGFloat = 300
+                    for (i, otherId) in others.enumerated() {
+                        let angle = (Double(i) / Double(others.count)) * 2.0 * .pi
+                        nodePositions[otherId] = CGPoint(
+                            x: clusterCenter.x + radius * cos(angle),
+                            y: clusterCenter.y + radius * sin(angle)
+                        )
+                    }
+                }
+            }
+        }
+        
+        // 3. Apply with animation
+        withAnimation(.spring(response: 0.8, dampingFraction: 0.7)) {
+            for (id, pos) in nodePositions {
+                if let index = nodes.firstIndex(where: { $0.id == id }) {
+                    nodes[index].position = pos
+                }
+            }
+        }
+        
+        requestSave()
+        HapticsManager.shared.notification(.success)
+    }
     
-    /// Adds a new code node to the project at the current viewport center.
-    public func addNode() {
+    /// Adds a new node to the project at the current viewport center.
+    public func addNode(type: NodeType = .code) {
+        let baseTitle = type == .code ? "New Logic" : type.displayName
+        let uniqueTitle = generateUniqueTitle(base: baseTitle)
+        
         let newNode = SpatialNode(
             id: UUID(),
-            type: .code,
+            type: type,
             position: CGPoint(x: -viewportOffset.width / viewportScale, y: -viewportOffset.height / viewportScale),
-            title: "New Logic",
-            subtitle: "Write your intent here.",
-            icon: "plus.square.fill",
-            theme: .blue,
-            textContent: "// Start coding here..."
+            title: uniqueTitle,
+            subtitle: type == .code ? "Write your intent here." : nil,
+            icon: nodeIcon(for: type),
+            theme: nodeTheme(for: type),
+            textContent: type == .code ? "// Start coding here..." : nil
         )
         
         // Register Undo
@@ -422,6 +564,64 @@ public class ProjectStore {
             nodes.append(newNode)
         }
         requestSave()
+        recalculateGraph()
+    }
+
+    private func nodeIcon(for type: NodeType) -> String {
+        switch type {
+        case .code: return "plus.square.fill"
+        case .text: return "text.justify.left"
+        case .number: return "text.cursor"
+        case .table: return "tablecells.fill"
+        case .calculation: return "plus.forwardslash.minus"
+        case .display: return "opticaldisc.fill"
+        case .srs: return "doc.text.fill"
+        case .webView: return "play.display"
+        case .art: return "pencil.tip"
+        case .standard: return "square.grid.2x2"
+        case .aiAgent: return "brain.head.profile.fill"
+        }
+    }
+
+    private func nodeTheme(for type: NodeType) -> NodeTheme {
+        switch type {
+        case .text: return .blue
+        case .number: return .blue
+        case .table: return .cyan
+        case .calculation: return .orange
+        case .display: return .green
+        case .aiAgent: return .indigo
+        default: return .blue
+        }
+    }
+
+    private func generateUniqueTitle(base: String) -> String {
+        var candidate = base
+        var count = 1
+        // If the base itself exists, start numbering immediately
+        if nodes.contains(where: { $0.title.lowercased() == candidate.lowercased() }) {
+            while nodes.contains(where: { $0.title.lowercased() == "\(base) \(count)".lowercased() }) {
+                count += 1
+            }
+            candidate = "\(base) \(count)"
+        }
+        return candidate
+    }
+
+    public func updateNodeTitle(id: UUID, title: String) {
+        let trimmed = title.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !trimmed.isEmpty else { return }
+        
+        // Prevent duplicates (excluding self)
+        if nodes.contains(where: { $0.id != id && $0.title.lowercased() == trimmed.lowercased() }) {
+            // Silently ignore or we could handle with feedback
+            return 
+        }
+        
+        if let index = nodes.firstIndex(where: { $0.id == id }) {
+            nodes[index].title = trimmed
+            requestSave()
+        }
     }
 
     /// Removes a node from the project and cleans up any references to it.
@@ -467,11 +667,184 @@ public class ProjectStore {
                         nodes[i].connectedNodeIds = nil
                     }
                 }
+                if let inputs = nodes[i].inputNodeIds {
+                    nodes[i].inputNodeIds = inputs.filter { $0 != id }
+                    if nodes[i].inputNodeIds?.isEmpty == true {
+                        nodes[i].inputNodeIds = nil
+                    }
+                }
             }
         }
         
         if persist {
             requestSave()
         }
+    }
+
+    public func updateNodeOperation(id: UUID, operation: ArithmeticOperation, persist: Bool = true) {
+        if let index = nodes.firstIndex(where: { $0.id == id }) {
+            let oldOp = nodes[index].operation ?? .add
+            
+            undoManager?.registerUndo(withTarget: self) { target in
+                MainActor.assumeIsolated {
+                    target.updateNodeOperation(id: id, operation: oldOp, persist: persist)
+                }
+            }
+            undoStackChanged += 1
+            
+            nodes[index].operation = operation
+            if persist {
+                requestSave()
+            }
+            recalculateGraph()
+        }
+    }
+
+    /// Evaluates the reactive calculation graph.
+    /// Values flow from Text nodes -> Calculation nodes -> Display nodes.
+    public func recalculateGraph() {
+        var changed = false
+        
+        // Multi-pass to handle chains (e.g. A + B -> C, then C + D -> E)
+        for _ in 0..<3 {
+            var currentPassChanged = false
+            
+            for i in 0..<nodes.count {
+                let node = nodes[i]
+                
+                if node.type == .calculation {
+                    let inputs = (node.inputNodeIds ?? []).compactMap { id in
+                        nodes.first(where: { $0.id == id })
+                    }
+                    
+                    let values = inputs.compactMap { inputNode -> Double? in
+                        if inputNode.type == .number {
+                            return Double(inputNode.textContent ?? "0")
+                        } else {
+                            return inputNode.outputValue
+                        }
+                    }
+                    
+                    let result: Double
+                    let op = node.operation ?? .add
+                    
+                    if values.isEmpty {
+                        result = 0
+                    } else {
+                        switch op {
+                        case .add:
+                            result = values.reduce(0, +)
+                        case .subtract:
+                            result = values.count > 1 ? values.dropFirst().reduce(values[0], -) : (values.first ?? 0)
+                        case .multiply:
+                            result = values.reduce(1, *)
+                        case .divide:
+                            let first = values.first ?? 0
+                            let others = values.dropFirst()
+                            result = others.contains(0) ? 0 : others.reduce(first, /)
+                        }
+                    }
+                    
+                    if nodes[i].outputValue != result {
+                        nodes[i].outputValue = result
+                        currentPassChanged = true
+                        changed = true
+                    }
+                } else if node.type == .display {
+                    // Display nodes mirror their first input
+                    if let inputId = node.inputNodeIds?.first,
+                       let inputNode = nodes.first(where: { $0.id == inputId }) {
+                        let value = inputNode.type == .text ? Double(inputNode.textContent ?? "0") : inputNode.outputValue
+                        if nodes[i].outputValue != value {
+                            nodes[i].outputValue = value
+                            currentPassChanged = true
+                            changed = true
+                        }
+                    }
+                } else if node.type == .aiAgent {
+                    // AI Agents use aiResponse, but they can flow into Display nodes as well.
+                    // RecalculateGraph primarily handles numeric propagation.
+                }
+            }
+            
+            if !currentPassChanged { break }
+        }
+    }
+
+    public func updateNodeInputs(id: UUID, inputNodeIds: [UUID]) {
+        if let index = nodes.firstIndex(where: { $0.id == id }) {
+            nodes[index].inputNodeIds = inputNodeIds
+            recalculateGraph()
+            requestSave()
+            
+            // If it's an AI Agent, automatically trigger evaluation when inputs change
+            if nodes[index].type == .aiAgent {
+                evaluateAINode(id: id)
+            }
+        }
+    }
+
+    public func updateNodePrompt(id: UUID, prompt: String) {
+        if let index = nodes.firstIndex(where: { $0.id == id }) {
+            nodes[index].promptTemplate = prompt
+            evaluateAINode(id: id)
+            requestSave()
+        }
+    }
+
+    public func updateNodeDisplayStyle(id: UUID, style: DisplayStyle) {
+        if let index = nodes.firstIndex(where: { $0.id == id }) {
+            nodes[index].displayStyle = style
+            requestSave()
+        }
+    }
+
+    public func evaluateAINode(id: UUID) {
+        guard let index = nodes.firstIndex(where: { $0.id == id }),
+              nodes[index].type == .aiAgent,
+              let template = nodes[index].promptTemplate, !template.isEmpty else { return }
+        
+        // Build the prompt by injecting input node content
+        var finalPrompt = template
+        let inputIds = nodes[index].inputNodeIds ?? []
+        
+        for (idx, inputId) in inputIds.enumerated() {
+            if let inputNode = nodes.first(where: { $0.id == inputId }) {
+                let content = inputNode.textContent ?? inputNode.aiResponse ?? inputNode.subtitle ?? ""
+                
+                // For tables, we can wrap the content in a data block to help the AI
+                let processedContent = inputNode.type == .table ? "### DATA TABLE: \(inputNode.title) ###\n\(content)\n###################" : content
+                
+                // Replace both index-based and title-based tags
+                finalPrompt = finalPrompt.replacingOccurrences(of: "{{input\(idx + 1)}}", with: processedContent)
+                finalPrompt = finalPrompt.replacingOccurrences(of: "{{\(inputNode.title)}}", with: processedContent)
+            }
+        }
+        
+        // Trigger async AI call
+        Task {
+            nodes[index].aiResponse = "Thinking..."
+            
+            do {
+                var response = ""
+                let stream = LLMService.shared.streamResponse(for: finalPrompt)
+                for try await chunk in stream {
+                    response += chunk
+                    // Throttle updates for UI performance if needed, but for small nodes this is fine
+                    nodes[index].aiResponse = response
+                }
+                
+                // Final result
+                nodes[index].aiResponse = response
+                recalculateGraph() // Trigger ripple if other nodes depend on this result
+                requestSave()
+            } catch {
+                nodes[index].aiResponse = "Error: \(error.localizedDescription)"
+            }
+        }
+    }
+
+    private func findInputs(for nodeId: UUID) -> [SpatialNode] {
+        nodes.filter { $0.nextNodeId == nodeId }
     }
 }

@@ -7,14 +7,25 @@ struct NodeDetailView: View {
     let node: SpatialNode
     let store: ProjectStore
     @Environment(\.dismiss) var dismiss
+    @State private var isEditingTitle = false
+    @State private var showingFilePicker = false
+    @FocusState private var isTitleFocused: Bool
+    
+    private var currentNode: SpatialNode {
+        store.nodes.first(where: { $0.id == node.id }) ?? node
+    }
+    
+    private var eligibleInputNodes: [SpatialNode] {
+        store.nodes.filter { $0.id != currentNode.id && ($0.type == .text || $0.type == .calculation) }
+    }
     
     var body: some View {
-        if node.type == .webView {
+        if currentNode.type == .webView {
             NavigationView {
                 ZStack {
                     Color(uiColor: .systemBackground).ignoresSafeArea()
                     
-                    if let html = node.htmlContent {
+                    if let html = currentNode.htmlContent {
                         HTMLWebView(htmlContent: html)
                             .ignoresSafeArea()
                     } else {
@@ -22,7 +33,7 @@ struct NodeDetailView: View {
                             .foregroundColor(.gray)
                     }
                 }
-                .navigationTitle(node.displayTitle)
+                .navigationTitle(currentNode.displayTitle)
                 .navigationBarTitleDisplayMode(.inline)
                 .toolbar {
                     ToolbarItem(placement: .navigationBarTrailing) {
@@ -33,12 +44,12 @@ struct NodeDetailView: View {
                     }
                 }
             }
-        } else if node.type == .code {
-            CodeEditorView(node: node, store: store)
-        } else if node.type == .srs {
-            SRSEditorView(node: node, store: store)
-        } else if node.type == .art {
-            ArtEditorView(node: node, store: store)
+        } else if currentNode.type == .code {
+            CodeEditorView(node: currentNode, store: store)
+        } else if currentNode.type == .srs {
+            SRSEditorView(node: currentNode, store: store)
+        } else if currentNode.type == .art {
+            ArtEditorView(node: currentNode, store: store)
         } else {
             NavigationView {
                 ZStack {
@@ -48,38 +59,8 @@ struct NodeDetailView: View {
                     ScrollView {
                         VStack(alignment: .leading, spacing: 24) {
                             // Header Section
-                            Section(header: Text("Aesthetics & Role").font(.caption).foregroundStyle(.secondary)) {
-                                HStack(spacing: 12) {
-                                    Picker("Theme", selection: Binding(
-                                        get: { node.theme },
-                                        set: { store.updateNodeTheme(id: node.id, theme: $0) }
-                                    )) {
-                                        ForEach(NodeTheme.allCases, id: \.self) { theme in
-                                            Circle()
-                                                .fill(theme.color)
-                                                .frame(width: 20, height: 20)
-                                                .tag(theme)
-                                        }
-                                    }
-                                    .pickerStyle(.menu)
-                                    .buttonStyle(.bordered)
-                                    
-                                    if !node.isProtected {
-                                        Picker("Type", selection: Binding(
-                                            get: { node.type },
-                                            set: { store.updateNodeType(id: node.id, type: $0) }
-                                        )) {
-                                            ForEach(NodeType.allCases, id: \.self) { type in
-                                                Text(type.displayName).tag(type)
-                                            }
-                                        }
-                                        .pickerStyle(.menu)
-                                        .buttonStyle(.bordered)
-                                    }
-                                }
-                            }
                             HStack(spacing: 20) {
-                                if let icon = node.icon {
+                                if let icon = currentNode.icon {
                                     ZStack {
                                         Circle()
                                             .fill(themeColor.opacity(0.15))
@@ -92,39 +73,340 @@ struct NodeDetailView: View {
                                 }
                                 
                                 VStack(alignment: .leading, spacing: 4) {
-                                    Text(node.displayTitle)
-                                        .font(.system(size: 28, weight: .bold, design: .rounded))
-                                    
-                                    if let subtitle = node.displaySubtitle {
-                                        Text(subtitle)
-                                            .font(.system(size: 16, weight: .medium))
-                                            .foregroundColor(.secondary)
+                                    HStack(spacing: 8) {
+                                        if isEditingTitle {
+                                            TextField("Node Name", text: Binding(
+                                                get: { currentNode.title },
+                                                set: { store.updateNodeTitle(id: node.id, title: $0) }
+                                            ))
+                                            .font(.system(size: 28, weight: .bold, design: .rounded))
+                                            .focused($isTitleFocused)
+                                            .submitLabel(.done)
+                                            .onSubmit { isEditingTitle = false }
+                                        } else {
+                                            Text(currentNode.title)
+                                                .font(.system(size: 28, weight: .bold, design: .rounded))
+                                        }
+                                        
+                                        Button {
+                                            isEditingTitle.toggle()
+                                            isTitleFocused = isEditingTitle
+                                        } label: {
+                                            Image(systemName: isEditingTitle ? "checkmark.circle.fill" : "pencil.line")
+                                                .font(.system(size: 18))
+                                                .foregroundColor(isEditingTitle ? .green : .secondary)
+                                                .opacity(0.8)
+                                        }
                                     }
+                                    
+                                    Text(currentNode.type.displayName)
+                                        .font(.system(size: 16, weight: .medium))
+                                        .foregroundColor(.secondary)
                                 }
                             }
                             .padding(.top, 20)
                             
                             Divider()
                             
-                            // Content Section (Placeholder for node-specific data)
-                            VStack(alignment: .leading, spacing: 16) {
-                                Label("Node Details", systemImage: "info.circle")
-                                    .font(.headline)
-                                    .foregroundColor(themeColor)
-                                
-                                Text("This node represents a spatial element in your project. You can drag it around the canvas to organize your thoughts and code.")
-                                    .font(.body)
-                                    .foregroundColor(.primary.opacity(0.8))
-                                    .lineSpacing(4)
-                                
-                                HStack {
-                                    DetailTag(label: "nodeDetail.typeLabel", value: "Spatial Node")
-                                    DetailTag(label: "Theme", value: node.theme.localizedDisplayName)
+                            // Content Editors
+                            if currentNode.type == .number {
+                                VStack(alignment: .leading, spacing: 12) {
+                                    Label("Enter Value", systemImage: "number")
+                                        .font(.headline)
+                                        .foregroundColor(themeColor)
+                                    
+                                    TextField("0", text: Binding(
+                                        get: { currentNode.textContent ?? "" },
+                                        set: { store.updateNodeTextContent(id: node.id, text: $0) }
+                                    ))
+                                    .keyboardType(.decimalPad)
+                                    .font(.system(size: 44, weight: .bold, design: .monospaced))
+                                    .padding()
+                                    .background(.ultraThinMaterial)
+                                    .cornerRadius(16)
+                                }
+                            } else if currentNode.type == .text {
+                                VStack(alignment: .leading, spacing: 12) {
+                                    Label("Notes", systemImage: "text.alignleft")
+                                        .font(.headline)
+                                        .foregroundColor(themeColor)
+                                    
+                                    TextEditor(text: Binding(
+                                        get: { currentNode.textContent ?? "" },
+                                        set: { store.updateNodeTextContent(id: node.id, text: $0) }
+                                    ))
+                                    .frame(minHeight: 200)
+                                    .padding(12)
+                                    .background(.ultraThinMaterial)
+                                    .cornerRadius(16)
+                                }
+                            } else if currentNode.type == .table {
+                                VStack(alignment: .leading, spacing: 12) {
+                                    HStack {
+                                        Label("Table Data (CSV)", systemImage: "tablecells")
+                                            .font(.headline)
+                                            .foregroundColor(themeColor)
+                                        Spacer()
+                                        
+                                        Button {
+                                            showingFilePicker = true
+                                        } label: {
+                                            Label("Import CSV", systemImage: "square.and.arrow.down")
+                                                .font(.caption.bold())
+                                                .padding(.horizontal, 12)
+                                                .padding(.vertical, 6)
+                                                .background(themeColor.opacity(0.1))
+                                                .cornerRadius(20)
+                                        }
+                                    }
+                                    
+                                    TextEditor(text: Binding(
+                                        get: { currentNode.textContent ?? "" },
+                                        set: { store.updateNodeTextContent(id: node.id, text: $0) }
+                                    ))
+                                    .font(.system(size: 12, design: .monospaced))
+                                    .frame(minHeight: 150)
+                                    .padding(8)
+                                    .background(Color.black.opacity(0.05))
+                                    .cornerRadius(12)
+                                    
+                                    let rows = (currentNode.textContent ?? "").components(separatedBy: "\n").filter { !$0.isEmpty }
+                                    if !rows.isEmpty {
+                                        Text("\(rows.count) rows found")
+                                            .font(.caption2)
+                                            .foregroundColor(.secondary)
+                                    }
+                                }
+                                .fileImporter(
+                                    isPresented: $showingFilePicker,
+                                    allowedContentTypes: [.commaSeparatedText, .plainText],
+                                    allowsMultipleSelection: false
+                                ) { result in
+                                    do {
+                                        let urls = try result.get()
+                                        if let url = urls.first {
+                                            if url.startAccessingSecurityScopedResource() {
+                                                let content = try String(contentsOf: url)
+                                                store.updateNodeTextContent(id: node.id, text: content)
+                                                url.stopAccessingSecurityScopedResource()
+                                            }
+                                        }
+                                    } catch {
+                                        print("File import failed: \(error)")
+                                    }
+                                }
+                            } else if currentNode.type == .calculation {
+                                VStack(alignment: .leading, spacing: 12) {
+                                    Label("Operation", systemImage: "plus.forwardslash.minus")
+                                        .font(.headline)
+                                        .foregroundColor(themeColor)
+                                    
+                                    Picker("Operation", selection: Binding(
+                                        get: { currentNode.operation ?? .add },
+                                        set: { store.updateNodeOperation(id: node.id, operation: $0) }
+                                    )) {
+                                        ForEach(ArithmeticOperation.allCases, id: \.self) { op in
+                                            Text(op.rawValue).tag(op)
+                                        }
+                                    }
+                                    .pickerStyle(.segmented)
+                                    .padding()
+                                    .background(.ultraThinMaterial)
+                                    .cornerRadius(16)
+                                    
+                                    Text("Computed Result: \(String(format: "%.1f", currentNode.outputValue ?? 0.0))")
+                                        .font(.headline)
+                                        .padding(.top, 8)
+                                }
+                            } else if currentNode.type == .display {
+                                VStack(alignment: .leading, spacing: 16) {
+                                    Label("Live Result", systemImage: "opticaldisc.fill")
+                                        .font(.headline)
+                                        .foregroundColor(themeColor)
+                                    
+                                    // Visual Display Picker
+                                    Picker("Display Mode", selection: Binding(
+                                        get: { currentNode.displayStyle ?? .number },
+                                        set: { store.updateNodeDisplayStyle(id: node.id, style: $0) }
+                                    )) {
+                                        ForEach(DisplayStyle.allCases, id: \.self) { style in
+                                            Text(style.displayName).tag(style)
+                                        }
+                                    }
+                                    .pickerStyle(.segmented)
+                                    .padding(.bottom, 8)
+
+                                    Text(String(format: "%.1f", currentNode.outputValue ?? 0.0))
+                                        .font(.system(size: 54, weight: .black, design: .monospaced))
+                                        .foregroundColor(themeColor)
+                                        .padding()
+                                        .frame(maxWidth: .infinity, alignment: .center)
+                                        .background(.ultraThinMaterial)
+                                        .cornerRadius(16)
+                                }
+                            } else if currentNode.type == .aiAgent {
+                                VStack(alignment: .leading, spacing: 12) {
+                                    Label("AI Agent Prompt", systemImage: "brain.head.profile.fill")
+                                        .font(.headline)
+                                        .foregroundColor(themeColor)
+                                    
+                                    Text("Define how this agent processes its inputs. Use {{input1}} or {{Title}} to inject data.")
+                                        .font(.caption)
+                                        .foregroundColor(.secondary)
+                                    
+                                    TextEditor(text: Binding(
+                                        get: { currentNode.promptTemplate ?? "" },
+                                        set: { store.updateNodePrompt(id: node.id, prompt: $0) }
+                                    ))
+                                    .frame(minHeight: 100)
+                                    .padding(8)
+                                    .background(.ultraThinMaterial)
+                                    .cornerRadius(12)
+                                    .overlay(
+                                        RoundedRectangle(cornerRadius: 12)
+                                            .stroke(themeColor.opacity(0.3), lineWidth: 1)
+                                    )
+                                    
+                                    // Quick Insert Tags (Show all project nodes for easy access)
+                                    let availableNodes = store.nodes.filter { $0.id != currentNode.id }
+                                    if !availableNodes.isEmpty {
+                                        VStack(alignment: .leading, spacing: 6) {
+                                            Text("Quick Insert:")
+                                                .font(.caption2.bold())
+                                                .foregroundColor(.secondary)
+                                            
+                                            ScrollView(.horizontal, showsIndicators: false) {
+                                                HStack(spacing: 8) {
+                                                    ForEach(availableNodes) { otherNode in
+                                                        Button {
+                                                            let tag = "{{\(otherNode.title)}}"
+                                                            let current = currentNode.promptTemplate ?? ""
+                                                            store.updateNodePrompt(id: node.id, prompt: current + (current.isEmpty ? "" : " ") + tag)
+                                                        } label: {
+                                                            HStack(spacing: 4) {
+                                                                Image(systemName: otherNode.icon ?? "square")
+                                                                    .font(.system(size: 10))
+                                                                Text(otherNode.title)
+                                                            }
+                                                            .font(.caption2.bold())
+                                                            .padding(.horizontal, 10)
+                                                            .padding(.vertical, 6)
+                                                            .background(themeColor.opacity(0.2))
+                                                            .foregroundColor(themeColor)
+                                                            .clipShape(Capsule())
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                    
+                                    if let response = currentNode.aiResponse {
+                                        VStack(alignment: .leading, spacing: 8) {
+                                            Label("Agent Result", systemImage: "sparkles")
+                                                .font(.subheadline.bold())
+                                                .foregroundColor(themeColor)
+                                            
+                                            Text(response)
+                                                .font(.system(size: 14, weight: .medium, design: .serif))
+                                                .padding()
+                                                .frame(maxWidth: .infinity, alignment: .leading)
+                                                .background(themeColor.opacity(0.1))
+                                                .cornerRadius(12)
+                                        }
+                                        .padding(.top, 8)
+                                    }
+                                    
+                                    Button {
+                                        store.evaluateAINode(id: node.id)
+                                    } label: {
+                                        Label("Run Agent", systemImage: "play.fill")
+                                            .fontWeight(.bold)
+                                            .frame(maxWidth: .infinity)
+                                            .padding()
+                                            .background(themeColor.opacity(0.2))
+                                            .cornerRadius(12)
+                                    }
                                 }
                             }
-                            .padding(.vertical)
+
+                            // Input Connections Section
+                            if currentNode.type == .calculation || currentNode.type == .display {
+                                VStack(alignment: .leading, spacing: 12) {
+                                    Label("Connect Inputs", systemImage: "link")
+                                        .font(.headline)
+                                        .foregroundColor(themeColor)
+                                    
+                                    if eligibleInputNodes.isEmpty {
+                                        Text("No text or calculation nodes available to connect.")
+                                            .font(.caption)
+                                            .foregroundColor(.secondary)
+                                    } else {
+                                        ForEach(eligibleInputNodes) { otherNode in
+                                            Button {
+                                                var currentInputs = currentNode.inputNodeIds ?? []
+                                                if currentInputs.contains(otherNode.id) {
+                                                    currentInputs.removeAll(where: { $0 == otherNode.id })
+                                                } else {
+                                                    // Display nodes only support one input for simplicity
+                                                    if currentNode.type == .display {
+                                                        currentInputs = [otherNode.id]
+                                                    } else {
+                                                        currentInputs.append(otherNode.id)
+                                                    }
+                                                }
+                                                store.updateNodeInputs(id: currentNode.id, inputNodeIds: currentInputs)
+                                            } label: {
+                                                HStack {
+                                                    Image(systemName: otherNode.icon ?? "square")
+                                                        .foregroundColor(otherNode.theme.color)
+                                                    Text(otherNode.displayTitle)
+                                                        .foregroundColor(.primary)
+                                                    Spacer()
+                                                    if (currentNode.inputNodeIds ?? []).contains(otherNode.id) {
+                                                        Image(systemName: "checkmark.circle.fill")
+                                                            .foregroundColor(themeColor)
+                                                    }
+                                                }
+                                                .padding()
+                                                .background(.ultraThinMaterial)
+                                                .cornerRadius(12)
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+
+                            // Aesthetics & Role Section (Only for protected/navigation nodes)
+                            if currentNode.isProtected {
+                                Section(header: Text("Configuration").font(.caption).foregroundStyle(.secondary)) {
+                                    HStack(spacing: 12) {
+                                        Picker("Theme", selection: Binding(
+                                            get: { currentNode.theme },
+                                            set: { store.updateNodeTheme(id: node.id, theme: $0) }
+                                        )) {
+                                            ForEach(NodeTheme.allCases, id: \.self) { theme in
+                                                Circle().fill(theme.color).frame(width: 20, height: 20).tag(theme)
+                                            }
+                                        }
+                                        .pickerStyle(.menu)
+                                        .buttonStyle(.bordered)
+                                        
+                                        Picker("Role", selection: Binding(
+                                            get: { currentNode.type },
+                                            set: { store.updateNodeType(id: node.id, type: $0) }
+                                        )) {
+                                            ForEach(NodeType.allCases, id: \.self) { type in
+                                                Text(type.displayName).tag(type)
+                                            }
+                                        }
+                                        .pickerStyle(.menu)
+                                        .buttonStyle(.bordered)
+                                    }
+                                }
+                            }
                             
-                            if !node.isProtected {
+                            if !currentNode.isProtected {
                                 Divider()
                                 
                                 Button(role: .destructive) {
@@ -150,10 +432,7 @@ struct NodeDetailView: View {
                 .navigationBarTitleDisplayMode(.inline)
                 .toolbar {
                     ToolbarItem(placement: .navigationBarTrailing) {
-                        Button("Done") {
-                            dismiss()
-                        }
-                        .fontWeight(.semibold)
+                        Button("Done") { dismiss() }.fontWeight(.semibold)
                     }
                 }
             }
@@ -161,7 +440,7 @@ struct NodeDetailView: View {
     }
     
     private var themeColor: Color {
-        node.theme.color
+        currentNode.theme.color
     }
 }
 
@@ -183,14 +462,4 @@ struct DetailTag: View {
                 .cornerRadius(8)
         }
     }
-}
-
-#Preview {
-    NodeDetailView(node: SpatialNode(
-        position: .zero,
-        title: "Intent Node",
-        subtitle: "Define the core purpose of your app",
-        icon: "lightbulb.fill",
-        theme: .purple
-    ), store: ProjectStore(fileName: "preview.json", projectName: "Preview"))
 }

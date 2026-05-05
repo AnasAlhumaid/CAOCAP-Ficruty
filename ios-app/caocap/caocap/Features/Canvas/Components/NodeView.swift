@@ -59,8 +59,145 @@ struct NodeView: View {
             
             if node.type == .webView, let html = node.htmlContent {
                 HTMLWebView(htmlContent: html)
-                    .frame(width: 360, height: 640)
-                    .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
+                    .frame(height: 200)
+                    .background(Color.white.opacity(0.1))
+                    .cornerRadius(12)
+                    .padding(.top, 12)
+            } else if node.type == .number, node.action == nil {
+                VStack(alignment: .leading, spacing: 4) {
+                    Text(node.textContent ?? "0")
+                        .font(.system(size: 32, weight: .bold, design: .monospaced))
+                        .foregroundColor(themeColor)
+                    
+                    Text("NUMBER VALUE")
+                        .font(.system(size: 10, weight: .black))
+                        .opacity(0.4)
+                }
+                .padding(.top, 12)
+            } else if node.type == .text, node.action == nil {
+                VStack(alignment: .leading, spacing: 6) {
+                    Text(node.textContent ?? "Notes...")
+                        .font(.system(size: 14, weight: .medium))
+                        .lineLimit(4)
+                        .foregroundColor(.primary)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                    
+                    Text("NOTE PREVIEW")
+                        .font(.system(size: 10, weight: .black))
+                        .opacity(0.4)
+                }
+                .padding(.top, 12)
+            } else if node.type == .table, node.action == nil {
+                VStack(alignment: .leading, spacing: 0) {
+                    let rows = (node.textContent ?? "").components(separatedBy: "\n").filter { !$0.isEmpty }
+                    
+                    ForEach(0..<min(rows.count, 5), id: \.self) { rowIndex in
+                        let columns = rows[rowIndex].components(separatedBy: ",")
+                        HStack(spacing: 0) {
+                            ForEach(0..<min(columns.count, 4), id: \.self) { colIndex in
+                                Text(columns[colIndex].trimmingCharacters(in: .whitespaces))
+                                    .font(.system(size: 10, weight: rowIndex == 0 ? .bold : .medium))
+                                    .padding(6)
+                                    .frame(maxWidth: .infinity, alignment: .leading)
+                                    .background(rowIndex == 0 ? themeColor.opacity(0.15) : (rowIndex % 2 == 0 ? Color.black.opacity(0.05) : Color.clear))
+                                    .border(Color.black.opacity(0.05), width: 0.5)
+                            }
+                        }
+                    }
+                    
+                    if rows.count > 5 {
+                        Text("+ \(rows.count - 5) more rows...")
+                            .font(.system(size: 9, weight: .bold))
+                            .foregroundColor(.secondary)
+                            .padding(.top, 4)
+                    }
+                }
+                .cornerRadius(8)
+                .padding(.top, 12)
+            } else if node.type == .calculation, node.action == nil {
+                HStack(spacing: 12) {
+                    Image(systemName: (node.operation ?? .add).icon)
+                        .font(.system(size: 20, weight: .bold))
+                        .foregroundColor(themeColor)
+                    
+                    VStack(alignment: .leading, spacing: 2) {
+                        Text(String(format: "%.1f", node.outputValue ?? 0.0))
+                            .font(.system(size: 24, weight: .bold, design: .monospaced))
+                            .foregroundColor(.primary)
+                        
+                        Text("COMPUTING \(node.operation?.rawValue ?? "+")")
+                            .font(.system(size: 9, weight: .bold))
+                            .opacity(0.5)
+                    }
+                }
+                .padding(.top, 12)
+            } else if node.type == .display, node.action == nil {
+                VStack(spacing: 8) {
+                    let value = node.outputValue ?? 0.0
+                    let style = node.displayStyle ?? .number
+                    
+                    switch style {
+                    case .number:
+                        Text(String(format: "%.1f", value))
+                            .font(.system(size: 48, weight: .black, design: .rounded))
+                            .foregroundColor(themeColor)
+                    
+                    case .percentage:
+                        Text("\(Int(value))%")
+                            .font(.system(size: 48, weight: .black, design: .rounded))
+                            .foregroundColor(themeColor)
+                    
+                    case .progress:
+                        VStack(spacing: 12) {
+                            ProgressView(value: min(max(value, 0), 100), total: 100)
+                                .tint(themeColor)
+                                .scaleEffect(x: 1, y: 4, anchor: .center)
+                                .padding(.horizontal, 10)
+                            
+                            Text("\(Int(value))/100")
+                                .font(.system(size: 14, weight: .bold, design: .monospaced))
+                                .foregroundColor(themeColor)
+                        }
+                        .frame(height: 60)
+                        
+                    case .gauge:
+                        ZStack {
+                            Circle()
+                                .stroke(themeColor.opacity(0.1), lineWidth: 12)
+                            
+                            Circle()
+                                .trim(from: 0, to: CGFloat(min(max(value, 0), 100)) / 100.0)
+                                .stroke(themeColor, style: StrokeStyle(lineWidth: 12, lineCap: .round))
+                                .rotationEffect(.degrees(-90))
+                            
+                            Text("\(Int(value))")
+                                .font(.system(size: 24, weight: .black, design: .rounded))
+                                .foregroundColor(themeColor)
+                        }
+                        .frame(width: 80, height: 80)
+                        .padding(.vertical, 8)
+                    }
+                    
+                    Text(style.displayName.uppercased())
+                        .font(.system(size: 10, weight: .black))
+                        .opacity(0.4)
+                }
+                .padding(.top, 12)
+            } else if node.type == .aiAgent, node.action == nil {
+                VStack(alignment: .leading, spacing: 6) {
+                    Label("AGENT OUTPUT", systemImage: "sparkles")
+                        .font(.system(size: 10, weight: .black))
+                        .opacity(0.4)
+                    
+                    Text(node.aiResponse ?? "Ready to process...")
+                        .font(.system(size: 13, weight: .medium, design: .serif))
+                        .foregroundColor(.primary)
+                        .padding(10)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                        .background(themeColor.opacity(0.1))
+                        .cornerRadius(8)
+                }
+                .padding(.top, 12)
             }
 
         }

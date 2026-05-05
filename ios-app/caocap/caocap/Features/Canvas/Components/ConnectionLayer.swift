@@ -15,28 +15,28 @@ struct ConnectionLayer: View {
             let nodeDict = Dictionary(uniqueKeysWithValues: nodes.map { ($0.id, $0) })
             
             for node in nodes {
-                var targets: [UUID] = []
-                if let next = node.nextNodeId { targets.append(next) }
-                if let connected = node.connectedNodeIds { targets.append(contentsOf: connected) }
+                // 1. Structural Links (Next/Connected)
+                var structuralTargets: [UUID] = []
+                if let next = node.nextNodeId { structuralTargets.append(next) }
+                if let connected = node.connectedNodeIds { structuralTargets.append(contentsOf: connected) }
                 
-                for targetId in targets {
-                    if let nextNode = nodeDict[targetId] {
-                        
-                        let nodeOffset = dragOffsets[node.id] ?? .zero
-                        let nextNodeOffset = dragOffsets[nextNode.id] ?? .zero
-                        
-                        // Convert back to screen space to ensure perfect alignment
-                        let start = CGPoint(
-                            x: center.x + (node.position.x + nodeOffset.width) * viewport.scale + viewport.offset.width,
-                            y: center.y + (node.position.y + nodeOffset.height) * viewport.scale + viewport.offset.height
-                        )
-                        
-                        let end = CGPoint(
-                            x: center.x + (nextNode.position.x + nextNodeOffset.width) * viewport.scale + viewport.offset.width,
-                            y: center.y + (nextNode.position.y + nextNodeOffset.height) * viewport.scale + viewport.offset.height
-                        )
-                        
-                        drawArrow(context: context, from: start, to: end, themeColor: node.theme.color, scale: viewport.scale)
+                for targetId in structuralTargets {
+                    if let targetNode = nodeDict[targetId] {
+                        let start = screenPoint(for: node, in: size)
+                        let end = screenPoint(for: targetNode, in: size)
+                        drawArrow(context: context, from: start, to: end, themeColor: node.theme.color, scale: viewport.scale, isLogic: false)
+                    }
+                }
+                
+                // 2. Logic Links (Inputs -> Current Node)
+                if let inputIds = node.inputNodeIds {
+                    for sourceId in inputIds {
+                        if let sourceNode = nodeDict[sourceId] {
+                            let start = screenPoint(for: sourceNode, in: size)
+                            let end = screenPoint(for: node, in: size)
+                            // Logic links are always orange/gold to distinguish them from structural flow
+                            drawArrow(context: context, from: start, to: end, themeColor: .orange, scale: viewport.scale, isLogic: true)
+                        }
                     }
                 }
             }
@@ -44,8 +44,16 @@ struct ConnectionLayer: View {
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .allowsHitTesting(false)
     }
+
+    private func screenPoint(for node: SpatialNode, in size: CGSize) -> CGPoint {
+        let nodeOffset = dragOffsets[node.id] ?? .zero
+        return CGPoint(
+            x: center.x + (node.position.x + nodeOffset.width) * viewport.scale + viewport.offset.width,
+            y: center.y + (node.position.y + nodeOffset.height) * viewport.scale + viewport.offset.height
+        )
+    }
     
-    private func drawArrow(context: GraphicsContext, from: CGPoint, to: CGPoint, themeColor: Color, scale: CGFloat) {
+    private func drawArrow(context: GraphicsContext, from: CGPoint, to: CGPoint, themeColor: Color, scale: CGFloat, isLogic: Bool) {
         var path = Path()
         path.move(to: from)
         
@@ -56,24 +64,29 @@ struct ConnectionLayer: View {
         
         path.addCurve(to: to, control1: cp1, control2: cp2)
         
-        
         let stroke: StrokeStyle
         let color: Color
         
-        switch connectionStyle {
-        case "Solid":
-            stroke = StrokeStyle(lineWidth: 2 * scale, lineCap: .round, lineJoin: .round)
-            color = themeColor.opacity(0.6)
-        case "Neon":
-            stroke = StrokeStyle(lineWidth: 3 * scale, lineCap: .round, lineJoin: .round)
-            color = themeColor
-        default: // Dashed
-            stroke = StrokeStyle(lineWidth: 3 * scale, lineCap: .round, lineJoin: .round, dash: [10 * scale, 10 * scale])
-            color = themeColor.opacity(0.4)
+        if isLogic {
+            // Logic links use a tighter dash and distinct orange color
+            stroke = StrokeStyle(lineWidth: 2 * scale, lineCap: .round, lineJoin: .round, dash: [5 * scale, 5 * scale])
+            color = .orange.opacity(0.8)
+        } else {
+            switch connectionStyle {
+            case "Solid":
+                stroke = StrokeStyle(lineWidth: 2 * scale, lineCap: .round, lineJoin: .round)
+                color = themeColor.opacity(0.6)
+            case "Neon":
+                stroke = StrokeStyle(lineWidth: 3 * scale, lineCap: .round, lineJoin: .round)
+                color = themeColor
+            default: // Dashed
+                stroke = StrokeStyle(lineWidth: 3 * scale, lineCap: .round, lineJoin: .round, dash: [10 * scale, 10 * scale])
+                color = themeColor.opacity(0.4)
+            }
         }
         
         var arrowContext = context
-        if connectionStyle == "Neon" {
+        if !isLogic && connectionStyle == "Neon" {
             arrowContext.addFilter(.shadow(color: themeColor, radius: 4 * scale))
         }
         

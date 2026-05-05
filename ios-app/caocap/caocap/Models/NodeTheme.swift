@@ -1,7 +1,7 @@
 import SwiftUI
 
 public enum NodeTheme: String, Codable, CaseIterable {
-    case purple, blue, pink, orange, green, secondary
+    case purple, blue, pink, orange, green, indigo, cyan, secondary
     
     public var color: Color {
         switch self {
@@ -10,6 +10,8 @@ public enum NodeTheme: String, Codable, CaseIterable {
         case .pink: return .pink
         case .orange: return .orange
         case .green: return .green
+        case .indigo: return .indigo
+        case .cyan: return .cyan
         case .secondary: return .secondary
         }
     }

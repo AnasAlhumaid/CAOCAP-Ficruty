@@ -23,12 +23,16 @@ struct InfiniteCanvasView: View {
     /// Optional coordinator for guided onboarding steps.
     var onboardingCoordinator: OnboardingCoordinator? = nil
     
-    init(store: ProjectStore, viewport: Binding<ViewportState>, currentScale: Binding<CGFloat>, onboardingCoordinator: OnboardingCoordinator? = nil, onNodeAction: ((NodeAction) -> Void)? = nil) {
+    /// Flag to determine if this is the Home workspace for specific layout logic.
+    var isHome: Bool = false
+    
+    init(store: ProjectStore, viewport: Binding<ViewportState>, currentScale: Binding<CGFloat>, onboardingCoordinator: OnboardingCoordinator? = nil, onNodeAction: ((NodeAction) -> Void)? = nil, isHome: Bool = false) {
         self.store = store
         self._viewport = viewport
         self._currentScale = currentScale
         self.onboardingCoordinator = onboardingCoordinator
         self.onNodeAction = onNodeAction
+        self.isHome = isHome
     }
     
     // Drag offsets stay local until the drag ends so links and nodes can track
@@ -88,7 +92,7 @@ struct InfiniteCanvasView: View {
                                     onboardingCoordinator?.advance()
                                 }
                             }
-                            .contextMenu {
+                            .contextMenu(menuItems: {
                                 if !node.isProtected {
                                     Button(role: .destructive) {
                                         HapticsManager.shared.notification(.warning)
@@ -103,24 +107,24 @@ struct InfiniteCanvasView: View {
                                 } label: {
                                     Label("Inspect", systemImage: "info.circle")
                                 }
-                            }
-                            .highPriorityGesture(
+                            }, preview: {
+                                // Provide a clean, unscaled preview of the node
+                                NodeView(node: node)
+                                    .environment(\.colorScheme, .dark) // Force dark for consistency if needed
+                                    .frame(width: 280) // Standard width for preview
+                                    .padding()
+                            })
+                            .gesture(
                                 DragGesture(minimumDistance: 5)
                                     .onChanged { value in
-                                        // The node drag gesture has priority, but the canvas
-                                        // pan gesture still observes events; this flag prevents
-                                        // both transforms from applying to the same drag.
                                         isDraggingNode = true
                                         nodeDragOffsets[node.id] = value.translation
                                     }
                                     .onEnded { value in
-                                        // Finalize the node position with a smooth spring animation.
                                         withAnimation(.spring(response: 0.4, dampingFraction: 0.75)) {
                                             let finalX = node.position.x + value.translation.width
                                             let finalY = node.position.y + value.translation.height
                                             
-                                            // Onboarding edits are session-only; project edits
-                                            // persist because they are user-authored layout state.
                                             store.updateNodePosition(
                                                 id: node.id,
                                                 position: CGPoint(x: finalX, y: finalY),

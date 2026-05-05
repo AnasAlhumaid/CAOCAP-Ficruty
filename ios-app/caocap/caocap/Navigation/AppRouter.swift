@@ -61,6 +61,12 @@ public class AppRouter {
             }
             self.currentWorkspace = workspace
             
+            // Clean Home Store: Remove any accidental content nodes (text, calc, etc) 
+            // that don't belong on the navigation dashboard.
+            if workspace == .home {
+                self.homeStore.nodes = self.homeStore.nodes.filter { $0.action != nil }
+            }
+            
             // Update UserDefaults if we navigate to home from onboarding
             if workspace == .home {
                 UserDefaults.standard.set(true, forKey: "hasCompletedOnboarding")
