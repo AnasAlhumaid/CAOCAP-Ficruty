@@ -16,7 +16,10 @@ struct NodeDetailView: View {
     }
     
     private var eligibleInputNodes: [SpatialNode] {
-        store.nodes.filter { $0.id != currentNode.id && ($0.type == .text || $0.type == .calculation) }
+        store.nodes.filter { other in
+            other.id != currentNode.id && 
+            [.text, .calculation, .number, .table, .aiAgent].contains(other.type)
+        }
     }
     
     var body: some View {
@@ -254,20 +257,25 @@ struct NodeDetailView: View {
                                         .font(.caption)
                                         .foregroundColor(.secondary)
                                     
-                                    TextEditor(text: Binding(
-                                        get: { currentNode.promptTemplate ?? "" },
-                                        set: { store.updateNodePrompt(id: node.id, prompt: $0) }
-                                    ))
-                                    .frame(minHeight: 100)
-                                    .padding(8)
+                                    // The New Inline Token Editor
+                                    TokenPromptEditor(
+                                        text: Binding(
+                                            get: { currentNode.promptTemplate ?? "" },
+                                            set: { store.updateNodePrompt(id: node.id, prompt: $0) }
+                                        ),
+                                        nodes: store.nodes,
+                                        themeColor: themeColor
+                                    )
+                                    .frame(minHeight: 120)
+                                    .padding(12)
                                     .background(.ultraThinMaterial)
-                                    .cornerRadius(12)
+                                    .cornerRadius(16)
                                     .overlay(
-                                        RoundedRectangle(cornerRadius: 12)
+                                        RoundedRectangle(cornerRadius: 16)
                                             .stroke(themeColor.opacity(0.3), lineWidth: 1)
                                     )
                                     
-                                    // Quick Insert Tags (Show all project nodes for easy access)
+                                    // Quick Insert Tags
                                     let availableNodes = store.nodes.filter { $0.id != currentNode.id }
                                     if !availableNodes.isEmpty {
                                         VStack(alignment: .leading, spacing: 6) {
@@ -328,10 +336,137 @@ struct NodeDetailView: View {
                                             .cornerRadius(12)
                                     }
                                 }
+                            } else if currentNode.type == .chart {
+                                VStack(alignment: .leading, spacing: 20) {
+                                    // Live Preview Header
+                                    VStack(alignment: .leading, spacing: 8) {
+                                        Label("LIVE PREVIEW", systemImage: "eye.fill")
+                                            .font(.system(size: 10, weight: .black))
+                                            .opacity(0.4)
+                                        
+                                        ChartNodeView(node: currentNode, allNodes: store.nodes, isScrollable: true)
+                                            .frame(height: 240)
+                                            .padding()
+                                            .background(.ultraThinMaterial)
+                                            .cornerRadius(20)
+                                            .overlay(
+                                                RoundedRectangle(cornerRadius: 20)
+                                                    .stroke(themeColor.opacity(0.1), lineWidth: 1)
+                                            )
+                                    }
+                                    .padding(.bottom, 8)
+
+                                    Label("Chart Style", systemImage: "chart.line.uptrend.xyaxis")
+                                        .font(.headline)
+                                        .foregroundColor(themeColor)
+                                    
+                                    Picker("Style", selection: Binding(
+                                        get: { currentNode.chartStyle ?? .bar },
+                                        set: { store.updateNodeChartStyle(id: node.id, style: $0) }
+                                    )) {
+                                        ForEach(ChartStyle.allCases, id: \.self) { style in
+                                            Label(style.displayName, systemImage: style.icon).tag(style)
+                                        }
+                                    }
+                                    .pickerStyle(.segmented)
+                                    .padding()
+                                    .background(.ultraThinMaterial)
+                                    .cornerRadius(16)
+                                    
+                                    // Visual Preview of data points
+                                    let inputCount = currentNode.inputNodeIds?.count ?? 0
+                                    Text("\(inputCount) active data streams")
+                                        .font(.subheadline.bold())
+                                        .foregroundColor(.secondary)
+                                    
+                                    Divider().padding(.vertical, 8)
+                                    
+                                    // Advanced Table Mapping (If a table is connected)
+                                    if let tableNode = store.nodes.first(where: { 
+                                        let sourceIds = Set(currentNode.inputNodeIds ?? [])
+                                        let incomingStructuralIds = store.nodes.filter { other in
+                                            other.nextNodeId == currentNode.id || (other.connectedNodeIds ?? []).contains(currentNode.id)
+                                        }.map { $0.id }
+                                        let allSourceIds = sourceIds.union(incomingStructuralIds)
+                                        return allSourceIds.contains($0.id) && $0.type == .table 
+                                    }) {
+                                        VStack(alignment: .leading, spacing: 20) {
+                                            Label("Data Source Configuration", systemImage: "tablecells.badge.ellipsis")
+                                                .font(.headline)
+                                                .foregroundColor(themeColor)
+                                            
+                                            // Header Toggle
+                                            Toggle(isOn: Binding(
+                                                get: { currentNode.chartHasHeaderRow ?? false },
+                                                set: { store.updateNodeChartHasHeaderRow(id: currentNode.id, hasHeader: $0) }
+                                            )) {
+                                                VStack(alignment: .leading) {
+                                                    Text("First row is header")
+                                                        .font(.system(size: 16, weight: .medium))
+                                                    Text("Skip the first row and use it for labels")
+                                                        .font(.caption)
+                                                        .foregroundColor(.secondary)
+                                                }
+                                            }
+                                            .tint(themeColor)
+                                            
+                                            let headers = (tableNode.textContent ?? "").components(separatedBy: "\n").first?.components(separatedBy: ",") ?? []
+                                            
+                                            if !headers.isEmpty {
+                                                VStack(alignment: .leading, spacing: 12) {
+                                                    // X-Axis Picker
+                                                    VStack(alignment: .leading, spacing: 8) {
+                                                        Text("X-AXIS (LABELS)")
+                                                            .font(.system(size: 10, weight: .black))
+                                                            .opacity(0.4)
+                                                        
+                                                        Picker("X-Axis", selection: Binding(
+                                                            get: { currentNode.chartXColumnIndex ?? 0 },
+                                                            set: { store.updateNodeChartXColumn(id: currentNode.id, index: $0) }
+                                                        )) {
+                                                            ForEach(0..<headers.count, id: \.self) { index in
+                                                                Text(headers[index].trimmingCharacters(in: .whitespaces)).tag(index)
+                                                            }
+                                                        }
+                                                        .pickerStyle(.menu)
+                                                        .padding(4)
+                                                        .frame(maxWidth: .infinity, alignment: .leading)
+                                                        .background(.ultraThinMaterial)
+                                                        .cornerRadius(8)
+                                                    }
+                                                    
+                                                    // Y-Axis Picker
+                                                    VStack(alignment: .leading, spacing: 8) {
+                                                        Text("Y-AXIS (VALUES)")
+                                                            .font(.system(size: 10, weight: .black))
+                                                            .opacity(0.4)
+                                                        
+                                                        Picker("Y-Axis", selection: Binding(
+                                                            get: { currentNode.chartYColumnIndex ?? 1 },
+                                                            set: { store.updateNodeChartYColumn(id: currentNode.id, index: $0) }
+                                                        )) {
+                                                            ForEach(0..<headers.count, id: \.self) { index in
+                                                                Text(headers[index].trimmingCharacters(in: .whitespaces)).tag(index)
+                                                            }
+                                                        }
+                                                        .pickerStyle(.menu)
+                                                        .padding(4)
+                                                        .frame(maxWidth: .infinity, alignment: .leading)
+                                                        .background(.ultraThinMaterial)
+                                                        .cornerRadius(8)
+                                                    }
+                                                }
+                                            }
+                                        }
+                                        .padding()
+                                        .background(themeColor.opacity(0.05))
+                                        .cornerRadius(16)
+                                    }
+                                }
                             }
 
                             // Input Connections Section
-                            if currentNode.type == .calculation || currentNode.type == .display {
+                            if currentNode.type == .calculation || currentNode.type == .display || currentNode.type == .chart {
                                 VStack(alignment: .leading, spacing: 12) {
                                     Label("Connect Inputs", systemImage: "link")
                                         .font(.headline)
@@ -441,6 +576,97 @@ struct NodeDetailView: View {
     
     private var themeColor: Color {
         currentNode.theme.color
+    }
+}
+
+/// A high-performance editor that overlays an invisible TextEditor on a rich visual layer.
+struct TokenPromptEditor: View {
+    @Binding var text: String
+    let nodes: [SpatialNode]
+    let themeColor: Color
+    
+    var body: some View {
+        ZStack(alignment: .topLeading) {
+            // Layer 1: Visual Rendering (Pills and Icons)
+            // We use a fixed-width container to ensure wrapping matches the editor
+            renderVisualLayer()
+                .padding(.top, 8)
+                .padding(.horizontal, 4)
+            
+            // Layer 2: The Actual Functional Editor (Transparent)
+            TextEditor(text: $text)
+                .font(.system(size: 16))
+                .foregroundColor(.clear) // Text is handled by visual layer
+                .scrollContentBackground(.hidden)
+                .accentColor(themeColor) // Keep the cursor visible
+        }
+    }
+    
+    @ViewBuilder
+    private func renderVisualLayer() -> some View {
+        let segments = parseText(text)
+        
+        // We use wrapping Text for the visual layer to maintain perfect alignment
+        segments.reduce(Text("")) { (result, segment) in
+            switch segment {
+            case .text(let str):
+                return result + Text(str).font(.system(size: 16)).foregroundColor(.primary)
+            case .tag(let tagName):
+                if let matchedNode = findNode(by: tagName) {
+                    // Styled Pill with Icon
+                    return result + Text(" ") + Text(" \(matchedNode.icon ?? "tag") \(matchedNode.title) ")
+                        .font(.system(size: 12, weight: .bold))
+                        .foregroundColor(matchedNode.theme.color)
+                        .baselineOffset(2)
+                } else {
+                    return result + Text(" ") + Text(" \(tagName) ")
+                        .font(.system(size: 12, weight: .bold))
+                        .foregroundColor(.secondary)
+                        .baselineOffset(2)
+                }
+            }
+        }
+    }
+    
+    private enum Segment {
+        case text(String)
+        case tag(String)
+    }
+    
+    private func parseText(_ input: String) -> [Segment] {
+        var result: [Segment] = []
+        let pattern = "\\{\\{(.*?)\\}\\}"
+        let regex = try? NSRegularExpression(pattern: pattern, options: [])
+        let nsString = input as NSString
+        let matches = regex?.matches(in: input, options: [], range: NSRange(location: 0, length: nsString.length)) ?? []
+        
+        var lastIndex = 0
+        for match in matches {
+            let range = match.range
+            if range.location > lastIndex {
+                let text = nsString.substring(with: NSRange(location: lastIndex, length: range.location - lastIndex))
+                result.append(.text(text))
+            }
+            
+            let tagContent = nsString.substring(with: match.range(at: 1))
+            result.append(.tag(tagContent))
+            lastIndex = range.location + range.length
+        }
+        
+        if lastIndex < nsString.length {
+            let remaining = nsString.substring(from: lastIndex)
+            result.append(.text(remaining))
+        }
+        
+        return result
+    }
+    
+    private func findNode(by title: String) -> SpatialNode? {
+        let normalizedSearch = title.lowercased().replacingOccurrences(of: " ", with: "")
+        return nodes.first { node in
+            node.title.lowercased() == title.lowercased() ||
+            node.title.lowercased().replacingOccurrences(of: " ", with: "") == normalizedSearch
+        }
     }
 }
 

@@ -38,7 +38,7 @@ public struct ProjectTemplateProvider {
                 subtitle: "Document structure.",
                 icon: "chevron.left.slash.chevron.right",
                 theme: .orange,
-                connectedNodeIds: [srsId, webViewId],
+                connectedNodeIds: [srsId],
                 textContent: "<!DOCTYPE html>\n<html>\n<head>\n    <title>My App</title>\n</head>\n<body>\n    <h1>Hello World!</h1>\n</body>\n</html>"
             ),
             SpatialNode(

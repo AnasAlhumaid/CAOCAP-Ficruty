@@ -24,6 +24,7 @@ public enum NodeType: String, Codable, Equatable, CaseIterable {
     case calculation
     case display
     case aiAgent
+    case chart
     
     public var displayName: String {
         switch self {
@@ -38,6 +39,29 @@ public enum NodeType: String, Codable, Equatable, CaseIterable {
         case .calculation: return "Calculation"
         case .display: return "Display"
         case .aiAgent: return "AI Agent"
+        case .chart: return "Chart"
+        }
+    }
+}
+
+public enum ChartStyle: String, Codable, CaseIterable {
+    case bar
+    case line
+    case area
+    
+    public var displayName: String {
+        switch self {
+        case .bar: return "Bar Chart"
+        case .line: return "Line Trend"
+        case .area: return "Area Graph"
+        }
+    }
+    
+    public var icon: String {
+        switch self {
+        case .bar: return "chart.bar.fill"
+        case .line: return "chart.line.uptrend.xyaxis"
+        case .area: return "chart.xyaxis.line"
         }
     }
 }
@@ -105,14 +129,26 @@ public struct SpatialNode: Identifiable, Codable, Equatable {
     /// The AI prompt template for AI-processing nodes.
     public var promptTemplate: String?
     
+    /// The chart style for chart nodes.
+    public var chartStyle: ChartStyle?
+    
+    /// The selected column index for X-axis labels (for table inputs).
+    public var chartXColumnIndex: Int?
+    
+    /// The selected column index for Y-axis values (for table inputs).
+    public var chartYColumnIndex: Int?
+    
+    /// Whether the input table has a header row to be skipped.
+    public var chartHasHeaderRow: Bool?
+    
     /// IDs of nodes providing input data to this node.
     public var inputNodeIds: [UUID]?
 
     enum CodingKeys: String, CodingKey {
-        case id, type, position, title, subtitle, icon, theme, nextNodeId, connectedNodeIds, action, htmlContent, textContent, srsReadinessState, drawingData, operation, outputValue, aiResponse, promptTemplate, inputNodeIds
+        case id, type, position, title, subtitle, icon, theme, nextNodeId, connectedNodeIds, action, htmlContent, textContent, srsReadinessState, drawingData, operation, outputValue, aiResponse, promptTemplate, inputNodeIds, displayStyle, chartStyle, chartXColumnIndex, chartYColumnIndex, chartHasHeaderRow
     }
     
-    public init(id: UUID = UUID(), type: NodeType = .standard, position: CGPoint, title: String, subtitle: String? = nil, icon: String? = nil, theme: NodeTheme = .blue, nextNodeId: UUID? = nil, connectedNodeIds: [UUID]? = nil, action: NodeAction? = nil, htmlContent: String? = nil, textContent: String? = nil, srsReadinessState: SRSReadinessState? = nil, drawingData: Data? = nil, operation: ArithmeticOperation? = nil, outputValue: Double? = nil, aiResponse: String? = nil, promptTemplate: String? = nil, inputNodeIds: [UUID]? = nil) {
+    public init(id: UUID = UUID(), type: NodeType = .standard, position: CGPoint, title: String, subtitle: String? = nil, icon: String? = nil, theme: NodeTheme = .blue, nextNodeId: UUID? = nil, connectedNodeIds: [UUID]? = nil, action: NodeAction? = nil, htmlContent: String? = nil, textContent: String? = nil, srsReadinessState: SRSReadinessState? = nil, drawingData: Data? = nil, operation: ArithmeticOperation? = nil, outputValue: Double? = nil, aiResponse: String? = nil, promptTemplate: String? = nil, inputNodeIds: [UUID]? = nil, displayStyle: DisplayStyle? = nil, chartStyle: ChartStyle? = nil, chartXColumnIndex: Int? = nil, chartYColumnIndex: Int? = nil, chartHasHeaderRow: Bool? = nil) {
         self.id = id
         self.type = type
         self.position = position
@@ -132,6 +168,11 @@ public struct SpatialNode: Identifiable, Codable, Equatable {
         self.aiResponse = aiResponse
         self.promptTemplate = promptTemplate
         self.inputNodeIds = inputNodeIds
+        self.displayStyle = displayStyle
+        self.chartStyle = chartStyle
+        self.chartXColumnIndex = chartXColumnIndex
+        self.chartYColumnIndex = chartYColumnIndex
+        self.chartHasHeaderRow = chartHasHeaderRow
     }
 
     public var displayTitle: String {

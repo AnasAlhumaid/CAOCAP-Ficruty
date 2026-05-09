@@ -9,6 +9,7 @@ struct ConnectionLayer: View {
     let dragOffsets: [UUID: CGSize]
     let viewport: ViewportState
     let center: CGPoint
+    let nodeFrames: [UUID: NodeFrameData]
     
     var body: some View {
         Canvas { context, size in
@@ -22,8 +23,8 @@ struct ConnectionLayer: View {
                 
                 for targetId in structuralTargets {
                     if let targetNode = nodeDict[targetId] {
-                        let start = screenPoint(for: node, in: size)
-                        let end = screenPoint(for: targetNode, in: size)
+                        let start = screenPoint(for: node)
+                        let end = screenPoint(for: targetNode)
                         drawArrow(context: context, from: start, to: end, themeColor: node.theme.color, scale: viewport.scale, isLogic: false)
                     }
                 }
@@ -32,10 +33,10 @@ struct ConnectionLayer: View {
                 if let inputIds = node.inputNodeIds {
                     for sourceId in inputIds {
                         if let sourceNode = nodeDict[sourceId] {
-                            let start = screenPoint(for: sourceNode, in: size)
-                            let end = screenPoint(for: node, in: size)
-                            // Logic links are always orange/gold to distinguish them from structural flow
-                            drawArrow(context: context, from: start, to: end, themeColor: .orange, scale: viewport.scale, isLogic: true)
+                            let start = screenPoint(for: sourceNode)
+                            let end = screenPoint(for: node)
+                            // Logic links now use the source node's theme color to match the premium design
+                            drawArrow(context: context, from: start, to: end, themeColor: sourceNode.theme.color, scale: viewport.scale, isLogic: false)
                         }
                     }
                 }
@@ -45,7 +46,13 @@ struct ConnectionLayer: View {
         .allowsHitTesting(false)
     }
 
-    private func screenPoint(for node: SpatialNode, in size: CGSize) -> CGPoint {
+    private func screenPoint(for node: SpatialNode) -> CGPoint {
+        // Preference 1: Use real measured frame if available
+        if let frameData = nodeFrames[node.id] {
+            return frameData.center
+        }
+        
+        // Fallback: Use manual calculation (only during initial render before frames are measured)
         let nodeOffset = dragOffsets[node.id] ?? .zero
         return CGPoint(
             x: center.x + (node.position.x + nodeOffset.width) * viewport.scale + viewport.offset.width,

@@ -4,10 +4,13 @@ struct NodeView: View {
     let node: SpatialNode
     var isDragging: Bool = false
     @State private var isHovering = false
+    let allNodes: [SpatialNode]
+    var onUpdateChartX: ((Int?) -> Void)? = nil
+    var onUpdateChartY: ((Int?) -> Void)? = nil
     @AppStorage(LocalizationManager.languageStorageKey) private var selectedLanguage = "English"
     
     var body: some View {
-        VStack(spacing: 0) {
+        VStack(alignment: .leading, spacing: 0) {
             HStack(alignment: .top, spacing: 16) {
                 // Icon / Symbol
                 if let icon = node.icon {
@@ -80,7 +83,6 @@ struct NodeView: View {
                         .font(.system(size: 14, weight: .medium))
                         .lineLimit(4)
                         .foregroundColor(.primary)
-                        .frame(maxWidth: .infinity, alignment: .leading)
                     
                     Text("NOTE PREVIEW")
                         .font(.system(size: 10, weight: .black))
@@ -193,14 +195,16 @@ struct NodeView: View {
                         .font(.system(size: 13, weight: .medium, design: .serif))
                         .foregroundColor(.primary)
                         .padding(10)
-                        .frame(maxWidth: .infinity, alignment: .leading)
                         .background(themeColor.opacity(0.1))
                         .cornerRadius(8)
                 }
                 .padding(.top, 12)
+            } else if node.type == .chart, node.action == nil {
+                ChartNodeView(node: node, allNodes: allNodes, onUpdateX: onUpdateChartX, onUpdateY: onUpdateChartY)
             }
 
         }
+        .fixedSize(horizontal: true, vertical: true)
         .padding(.horizontal, 20)
         .padding(.vertical, 20)
         .background(
@@ -234,6 +238,15 @@ struct NodeView: View {
                 )
         )
         .scaleEffect(isDragging ? 1.05 : (isHovering ? 1.02 : 1.0))
+        .background(
+            GeometryReader { geo in
+                Color.clear
+                    .preference(
+                        key: NodeFramePreferenceKey.self,
+                        value: [node.id: NodeFrameData(nodeId: node.id, frame: geo.frame(in: .named("canvas")))]
+                    )
+            }
+        )
         .animation(.spring(response: 0.3, dampingFraction: 0.7), value: isDragging)
         .animation(.spring(response: 0.3, dampingFraction: 0.7), value: isHovering)
     }
@@ -252,6 +265,6 @@ struct NodeView: View {
             subtitle: "Welcome to the future of agentic programming.",
             icon: "sparkles",
             theme: .purple
-        ))
+        ), allNodes: [])
     }
 }

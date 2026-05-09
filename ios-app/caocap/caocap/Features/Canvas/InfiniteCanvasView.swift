@@ -40,6 +40,7 @@ struct InfiniteCanvasView: View {
     @State private var selectedNode: SpatialNode?
     @State private var nodeDragOffsets: [UUID: CGSize] = [:]
     @State private var isDraggingNode = false
+    @State private var nodeFrames: [UUID: NodeFrameData] = [:]
     
     var body: some View {
         GeometryReader { geometry in
@@ -48,11 +49,13 @@ struct InfiniteCanvasView: View {
             let center = CGPoint(x: geometry.size.width / 2, y: geometry.size.height / 2)
             
             ZStack {
+                Color.clear.coordinateSpace(name: "canvas")
+                
                 // Layer 1: The Infinite Dotted Grid
                 DottedBackground(offset: viewport.offset, scale: viewport.scale)
                 
                 // Layer 2: Node Connections (Drawn in screen space to prevent clipping and layout bugs)
-                ConnectionLayer(nodes: store.nodes, dragOffsets: nodeDragOffsets, viewport: viewport, center: center)
+                ConnectionLayer(nodes: store.nodes, dragOffsets: nodeDragOffsets, viewport: viewport, center: center, nodeFrames: nodeFrames)
                 
                 // Layer 3: The Spatial Core (Scaled & Offset)
                 ZStack {
@@ -73,7 +76,11 @@ struct InfiniteCanvasView: View {
                         let currentOffset = nodeDragOffsets[node.id] ?? .zero
                         let isDraggingThisNode = nodeDragOffsets[node.id] != nil
                         
-                        NodeView(node: node, isDragging: isDraggingThisNode)
+                        NodeView(node: node, isDragging: isDraggingThisNode, allNodes: store.nodes, onUpdateChartX: { index in
+                            store.updateNodeChartXColumn(id: node.id, index: index)
+                        }, onUpdateChartY: { index in
+                            store.updateNodeChartYColumn(id: node.id, index: index)
+                        })
                             .offset(
                                 x: node.position.x + currentOffset.width,
                                 y: node.position.y + currentOffset.height
@@ -109,7 +116,7 @@ struct InfiniteCanvasView: View {
                                 }
                             }, preview: {
                                 // Provide a clean, unscaled preview of the node
-                                NodeView(node: node)
+                                NodeView(node: node, allNodes: store.nodes)
                                     .environment(\.colorScheme, .dark) // Force dark for consistency if needed
                                     .frame(width: 280) // Standard width for preview
                                     .padding()
@@ -199,6 +206,9 @@ struct InfiniteCanvasView: View {
                         }
                     }
             )
+            .onPreferenceChange(NodeFramePreferenceKey.self) { value in
+                nodeFrames = value
+            }
             .environment(\.layoutDirection, .leftToRight)
             .overlay {
                 // Layer 4: Onboarding Focus Ring

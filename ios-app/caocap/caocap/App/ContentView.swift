@@ -279,6 +279,9 @@ struct ContentView: View {
             onCreateTableNode: {
                 router.activeStore.addNode(type: .table)
             },
+            onCreateChartNode: {
+                router.activeStore.addNode(type: .chart)
+            },
             onCreateAiAgentNode: {
                 router.activeStore.addNode(type: .aiAgent)
             },
@@ -322,7 +325,7 @@ struct ContentView: View {
 
     private func setupCommandHandlers() {
         // Filter out node creation actions when on the Home screen to keep it clean.
-        let forbiddenOnHome: Set<AppActionID> = [.createNode, .createTextNode, .createCalculationNode, .createDisplayNode, .createAiAgentNode, .createNumberNode, .createTableNode]
+        let forbiddenOnHome: Set<AppActionID> = [.createNode, .createTextNode, .createCalculationNode, .createDisplayNode, .createAiAgentNode, .createNumberNode, .createTableNode, .createChartNode]
         
         commandPalette.actions = actionDispatcher.availableActions.filter { action in
             if router.currentWorkspace == .home {

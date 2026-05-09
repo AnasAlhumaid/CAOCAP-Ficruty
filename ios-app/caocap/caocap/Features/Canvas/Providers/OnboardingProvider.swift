@@ -59,7 +59,7 @@ public struct OnboardingProvider {
         OnboardingManifest(
             version: 0,
             projectName: "Onboarding",
-            initialViewportScale: 1.0,
+            initialViewportScale: 0.5,
             nodes: fallbackNodes,
             steps: fallbackSteps
         )
@@ -90,7 +90,7 @@ public struct OnboardingProvider {
         return [
             SpatialNode(
                 id: node1Id,
-                position: CGPoint(x: 0, y: -180),
+                position: CGPoint(x: 0, y: -150),
                 title: "Welcome to CAOCAP",
                 subtitle: "This is a canvas, not a file tree. Move slowly, look around, and start from intent.",
                 icon: "sparkles",
@@ -99,7 +99,7 @@ public struct OnboardingProvider {
             SpatialNode(
                 id: node2Id,
                 type: .srs,
-                position: CGPoint(x: 0, y: 40),
+                position: CGPoint(x: 0, y: 0),
                 title: "Start With Intent",
                 subtitle: "Your first project will open with requirements, code, and preview nodes already arranged for you.",
                 icon: "doc.text.fill",
@@ -112,7 +112,7 @@ public struct OnboardingProvider {
             ),
             SpatialNode(
                 id: node3Id,
-                position: CGPoint(x: 0, y: 280),
+                position: CGPoint(x: 0, y: 150),
                 title: "Enter Home",
                 subtitle: "Create your first spatial project from the Home workspace.",
                 icon: "arrow.right.circle.fill",

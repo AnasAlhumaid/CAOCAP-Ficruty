@@ -16,6 +16,7 @@ public enum AppActionID: String, CaseIterable, Identifiable, Codable, Hashable {
     case createDisplayNode = "create_display_node"
     case createNumberNode = "create_number_node"
     case createTableNode = "create_table_node"
+    case createChartNode = "create_chart_node"
     case summonCoCaptain = "summon_cocaptain"
     case openFile = "open_file"
     case toggleGrid = "toggle_grid"
@@ -182,6 +183,14 @@ public final class AppActionDispatcher: AppActionPerforming {
             allowsAutonomousExecution: true
         ),
         AppActionDefinition(
+            id: .createChartNode,
+            title: "Create Chart Node",
+            icon: "chart.line.uptrend.xyaxis",
+            category: .project,
+            isMutating: true,
+            allowsAutonomousExecution: true
+        ),
+        AppActionDefinition(
             id: .summonCoCaptain,
             title: "Summon Co-Captain",
             icon: "sparkles",
@@ -296,6 +305,7 @@ public final class AppActionDispatcher: AppActionPerforming {
     private var createDisplayNodeHandler: (() -> Void)?
     private var createNumberNodeHandler: (() -> Void)?
     private var createTableNodeHandler: (() -> Void)?
+    private var createChartNodeHandler: (() -> Void)?
     private var createAiAgentNodeHandler: (() -> Void)?
     private var summonCoCaptainHandler: (() -> Void)?
     private var openFileHandler: (() -> Void)?
@@ -325,6 +335,7 @@ public final class AppActionDispatcher: AppActionPerforming {
         onCreateDisplayNode: @escaping () -> Void,
         onCreateNumberNode: @escaping () -> Void,
         onCreateTableNode: @escaping () -> Void,
+        onCreateChartNode: @escaping () -> Void,
         onCreateAiAgentNode: @escaping () -> Void,
         summonCoCaptain: @escaping () -> Void,
         openFile: (() -> Void)? = nil,
@@ -349,6 +360,7 @@ public final class AppActionDispatcher: AppActionPerforming {
         self.createDisplayNodeHandler = onCreateDisplayNode
         self.createNumberNodeHandler = onCreateNumberNode
         self.createTableNodeHandler = onCreateTableNode
+        self.createChartNodeHandler = onCreateChartNode
         self.createAiAgentNodeHandler = onCreateAiAgentNode
         self.summonCoCaptainHandler = summonCoCaptain
         self.openFileHandler = openFile
@@ -413,6 +425,8 @@ public final class AppActionDispatcher: AppActionPerforming {
             handler = createNumberNodeHandler
         case .createTableNode:
             handler = createTableNodeHandler
+        case .createChartNode:
+            handler = createChartNodeHandler
         case .createAiAgentNode:
             handler = createAiAgentNodeHandler
         case .summonCoCaptain:

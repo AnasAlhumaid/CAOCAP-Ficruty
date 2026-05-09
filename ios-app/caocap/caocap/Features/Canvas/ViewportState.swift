@@ -12,15 +12,15 @@ public class ViewportState {
     public var lastOffset: CGSize = .zero
     
     /// The current zoom level of the canvas.
-    public var scale: CGFloat = 1.0
+    public var scale: CGFloat = 0.5
     
     /// The zoom level at the end of the previous magnification gesture.
-    public var lastScale: CGFloat = 1.0
+    public var lastScale: CGFloat = 0.5
     
     public let minScale: CGFloat = 0.1
     public let maxScale: CGFloat = 2.0
     
-    public init(offset: CGSize = .zero, scale: CGFloat = 1.0) {
+    public init(offset: CGSize = .zero, scale: CGFloat = 0.5) {
         self.offset = offset
         self.lastOffset = offset
         self.scale = scale

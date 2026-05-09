@@ -8,10 +8,18 @@ import OSLog
 public class CommandPaletteViewModel {
     private let logger = Logger(subsystem: "Ficruty", category: "CommandPalette")
     
+    public enum NavigationPage {
+        case main
+        case createNode
+    }
+    
+    public var currentPage: NavigationPage = .main
     public var query: String = "" {
         didSet {
-            // Search results are rebuilt from the query, so keep keyboard
-            // selection pinned to the first visible command.
+            // If user types, we should probably be in the main list to show results
+            if !query.isEmpty && currentPage != .main {
+                currentPage = .main
+            }
             selectedIndex = 0
         }
     }
@@ -20,11 +28,21 @@ public class CommandPaletteViewModel {
     public var actions: [AppActionDefinition] = []
     public var nodes: [SpatialNode] = []
     
-    /// Filters against localized and canonical titles so command search works
-    /// in the UI language while still matching stable English action names.
+    /// Main navigation actions
+    public var mainActions: [AppActionDefinition] {
+        actions.filter { !$0.title.contains("Create") || $0.id == .createNode }
+    }
+    
+    /// Specific node creation actions for the 2x2 grid
+    public var creationActions: [AppActionDefinition] {
+        actions.filter { $0.title.contains("Create") && $0.id != .createNode }
+    }
+    
     public var filteredActions: [AppActionDefinition] {
         let trimmedQuery = query.trimmingCharacters(in: .whitespacesAndNewlines)
-        if trimmedQuery.isEmpty { return actions }
+        let source = currentPage == .main ? mainActions : creationActions
+        
+        if trimmedQuery.isEmpty { return source }
         
         return actions.filter {
             $0.localizedTitle.localizedCaseInsensitiveContains(trimmedQuery) ||
@@ -87,6 +105,15 @@ public class CommandPaletteViewModel {
     /// Emits the chosen action ID and dismisses. The view model does not perform
     /// side effects directly because the same action system is shared with agents.
     public func executeAction(_ action: AppActionDefinition) {
+        // If they click "Create New Node" and we're on the main page, drill down
+        if action.id.rawValue == "create_node" && currentPage == .main {
+            withAnimation(.spring(response: 0.35, dampingFraction: 0.8)) {
+                currentPage = .createNode
+                selectedIndex = 0
+            }
+            return
+        }
+        
         logger.info("Executing action: \(action.title)")
         onExecute?(action.id)
         setPresented(false)

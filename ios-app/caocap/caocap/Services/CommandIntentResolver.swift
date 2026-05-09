@@ -93,6 +93,8 @@ public struct CommandIntentResolver {
             return ["create table node", "new table node", "add table", "table node", "excel node", "انشاء عقدة جدول", "جدول", "أضف جدول"]
         case .createAiAgentNode:
             return ["create ai agent", "new ai agent", "add ai agent", "ai agent", "انشاء عقدة ذكاء اصطناعي", "ذكاء اصطناعي", "عميل ذكي"]
+        case .createChartNode:
+            return ["create chart node", "new chart", "add chart", "graph node", "analytics node", "visualize", "انشاء عقدة رسم بياني", "رسم بياني", "جدول بياني", "مخطط"]
         case .summonCoCaptain:
             return [
                 "summon cocaptain",

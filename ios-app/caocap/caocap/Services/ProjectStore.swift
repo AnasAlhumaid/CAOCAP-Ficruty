@@ -201,14 +201,14 @@ public class ProjectStore {
             return
         }
         
-        // Ensure the source code nodes are registered as inputs to the WebView 
-        // so that the Magic Organize clustering treats them as a group.
+        /* 
+        // Automatic grouping connections removed to declutter the canvas.
+        // The preview will still render correctly based on the node roles.
         let sourceNodeIds = nodes.filter { [.html, .css, .javascript].contains($0.role) }.map { $0.id }
         if Set(nodes[webViewIndex].inputNodeIds ?? []) != Set(sourceNodeIds) {
             nodes[webViewIndex].inputNodeIds = sourceNodeIds
         }
         
-        // Also ensure SRS is linked as an input to the HTML node so the entire chain stays together
         if let srsNode = nodes.first(where: { $0.role == .srs }),
            let htmlIndex = nodes.firstIndex(where: { $0.role == .html }) {
             if !(nodes[htmlIndex].inputNodeIds ?? []).contains(srsNode.id) {
@@ -217,6 +217,7 @@ public class ProjectStore {
                 nodes[htmlIndex].inputNodeIds = currentInputs
             }
         }
+        */
         
         // Update the WebView node if the content changed
         if nodes[webViewIndex].htmlContent != compilation.html {
@@ -346,12 +347,44 @@ public class ProjectStore {
                 if nodes[index].promptTemplate == nil {
                     nodes[index].promptTemplate = "Compare {{input1}} and {{input2}}"
                 }
+            case .chart:
+                if nodes[index].chartStyle == nil {
+                    nodes[index].chartStyle = .bar
+                }
             }
             
             if persist {
                 requestSave()
             }
             compileLivePreview()
+        }
+    }
+    
+    public func updateNodeChartStyle(id: UUID, style: ChartStyle) {
+        if let index = nodes.firstIndex(where: { $0.id == id }) {
+            nodes[index].chartStyle = style
+            requestSave()
+        }
+    }
+    
+    public func updateNodeChartXColumn(id: UUID, index: Int?) {
+        if let idx = nodes.firstIndex(where: { $0.id == id }) {
+            nodes[idx].chartXColumnIndex = index
+            requestSave()
+        }
+    }
+    
+    public func updateNodeChartYColumn(id: UUID, index: Int?) {
+        if let idx = nodes.firstIndex(where: { $0.id == id }) {
+            nodes[idx].chartYColumnIndex = index
+            requestSave()
+        }
+    }
+    
+    public func updateNodeChartHasHeaderRow(id: UUID, hasHeader: Bool) {
+        if let idx = nodes.firstIndex(where: { $0.id == id }) {
+            nodes[idx].chartHasHeaderRow = hasHeader
+            requestSave()
         }
     }
 
@@ -445,22 +478,13 @@ public class ProjectStore {
         var nodePositions = [UUID: CGPoint]()
         
         if isHome {
-            // HEXAGON / HONEYCOMB LAYOUT (Home)
-            let hexRadius: CGFloat = 220
-            let horizontalSpacing = hexRadius * 1.5
-            let verticalSpacing = hexRadius * sqrt(3) / 2
+            // VERTICAL STACK LAYOUT (Home) - Nodes placed closer together above each other
+            let verticalSpacing: CGFloat = 150
+            let startY: CGFloat = -CGFloat(nodes.count - 1) * verticalSpacing / 2
             
             for (index, node) in nodes.enumerated() {
-                // Find nearest spiral index or ring-based hex position
-                // For a simple hex grid:
-                let q = Int(round(sqrt(Double(index)) * cos(Double(index)))) // Simplified spiral
-                let r = Int(round(sqrt(Double(index)) * sin(Double(index))))
-                
-                // Real hex to pixel formula
-                let x = hexRadius * 3/2 * CGFloat(q)
-                let y = hexRadius * sqrt(3) * (CGFloat(r) + CGFloat(q)/2)
-                
-                nodePositions[node.id] = CGPoint(x: x, y: y)
+                let y = startY + CGFloat(index) * verticalSpacing
+                nodePositions[node.id] = CGPoint(x: 0, y: y)
             }
         } else {
             // CENTRALITY & GROUPED LAYOUT (Project)
@@ -580,6 +604,7 @@ public class ProjectStore {
         case .art: return "pencil.tip"
         case .standard: return "square.grid.2x2"
         case .aiAgent: return "brain.head.profile.fill"
+        case .chart: return "chart.line.uptrend.xyaxis"
         }
     }
 
@@ -591,6 +616,7 @@ public class ProjectStore {
         case .calculation: return .orange
         case .display: return .green
         case .aiAgent: return .indigo
+        case .chart: return .purple
         default: return .blue
         }
     }
@@ -718,11 +744,19 @@ public class ProjectStore {
                     }
                     
                     let values = inputs.compactMap { inputNode -> Double? in
-                        if inputNode.type == .number {
-                            return Double(inputNode.textContent ?? "0")
-                        } else {
-                            return inputNode.outputValue
+                        // 1. Try to get a reactive output value first (for chained calculations)
+                        if let outVal = inputNode.outputValue, outVal != 0 {
+                            return outVal
                         }
+                        
+                        // 2. Fallback to parsing the text content (for Number and Text nodes)
+                        if let text = inputNode.textContent {
+                            // Strip non-numeric characters except decimals
+                            let cleaned = text.filter { "0123456789.".contains($0) }
+                            return Double(cleaned)
+                        }
+                        
+                        return nil
                     }
                     
                     let result: Double
@@ -754,7 +788,17 @@ public class ProjectStore {
                     // Display nodes mirror their first input
                     if let inputId = node.inputNodeIds?.first,
                        let inputNode = nodes.first(where: { $0.id == inputId }) {
-                        let value = inputNode.type == .text ? Double(inputNode.textContent ?? "0") : inputNode.outputValue
+                        
+                        // Use the same smart extraction logic
+                        let value: Double
+                        if let outVal = inputNode.outputValue, outVal != 0 {
+                            value = outVal
+                        } else {
+                            let text = inputNode.textContent ?? "0"
+                            let cleaned = text.filter { "0123456789.".contains($0) }
+                            value = Double(cleaned) ?? 0
+                        }
+                        
                         if nodes[i].outputValue != value {
                             nodes[i].outputValue = value
                             currentPassChanged = true
@@ -777,17 +821,15 @@ public class ProjectStore {
             recalculateGraph()
             requestSave()
             
-            // If it's an AI Agent, automatically trigger evaluation when inputs change
-            if nodes[index].type == .aiAgent {
-                evaluateAINode(id: id)
-            }
+            // Auto-evaluation removed to prevent unwanted requests while configuring.
+            // Users will trigger AI agents manually via the UI.
         }
     }
 
     public func updateNodePrompt(id: UUID, prompt: String) {
         if let index = nodes.firstIndex(where: { $0.id == id }) {
             nodes[index].promptTemplate = prompt
-            evaluateAINode(id: id)
+            // evaluateAINode(id: id) // Removed: Don't trigger while typing
             requestSave()
         }
     }
@@ -804,22 +846,52 @@ public class ProjectStore {
               nodes[index].type == .aiAgent,
               let template = nodes[index].promptTemplate, !template.isEmpty else { return }
         
-        // Build the prompt by injecting input node content
+        // Build the prompt by injecting content from ALL nodes in the project
+        // This makes it much more intuitive (Global Node Awareness)
         var finalPrompt = template
-        let inputIds = nodes[index].inputNodeIds ?? []
         
-        for (idx, inputId) in inputIds.enumerated() {
-            if let inputNode = nodes.first(where: { $0.id == inputId }) {
-                let content = inputNode.textContent ?? inputNode.aiResponse ?? inputNode.subtitle ?? ""
-                
-                // For tables, we can wrap the content in a data block to help the AI
-                let processedContent = inputNode.type == .table ? "### DATA TABLE: \(inputNode.title) ###\n\(content)\n###################" : content
-                
-                // Replace both index-based and title-based tags
-                finalPrompt = finalPrompt.replacingOccurrences(of: "{{input\(idx + 1)}}", with: processedContent)
-                finalPrompt = finalPrompt.replacingOccurrences(of: "{{\(inputNode.title)}}", with: processedContent)
+        for inputNode in nodes {
+            // Priority: Numeric Output -> Text Content -> AI Response -> Subtitle
+            var valueStr = ""
+            
+            if let outVal = inputNode.outputValue, outVal != 0 {
+                valueStr = String(format: "%.2f", outVal)
+            } else if let text = inputNode.textContent, !text.isEmpty {
+                // If it's a number node, try to parse the text as a number
+                if inputNode.type == .number || inputNode.type == .calculation {
+                    let cleaned = text.filter { "0123456789.".contains($0) }
+                    if let dbl = Double(cleaned) {
+                        valueStr = String(format: "%.2f", dbl)
+                    } else {
+                        valueStr = text
+                    }
+                } else {
+                    valueStr = text
+                }
+            } else {
+                valueStr = inputNode.aiResponse ?? inputNode.subtitle ?? ""
             }
+            
+            // For tables, we can wrap the content in a data block to help the AI
+            let processedContent = inputNode.type == .table ? "### DATA TABLE: \(inputNode.title) ###\n\(valueStr)\n###################" : valueStr
+            
+            // Replace title-based tags (handling both with and without spaces, case-insensitive)
+            let title = inputNode.title
+            let normalizedTitle = title.replacingOccurrences(of: " ", with: "")
+            
+            // We use case-insensitive replacement to be user-friendly
+            finalPrompt = finalPrompt.replacingOccurrences(of: "{{\(title)}}", with: processedContent, options: .caseInsensitive)
+            finalPrompt = finalPrompt.replacingOccurrences(of: "{{\(normalizedTitle)}}", with: processedContent, options: .caseInsensitive)
         }
+        
+        // Final fallback: replace any remaining {{...}} tags that weren't found
+        // with "[Value not found]" to prevent the AI from echoing tags.
+        let regex = try? NSRegularExpression(pattern: "\\{\\{.*?\\}\\}", options: [])
+        finalPrompt = regex?.stringByReplacingMatches(in: finalPrompt, options: [], range: NSRange(location: 0, length: finalPrompt.utf16.count), withTemplate: "[Data Missing]") ?? finalPrompt
+
+        // Add a high-priority system constraint to the START of the prompt
+        let systemPrompt = "INSTRUCTION: You are a data assistant. Respond in 15 lines or less (prefer around 5-10 lines for most tasks). DO NOT echo variable names; use their actual values.\n\n"
+        let fullPrompt = systemPrompt + finalPrompt
         
         // Trigger async AI call
         Task {
@@ -827,7 +899,7 @@ public class ProjectStore {
             
             do {
                 var response = ""
-                let stream = LLMService.shared.streamResponse(for: finalPrompt)
+                let stream = LLMService.shared.streamResponse(for: fullPrompt)
                 for try await chunk in stream {
                     response += chunk
                     // Throttle updates for UI performance if needed, but for small nodes this is fine
