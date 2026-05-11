@@ -359,6 +359,8 @@ struct AppActionGridItem: View {
         if title.contains("Number") { return "Numeric variable inputs" }
         if title.contains("Table") { return "Structured data entry" }
         if title.contains("AI") { return "Smart data processing" }
+        if title.contains("Chart") { return "Charts from table data" }
+        if title.contains("Firebase") { return "Web app config for Live Preview" }
         return "Choose a specialized node"
     }
     
@@ -371,6 +373,8 @@ struct AppActionGridItem: View {
         if title.contains("Number") { return .green }
         if title.contains("Table") { return .indigo }
         if title.contains("AI") { return .cyan }
+        if title.contains("Chart") { return .purple }
+        if title.contains("Firebase") { return .orange }
         return .primary
     }
 }

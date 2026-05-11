@@ -23,7 +23,9 @@ struct NodeDetailView: View {
     }
     
     var body: some View {
-        if currentNode.type == .webView {
+        if currentNode.type == .firebase {
+            FirebaseConfigNodeEditorView(node: currentNode, store: store)
+        } else if currentNode.type == .webView {
             NavigationView {
                 ZStack {
                     Color(uiColor: .systemBackground).ignoresSafeArea()

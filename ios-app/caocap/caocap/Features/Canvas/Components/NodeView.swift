@@ -62,7 +62,7 @@ struct NodeView: View {
             
             if node.type == .webView, let html = node.htmlContent {
                 HTMLWebView(htmlContent: html)
-                    .frame(height: 200)
+                    .frame(height: 340)
                     .background(Color.white.opacity(0.1))
                     .cornerRadius(12)
                     .padding(.top, 12)
@@ -90,23 +90,31 @@ struct NodeView: View {
                 }
                 .padding(.top, 12)
             } else if node.type == .table, node.action == nil {
+                let rows = (node.textContent ?? "").components(separatedBy: "\n").filter { !$0.isEmpty }
+                /// Wider canvas than 4 squeezed columns; horizontal scroll keeps cells readable.
+                let maxPreviewColumns = 12
+                let columnMinWidth: CGFloat = 76
+
                 VStack(alignment: .leading, spacing: 0) {
-                    let rows = (node.textContent ?? "").components(separatedBy: "\n").filter { !$0.isEmpty }
-                    
-                    ForEach(0..<min(rows.count, 5), id: \.self) { rowIndex in
-                        let columns = rows[rowIndex].components(separatedBy: ",")
-                        HStack(spacing: 0) {
-                            ForEach(0..<min(columns.count, 4), id: \.self) { colIndex in
-                                Text(columns[colIndex].trimmingCharacters(in: .whitespaces))
-                                    .font(.system(size: 10, weight: rowIndex == 0 ? .bold : .medium))
-                                    .padding(6)
-                                    .frame(maxWidth: .infinity, alignment: .leading)
-                                    .background(rowIndex == 0 ? themeColor.opacity(0.15) : (rowIndex % 2 == 0 ? Color.black.opacity(0.05) : Color.clear))
-                                    .border(Color.black.opacity(0.05), width: 0.5)
+                    ScrollView(.horizontal, showsIndicators: true) {
+                        VStack(alignment: .leading, spacing: 0) {
+                            ForEach(0..<min(rows.count, 5), id: \.self) { rowIndex in
+                                let columns = rows[rowIndex].components(separatedBy: ",")
+                                HStack(spacing: 0) {
+                                    ForEach(0..<min(columns.count, maxPreviewColumns), id: \.self) { colIndex in
+                                        Text(columns[colIndex].trimmingCharacters(in: .whitespaces))
+                                            .font(.system(size: 10, weight: rowIndex == 0 ? .bold : .medium))
+                                            .padding(6)
+                                            .frame(minWidth: columnMinWidth, alignment: .leading)
+                                            .background(rowIndex == 0 ? themeColor.opacity(0.15) : (rowIndex % 2 == 0 ? Color.black.opacity(0.05) : Color.clear))
+                                            .border(Color.black.opacity(0.05), width: 0.5)
+                                    }
+                                }
                             }
                         }
                     }
-                    
+                    .frame(maxWidth: 280)
+
                     if rows.count > 5 {
                         Text("+ \(rows.count - 5) more rows...")
                             .font(.system(size: 9, weight: .bold))
@@ -197,6 +205,18 @@ struct NodeView: View {
                         .padding(10)
                         .background(themeColor.opacity(0.1))
                         .cornerRadius(8)
+                }
+                .padding(.top, 12)
+            } else if node.type == .firebase, node.action == nil {
+                VStack(alignment: .leading, spacing: 8) {
+                    Label("FIREBASE (WEB)", systemImage: "flame.fill")
+                        .font(.system(size: 10, weight: .black))
+                        .opacity(0.4)
+
+                    Text(FirebasePreviewBootstrap.canvasSummaryLine(for: node))
+                        .font(.system(size: 13, weight: .medium))
+                        .foregroundColor(.secondary)
+                        .fixedSize(horizontal: false, vertical: true)
                 }
                 .padding(.top, 12)
             } else if node.type == .chart, node.action == nil {

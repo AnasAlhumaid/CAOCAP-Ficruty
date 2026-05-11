@@ -12,6 +12,7 @@ extension NodeRole {
         case .calculation: return "plus.forwardslash.minus"
         case .display: return "opticaldisc.fill"
         case .aiAgent: return "brain.head.profile.fill"
+        case .firebase: return "flame.fill"
         case .custom: return "square.grid.2x2.fill"
         }
     }
@@ -27,6 +28,7 @@ extension NodeRole {
         case .calculation: return .orange
         case .display: return .green
         case .aiAgent: return .indigo
+        case .firebase: return .orange
         case .custom: return .purple
         }
     }

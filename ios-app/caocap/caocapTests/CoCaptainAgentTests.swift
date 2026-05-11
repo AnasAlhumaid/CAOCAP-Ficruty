@@ -72,6 +72,68 @@ struct CoCaptainAgentTests {
         #expect(SpatialNode(type: .code, position: .zero, title: "JavaScript").role == .javascript)
         #expect(SpatialNode(type: .webView, position: .zero, title: "Live Preview").role == .livePreview)
         #expect(SpatialNode(type: .code, position: .zero, title: "New Logic").role == .custom)
+        #expect(SpatialNode(type: .firebase, position: .zero, title: "Firebase").role == .firebase)
+    }
+
+    @Test func livePreviewCompilerInjectsFirebaseWhenConfigNodePresent() throws {
+        let htmlNode = SpatialNode(
+            type: .code,
+            position: .zero,
+            title: "HTML",
+            theme: .orange,
+            textContent: "<html><head></head><body><p>x</p></body></html>"
+        )
+        let previewNode = SpatialNode(
+            type: .webView,
+            position: .zero,
+            title: "Live Preview",
+            theme: .blue
+        )
+        let firebaseNode = SpatialNode(
+            type: .firebase,
+            position: .zero,
+            title: "Firebase",
+            theme: .orange,
+            textContent: #"{"apiKey":"testKey","authDomain":"t.firebaseapp.com","projectId":"tid","storageBucket":"t.appspot.com","messagingSenderId":"1","appId":"1:1:web:abc"}"#
+        )
+        let compilation = try #require(LivePreviewCompiler().compile(nodes: [previewNode, htmlNode, firebaseNode]))
+        #expect(compilation.html.contains("__caocap_fb_b64"))
+        #expect(compilation.html.contains("firebase-app-compat.js"))
+    }
+
+    @Test func livePreviewCompilerUsesFirstValidFirebaseNodeWhenEarlierIsPlaceholder() throws {
+        let htmlNode = SpatialNode(
+            type: .code,
+            position: .zero,
+            title: "HTML",
+            theme: .orange,
+            textContent: "<html><head></head><body></body></html>"
+        )
+        let previewNode = SpatialNode(
+            type: .webView,
+            position: .zero,
+            title: "Live Preview",
+            theme: .blue
+        )
+        let stubFirebase = SpatialNode(
+            type: .firebase,
+            position: .zero,
+            title: "Firebase Stub",
+            theme: .orange,
+            textContent: FirebasePreviewBootstrap.placeholderConfigJSON()
+        )
+        let realFirebase = SpatialNode(
+            type: .firebase,
+            position: .zero,
+            title: "Firebase Real",
+            theme: .orange,
+            textContent: #"{"apiKey":"realWebKey","authDomain":"x.firebaseapp.com","projectId":"myrealpid","storageBucket":"x.appspot.com","messagingSenderId":"1","appId":"1:1:web:abc"}"#
+        )
+        let compilation = try #require(
+            LivePreviewCompiler().compile(nodes: [previewNode, htmlNode, stubFirebase, realFirebase])
+        )
+        #expect(compilation.html.contains("__caocap_fb_b64"))
+        #expect(compilation.html.contains("firebase-app-compat.js"))
     }
 
     @Test func livePreviewCompilerInjectsCSSAndJavaScriptIntoDocumentTags() throws {

@@ -172,6 +172,10 @@ public final class LLMService {
                 - Use `request_app_action` for app navigation and app-level tool actions.
                 - Append the `cocaptain_actions` block at the end of every response that involves node content changes.
                 - Safe actions are only for non-mutating autonomous app actions. Mutating or review-required app actions must use executionMode `pending`.
+                
+                Firebase / Firestore (Live Preview):
+                - When the user asks to link JavaScript to Firebase, save/persist/sync data to Firestore, or connect the app to the backend, read the canvas context block about `window.__caocapFirestore` and `window.__caocapFirestoreDefaultPath`.
+                - Implement persistence with **`javascript` `node_edits`** using the Firestore compat instance on `window.__caocapFirestore` (never invent a second `initializeApp` in JS). If there is no Firebase node yet, propose `create_firebase_node` as a pending app action or tell the user to add the Firebase node and paste Web config from Firebase Console.
                 """
             )
         )
@@ -239,6 +243,7 @@ public final class LLMService {
                 Node edits:
                 - Only target these node roles for edits: srs, html, css, javascript.
                 - Code/content changes belong in `node_edits`, not app actions.
+                - For Firebase/Firestore persistence, edit the **javascript** role only: use `window.__caocapFirestore` (and optional `window.__caocapFirestoreDefaultPath`) as described in canvas context; use compat-style `collection`/`doc`/`set`/`add`/`update` calls after null-checks.
                 - Every node edit needs a non-empty summary and at least one operation.
                 - Exact operations require a non-empty `target`; append/prepend/replace_all do not.
 

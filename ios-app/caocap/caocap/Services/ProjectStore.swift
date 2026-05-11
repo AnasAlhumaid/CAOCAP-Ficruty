@@ -351,6 +351,10 @@ public class ProjectStore {
                 if nodes[index].chartStyle == nil {
                     nodes[index].chartStyle = .bar
                 }
+            case .firebase:
+                if nodes[index].textContent?.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty != false {
+                    nodes[index].textContent = FirebasePreviewBootstrap.placeholderConfigJSON()
+                }
             }
             
             if persist {
@@ -564,16 +568,30 @@ public class ProjectStore {
     public func addNode(type: NodeType = .code) {
         let baseTitle = type == .code ? "New Logic" : type.displayName
         let uniqueTitle = generateUniqueTitle(base: baseTitle)
-        
+
+        let subtitle: String?
+        let initialText: String?
+        switch type {
+        case .code:
+            subtitle = "Write your intent here."
+            initialText = "// Start coding here..."
+        case .firebase:
+            subtitle = "Project settings → Your apps → Web app config"
+            initialText = FirebasePreviewBootstrap.placeholderConfigJSON()
+        default:
+            subtitle = nil
+            initialText = nil
+        }
+
         let newNode = SpatialNode(
             id: UUID(),
             type: type,
             position: CGPoint(x: -viewportOffset.width / viewportScale, y: -viewportOffset.height / viewportScale),
             title: uniqueTitle,
-            subtitle: type == .code ? "Write your intent here." : nil,
+            subtitle: subtitle,
             icon: nodeIcon(for: type),
             theme: nodeTheme(for: type),
-            textContent: type == .code ? "// Start coding here..." : nil
+            textContent: initialText
         )
         
         // Register Undo
@@ -605,6 +623,7 @@ public class ProjectStore {
         case .standard: return "square.grid.2x2"
         case .aiAgent: return "brain.head.profile.fill"
         case .chart: return "chart.line.uptrend.xyaxis"
+        case .firebase: return "flame.fill"
         }
     }
 
@@ -617,6 +636,7 @@ public class ProjectStore {
         case .display: return .green
         case .aiAgent: return .indigo
         case .chart: return .purple
+        case .firebase: return .orange
         default: return .blue
         }
     }
@@ -838,6 +858,24 @@ public class ProjectStore {
         if let index = nodes.firstIndex(where: { $0.id == id }) {
             nodes[index].displayStyle = style
             requestSave()
+        }
+    }
+
+    /// Optional Firestore path for Firebase config nodes (preview exposes `window.__caocapFirestoreDefaultPath`).
+    public func updateNodeFirebaseFirestorePath(id: UUID, path: String?, persist: Bool = true) {
+        if let index = nodes.firstIndex(where: { $0.id == id }) {
+            let oldPath = nodes[index].firebaseFirestorePath
+            undoManager?.registerUndo(withTarget: self) { target in
+                MainActor.assumeIsolated {
+                    target.updateNodeFirebaseFirestorePath(id: id, path: oldPath, persist: persist)
+                }
+            }
+            undoStackChanged += 1
+            nodes[index].firebaseFirestorePath = path
+            if persist {
+                requestSave()
+            }
+            compileLivePreview()
         }
     }
 
